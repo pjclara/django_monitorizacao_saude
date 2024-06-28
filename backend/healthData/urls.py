@@ -31,6 +31,14 @@ urlpatterns = [
     path('documentos/atualizar_documento_por_sns/<int:sns>/', views.atualizar_documento_por_sns, name='atualizar_documento_por_sns'),
     path('documentos/buscar_por_sns/<int:sns>/', views.buscar_por_sns, name='buscar_por_sns'),
     path('documentos/atualizar_dados_paciente_por_sns/<int:sns>/', views.atualizar_dados_paciente_por_sns, name='atualizar_dados_paciente_por_sns'),
+    
+    # ativar/desativar sinal vital
+    path('documentos/ativar_sinal_vital/<int:sns>/', views.ativar_sinal_vital, name='ativar_sinal_vital'),
+    path('documentos/desativar_sinal_vital/<int:sns>/', views.desativar_sinal_vital, name='desativar_sinal_vital'),
+    #delete sinais vitais
+    path('documentos/delete_sinal_vital/<int:sns>/', views.delete_sinal_vital, name='delete_sinal_vital'),
+    #delete device 
+    path('documentos/delete_device/<int:sns>/', views.delete_device, name='delete_device'),
 
     #notifications
     path('listar_notificacoes/<int:sns>/', views.listar_notificacoes_por_sns, name='listar_notificacoes_por_sns'),

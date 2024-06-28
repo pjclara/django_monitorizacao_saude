@@ -182,6 +182,63 @@ const hasAlertSignal = (sinalVital) => {
 
     return isRead
 }
+const desativarSinal = async (patient, indexSinal, index) => {
+    patient.dispositivos[indexSinal].sinaisVitais[index].ativo = false;
+    patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(sinal => sinal.ativo);
+    const response = await fetch(window.URL + `/api/documentos/desativar_sinal_vital/${patient.sns}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+                "dispositivo_idx": indexSinal,
+                "sinal_idx": index
+            }
+        ),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    toast.success('Data creation stopped');
+    disabled.value = false;
+}
+
+const ativarSinal = async (patient, indexSinal, index) => {
+    patient.dispositivos[indexSinal].sinaisVitais[index].ativo = true;
+    patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(sinal => sinal.ativo);
+    const response = await fetch(window.URL + `/api/documentos/ativar_sinal_vital/${patient.sns}/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+            {
+                "dispositivo_idx": indexSinal,
+                "sinal_idx": index,
+                "data" : new Date().toISOString()
+            }
+        ),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    toast.success('Data creation stopped');
+    disabled.value = false;
+}
+
+const activate = async (patient, indexSinal, index, loop) => {
+    if (patient.dispositivos[indexSinal].sinaisVitais[index].ativo) {
+        await desativarSinal(patient, indexSinal, index);
+    } else {
+        await ativarSinal(patient, indexSinal, index);
+    }
+}
+
+
+
+/*
+
 
 const activate = async (patient, indexSinal, index, loop) => {
     console.log(patient);
@@ -221,9 +278,11 @@ const activate = async (patient, indexSinal, index, loop) => {
             },
             body: JSON.stringify(patient),
         });
-        sleep(10000);
+        // sleep for 5 seconds
+        await sleep(5000);
     }
 }
+    */
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));

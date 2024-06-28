@@ -60,6 +60,8 @@ const pt ={
     'OnlyDesktop': 'Apenas disponivel em desktop.',
     'My records': 'Os meus registos',
     'Return': 'Voltar',
+    'Without data': 'Sem dados',
+    'Delete': 'Eliminar',
 }
 
 export default pt;

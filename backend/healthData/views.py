@@ -474,3 +474,95 @@ def update_notificacao(request, notificacao_id):
         db.notificacoes.update_one({"_id": ObjectId(notificacao_id)}, {"$set": data})
         return Response({"_id": notificacao_id}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# desativar sinal vital por dispositivo, sinais vitais e sns
+@api_view(['PUT'])
+def desativar_sinal_vital(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if not documento:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        dispositivo_idx = request.data.get('dispositivo_idx')
+        sinal_idx = request.data.get('sinal_idx')
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['ativo'] = False
+        # se todos os sinais vitais do dispositivo estiverem desativados, o dispositivo também será desativado
+        if all([not sinal['ativo'] for sinal in documento['dispositivos'][dispositivo_idx]['sinaisVitais']]):
+            documento['dispositivos'][dispositivo_idx]['ativo'] = False
+        db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
+        return Response({"message": "Sinal vital desativado com sucesso."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# ativar sinal vital por dispositivo, sinais vitais e sns
+import random
+from time import sleep
+@api_view(['PUT'])
+def ativar_sinal_vital(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if not documento:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        dispositivo_idx = request.data.get('dispositivo_idx')
+        sinal_idx = request.data.get('sinal_idx')
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['ativo'] = True
+        documento['dispositivos'][dispositivo_idx]['ativo'] = True
+        db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
+        # criar valores para o sinal vital
+        valores = []
+        id = 0
+        maximo = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['maximo']
+        minimo = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['minimo']
+        
+        valores = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores']
+       
+        while id < 5:
+            random_value = random.randint(minimo, maximo)
+            valores.append(
+                {
+                    "valor": random_value,
+                    "alerta": False,
+                    "data": datetime.now(),
+                    "lida": False,
+                    "dataLida": ""                    
+                })
+            id += 1
+            send_update(sns, "valores", f"room{sns}")
+            documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'] = valores
+            # save the document
+            db.minha_colecao.update_one({"sns": sns}, {"$set": documento})       
+            sleep(5)            
+             
+        return Response({"message": "Sinal vital ativado com sucesso."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+# delete sinal vital por dispositivo, sinais vitais e sns
+@api_view(['PUT'])
+def delete_sinal_vital(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if not documento:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        dispositivo_idx = request.data.get('dispositivo_idx')
+        sinal_idx = request.data.get('sinal_idx')
+        del documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]
+        db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
+        return Response({"message": "Sinal vital eleminado com sucesso."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# delete device por sns
+@api_view(['PUT'])
+def delete_device(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if not documento:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        dispositivo_idx = request.data.get('dispositivo_idx')
+        del documento['dispositivos'][dispositivo_idx]
+        db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
+        return Response({"message": "Dispositivo eleminado com sucesso."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

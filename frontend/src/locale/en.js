@@ -60,6 +60,8 @@ const en = {
     'OnlyDesktop': 'Only available in Desktop.',
     'My records': 'My records',
     'Return': 'Return',
+    'Without data': 'Without data',
+    'Delete': 'Delete',
 }
 
 

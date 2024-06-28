@@ -10,9 +10,10 @@
     <v-row class="d-flex my-2 justify-center" no-gutters>
       <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('CreatePatient') }}</div>
     </v-row>
-    <PatientForm :patient="patient" ref="form" @validationChanged="updateButtonState"></PatientForm>
-    <v-row class="d-flex my-2 justify-center">
-      <v-btn :disabled="!isFormValid" @click="criarPaciente" color="indigo-darken-3">Save</v-btn>
+    <PatientForm :patient="patient" ref="form" @validationChanged="updateButtonState" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
+    <v-row class="d-flex my-2 justify-space-around">
+      <v-btn @click="voltar()" color="blue-darken-3">Return</v-btn>
+      <v-btn :disabled="!isFormValid || !isValid" @click="criarPaciente" color="indigo-darken-3">Save</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -42,6 +43,12 @@ const patient = ref({
   ]
 })
 
+const isValid = ref(false);
+
+const areAllFieldsNonEmpty = (data) => {
+  isValid.value = data; 
+}
+
 const patientId = computed(() => {
   return patient.value.sns;
 });
@@ -57,6 +64,10 @@ const snsRules = [
   v => /^\d{9}$/.test(v) || 'SNS number must have exactly 9 digits',
   v => /^\d+$/.test(v) || 'SNS number must contain only numbers'
 ]
+
+const voltar = () => {
+  router.push({ name: 'PatientsListing' })
+}
 
 const validateSns = (sns) => {
   const errors = snsRules.map(rule => rule(sns)).filter(result => result !== true);

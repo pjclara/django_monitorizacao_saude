@@ -75,14 +75,18 @@
                     <v-card-text class="flex-grow-1">
                         <v-window v-model="tab">
                             <v-window-item value="devices">
-                                <div v-for="device in decicesList">
-                                    <v-card>
+                                <div v-for="(device, index) in decicesList">
+                                    <v-card class="border-md border-info" elevation="16">
                                         <v-card-title>
                                             <h3>{{ device.modelo }}</h3>
                                         </v-card-title>
                                         <v-card-text>
                                             <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
+
                                         </v-card-text>
+                                        <v-card-footer>
+                                            <v-btn color="secondary" @click="deleteDevice(index)">Delete device</v-btn>
+                                        </v-card-footer>
                                     </v-card>
                                 </div>
                             </v-window-item>
@@ -94,17 +98,23 @@
                                             <v-card class="border-md border-info">
                                                 <v-card-title>
                                                     <h4>{{ sinal.nome }} ({{ sinal.modelo }})</h4>
+                                                    <v-btn color="secondary"
+                                                        @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)">
+                                                        Delete sinal
+                                                        
+                                                    </v-btn>
                                                 </v-card-title>
                                                 <v-card-text class="d-flex flex-wrap">
                                                     <v-row no-gutters class="w-100 justify-center"
                                                         v-if="sinal.valor?.valor">
                                                         <p v-if="sinal.min <= sinal.valor.valor && sinal.max >= sinal.valor.valor"
-                                                            class="text-h6 text-green">{{ sinal.valor.valor }}</p>
+                                                            class="text-h6 text-green">{{
+                                                                sinal.valor.valor }}</p>
                                                         <p v-else class="text-h6 text-red">{{ sinal.valor.valor }} {{
                                                             sinal.unidade }}</p>
                                                     </v-row>
                                                     <v-row v-else no-gutters class="w-100 justify-center">
-                                                        <p class="text-h6 text-center">0 {{ sinal.unidade }}</p>
+                                                        <p class="text-h6 text-center">{{ $t('Without data') }}</p>
                                                     </v-row>
                                                     <v-row no-gutters class="w-100 justify-space-between">
                                                         <p class="w-50 text-center">Min: {{ sinal.min }} {{
@@ -127,8 +137,9 @@
                                         </v-select>
                                     </div>
                                     <div>
-                                        <v-btn v-for="(sinalVital, index) in sinaisVitais" :color="sinal==index ? 'green':'primary'" class="ma-2"
-                                            :key="index" @click="atualizarGrafico(index)">{{
+                                        <v-btn v-for="(sinalVital, index) in sinaisVitais"
+                                            :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
+                                            @click="atualizarGrafico(index)">{{
                                                 sinalVital.nome }}</v-btn>
                                     </div>
                                     <div v-if="deviceId != null">
@@ -269,8 +280,12 @@ const sinaisVitais = computed(() => {
 });
 
 const lastVitalValues = computed(() => {
-    const values = patient.value.dispositivos.map(dispositivo => dispositivo.sinaisVitais.map(sinal => {
-        return { modelo: dispositivo.modelo, nome: sinal.tipo, max: sinal.maximo, min: sinal.minimo, unidade: sinal.unidade, valor: sinal.valores[sinal.valores.length - 1] }
+    const values = patient.value.dispositivos.map((dispositivo, dispositivo_idx) => dispositivo.sinaisVitais.map((sinal, sinal_idx) => {
+        return {
+            dispositivo_idx: dispositivo_idx,
+            sinal_idx: sinal_idx,
+            modelo: dispositivo.modelo, nome: sinal.tipo, max: sinal.maximo, min: sinal.minimo, unidade: sinal.unidade, valor: sinal.valores[sinal.valores.length - 1]
+        }
     }))
     return values.flat()
 })
@@ -307,8 +322,6 @@ const decicesList = computed(() => {
 onMounted(async () => {
     await fetchPatientData();
     await fetchNotifications();
-    //const intervalId = setInterval(fetchPatientData, 10000);
-    //return () => clearInterval(intervalId);
     try {
         const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
         ws.onopen = () => {
@@ -538,8 +551,66 @@ const read = async (id) => {
     }
 };
 
+const deleteSinal = async (sinal_idx, dispositivo_idx) => {
+    // confirm the deletion
+    if (!confirm('Are you sure you want to delete this signal?')) {
+        return;
+    }
+    try {
+        const sns = patient.value.sns;
+        const response = await fetch(window.URL + '/api/documentos/delete_sinal_vital/' + sns + '/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                dispositivo_idx: dispositivo_idx,
+                sinal_idx: sinal_idx
+            })
 
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+        else {
+            toast.success('Signal deleted');
+            // delete the signal from the local data
+            patient.value.dispositivos[dispositivo_idx].sinaisVitais.splice(sinal_idx, 1);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 
+const deleteDevice = async (index) => {
+    // confirm the deletion
+    if (!confirm('Are you sure you want to delete this device?')) {
+        return;
+    }
+    try {
+        const sns = patient.value.sns;
+        const response = await fetch(window.URL + '/api/documentos/delete_device/' + sns + '/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                dispositivo_idx: index
+            })
+
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+        else {
+            toast.success('Device deleted');
+            // delete the device from the local data
+            patient.value.dispositivos.splice(index, 1);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 </script>
 
 <style scoped>
