@@ -76,7 +76,7 @@ const userId = useRoute().params.id
 
 const roles = ref([])
 
-const typeUser = ref(['medico', 'enfermeiro', 'paciente', 'admin'])
+const typeUser = ref(['profissional', 'paciente', 'admin'])
 
 const user = ref({
   full_name: '',
@@ -110,6 +110,12 @@ const cancel = () => {
 const password = ref('')
 
 const updateUser = async () => {
+
+  // all fields are required
+  if (!user.value.full_name || !user.value.email || !user.value.password || !user.value.mobile_phone || !user.value.type_user || !user.value.role) {
+    toast.error('All fields are required')
+    return
+  }
   loaderStore.setLoading(true);
   try {
     const response = await fetch(window.URL + '/api/users/' + userId + '/', {
@@ -178,6 +184,8 @@ const fetchRolesFromApi = async () => {
 const usersList = () => {
   router.push({ name: 'EmployeesListing' })
 }
+
+
 
 
 </script>
