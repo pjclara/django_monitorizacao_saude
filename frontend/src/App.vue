@@ -12,6 +12,9 @@
         <v-progress-circular color="blue-lighten-3" indeterminate size="128" width="12" />
       </v-overlay>
     </v-main>
+    <footer class="d-flex flex-column">
+      IPleiria - ESTG - 2024 - &copy; Luís Marques & Paulo Clara
+    </footer>
   </v-app>
 </template>
 
@@ -60,3 +63,15 @@ const redirectNotifications = (sns) => {
     router.push({ name: 'PatientProfile', params: { patientSns: sns }, query: { notifications: true } });
 }
 </script>
+
+<style>
+footer {
+  border-top: 1px solid black;
+  background-color: lightgray;
+  color: lightslategrey;
+  text-align: right;
+  padding: 10px;
+  font-weight: bold ;
+  z-index: 1000;
+}
+</style>

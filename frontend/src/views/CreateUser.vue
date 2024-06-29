@@ -52,14 +52,15 @@ import { toast } from 'vue3-toastify';
 import { useRouter } from 'vue-router';
 const loaderStore = useLoaderStore();
 
-const showSuccess = ref(false)
-const showErrors = ref(false)
-
 const user = ref({
-  first_name: '',
-  last_name: '',
+  full_name: '',
   email: '',
-  username: '',
+  password: '',
+  health_number: 0,
+  taxpayer_number: 0,
+  mobile_phone: '',
+  type_user: '',
+  role: '',
   is_active: true,
   is_staff: false
 })
@@ -105,6 +106,8 @@ const getRoles = async () => {
 }
 
 const criarUser = async () => {
+  console.log(user.value)
+  //return
   try {
     if (user.value.role == 'add new role') {
       user.value.role = new_role.value

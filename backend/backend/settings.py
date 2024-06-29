@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'djongo',
         'CLIENT': {
             'host': "mongodb+srv://pjclara:mongoDB@djangodb.tdvpxfr.mongodb.net/?retryWrites=true&w=majority&appName=djangoDB",
-            'name': "health-monitor-teste",
+            'name': "health-monitor-teste2",
             'authMechanism': "SCRAM-SHA-1"
             }
     }

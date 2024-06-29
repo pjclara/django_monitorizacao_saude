@@ -67,6 +67,14 @@ const pt ={
     'Edit': 'Editar',
     'Activate': 'Ativar',
     'Deactivate': 'Desativar',
+    'Show Patients being monitored': 'Mostrar Pacientes a serem monitorizados',
+    'Search for Patients': 'Procurar Pacientes',
+    'Devices of the patient': 'Dispositivos do paciente',
+    'Vital Signs': 'Sinais Vitais',
+    'Notifications': 'Notificações',
+    'Statistics': 'Estatísticas',
+    'History': 'Histórico',
+    'Search': 'Procurar',
 }
 
 export default pt;

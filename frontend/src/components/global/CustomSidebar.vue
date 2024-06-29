@@ -17,7 +17,7 @@
                 </template>
                 <v-list-item-title>{{ $t('dashboard') }} </v-list-item-title>
             </v-list-item>
-            <v-list-item to="/employees" v-if="isAdmin && isLogged" >
+            <v-list-item to="/usersList" v-if="isAdmin && isLogged" >
                 <template v-slot:prepend>
                     <v-icon icon="mdi mdi-account-multiple" color="#B49239"></v-icon>
                 </template>

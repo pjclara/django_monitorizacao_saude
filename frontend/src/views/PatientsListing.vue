@@ -2,10 +2,7 @@
     <v-container>
         <!-- DESKTOP -->
         <v-col v-if="!smAndDown">
-            <!-- <v-row no-gutters justify="center" class="mb-2">
-                <h3>{{ $t('PatientsListing') }}</h3>
-            </v-row> -->
-            <v-text-field v-model="search" label="Procurar Pacientes" class="mb-4" outlined></v-text-field>
+            <v-text-field v-model="search" :label="$t('Search for Patients')" class="mb-4" outlined></v-text-field>
             <v-data-table :headers="headers" :items="patientsList" v-model:expanded="expanded" :search="search"
                 :mobile="smAndDown" item-value="sns">
                 <template v-slot:top>
@@ -16,7 +13,7 @@
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-col cols="5" class="d-flex justify-center pt-8">
                             <v-checkbox v-model="showMonitoredPatients"
-                                label="Show Patients being monitored"></v-checkbox>
+                                :label="$t('Show Patients being monitored')"></v-checkbox>
                         </v-col>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-col cols="3">
@@ -38,10 +35,10 @@
                                     <v-btn @click="startGenerateData(item, indexSinal, index)" v-if="!useVitalSignsStore().start[index]" :loading="useVitalSignsStore().loading[index]" 
                                     color="primary" width="150px" >                                        
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img src="/temperatura.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
                                         </span>
                                         <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img src="/oxigenio.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2"  src="/oxigenio.png" alt="" width="20px" height="20px">
                                         </span>
                                         <span v-else>
                                             <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px" height="20px">
@@ -50,13 +47,13 @@
                                     </v-btn>
                                     <v-btn @click="stopGeneratingData(item, indexSinal, index)" v-if="useVitalSignsStore().start[index]" color="secondary" width="150px" >
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img src="/temperatura.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
                                         </span>
                                         <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img src="/oxigenio.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2"  src="/oxigenio.png" alt="" width="20px" height="20px">
                                         </span>
                                         <span v-else>
-                                            <img src="/heart_beat.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2"  src="/heart_beat.png" alt="" width="20px" height="20px">
                                         </span>
                                         <span class="ml-2">{{ $t("Deactivate") }}</span>
                                     </v-btn>                                    

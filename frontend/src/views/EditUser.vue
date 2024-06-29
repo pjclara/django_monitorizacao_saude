@@ -81,10 +81,10 @@ const typeUser = ref(['medico', 'enfermeiro', 'paciente', 'admin'])
 const user = ref({
   full_name: '',
   email: '',
-  health_number: '',
+  health_number: 0,
   password: '',
   mobile_phone: '',
-  taxpayer_number: '',
+  taxpayer_number: 0,
   type_user: '',
   role: '',
   is_active: true,
@@ -142,9 +142,9 @@ const fetchUserData = async () => {
     const userData = await response.json();
     console.log('userData: ', userData)
     user.value.email = userData.email;
-    user.value.health_number = userData.health_number;
+    user.value.health_number = userData.health_number ? userData.health_number : 0;
     user.value.mobile_phone = userData.mobile_phone;
-    user.value.taxpayer_number = userData.taxpayer_number;
+    user.value.taxpayer_number = userData.taxpayer_number? userData.taxpayer_number : 0;
     user.value.type_user = userData.type_user;
     user.value.full_name = userData.full_name;
     user.value.is_active = userData.is_active;

@@ -7,7 +7,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" sm="4">
-        <v-card color="#B49239" theme="dark" class="rounded-xl" height="150">
+        <v-card color="#B49239" theme="dark" class="rounded-xl" height="150" @click="goToUsers">
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
@@ -45,6 +45,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users';
+import { useRouter } from 'vue-router';
 
 const user = useUsersStore().user
 
@@ -54,10 +55,14 @@ onMounted(() => {
   fetchDataFromApi();
   getUsers();
 });
-
+const router = useRouter();
 const roles = ref([]);
 
 const users = ref([]);
+
+const goToUsers = () => {
+  router.push({ name: 'EmployeesListing' });
+};
 
 const fetchDataFromApi = async () => {
   try {

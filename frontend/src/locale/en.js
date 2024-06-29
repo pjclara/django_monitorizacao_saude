@@ -65,6 +65,14 @@ const en = {
     'No active devices': 'No active devices',
     "Activate": "Activate",
     "Deactivate": "Deactivate",
+    "Show Patients being monitored": "Show Patients being monitored",
+    "Search for Patients": "Search for Patients",
+    "Devices of the patient": "Devices of the patient",
+    'Vital Signs': 'Vital Signs',
+    'Notifications': 'Notifications',
+    'Statistics': 'Statistics',
+    'History': 'History',
+    'Search': 'Search',
 }
 
 

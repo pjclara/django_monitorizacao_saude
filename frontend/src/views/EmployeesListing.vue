@@ -1,10 +1,9 @@
 <template>
     <v-container>
         <v-col class="d-flex flex-column">
-            <span class="text-h5 text-center"> Listagem Utilizadores </span>
             <v-text-field
                 v-model="search"
-                label="Procurar Utilizadores"
+                :label="$t('Search')"
                 class="mb-4"
                 outlined
             ></v-text-field>
@@ -42,7 +41,6 @@ const { smAndDown } = useDisplay()
 const loaderStore = useLoaderStore();
 
 const headers = ref([
-    { title: 'ID', key: 'id' },
     { title: 'Name', key: 'full_name' },
     { title: 'Email', key: 'email' },
     { title: 'Taxpayer number', key: 'taxpayer_number'},

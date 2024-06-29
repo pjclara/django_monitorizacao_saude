@@ -69,16 +69,8 @@ def get_all_users(request):
         
         # phone number must be unique
         if db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}):
-            return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
+            return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)       
         
-        # check if the user health_number or taxpayer_number already exists
-        if request.data['type_user'] == 'profissional':
-            if db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number']}):
-                return JsonResponse({'error': 'Taxpayer number already exists'}, status=400, safe=False)
-            
-        elif request.data['type_user'] == 'paciente':
-            if db.healthData_customuser.find_one({'health_number': request.data['health_number']}):
-                return JsonResponse({'error': 'Health number already exists'}, status=400, safe=False)            
 
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -116,25 +108,65 @@ def user_detail(request, pk):
 
     elif request.method == 'PUT':
         # check if the user exists
-        if not user:
-            return JsonResponse({'error': 'User does not exist'}, status=404, safe=False)
+        # chek if the required fields are present
         
-        # check if the email already exists in the database and is not the same as the user email
-        if db.healthData_customuser.find_one({'email': request.data['email']}) and request.data['email'] != user['email']:
-            return JsonResponse({'error': 'Email already exists'}, status=400, safe=False)
+        if not 'full_name' in request.data:
+            return JsonResponse({'error': 'Full name is required'}, status=400, safe=False)
+
+        if not 'email' in request.data:
+            return JsonResponse({'error': 'Email is required'}, status=400, safe=False)
         
-        # Check if the phone number already exists in the database and is not the same as the user phone number
-        if db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}) and request.data['mobile_phone'] != user['mobile_phone']:
+        if not 'password' in request.data:
+            return JsonResponse({'error': 'Password is required'}, status=400, safe=False)
+        
+        if not 'type_user' in request.data:
+            return JsonResponse({'error': 'Type user is required'}, status=400, safe=False)
+        
+        if not 'role' in request.data:
+            return JsonResponse({'error': 'Role is required'}, status=400, safe=False)
+        
+        if not 'mobile_phone' in request.data:
+            return JsonResponse({'error': 'Mobile phone is required'}, status=400, safe=False)
+        
+        if not request.data['type_user'] in ['profissional', 'paciente', 'admin']:
+            return JsonResponse({'error': 'Type user must be profissional or paciente'}, status=400, safe=False)
+        
+        if (request.data['type_user'] == 'profissional') and not 'taxpayer_number' in request.data:
+            return JsonResponse({'error': 'Taxpayer number is required'}, status=400, safe=False)
+        
+        # check if the taxpayer_number is unique except for 0
+        if 'taxpayer_number' in request.data:
+            if  request.data['taxpayer_number'] != 0 and (request.data['type_user'] == 'profissional'):
+                if db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number'], 'id': pk}):
+                    pass
+                elif db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number']}):
+                    return JsonResponse({'error': 'Taxpayer number already exists'}, status=400, safe=False)
+       
+        if (request.data['type_user'] == 'paciente') and not 'health_number' in request.data:
+            return JsonResponse({'error': 'Health number number is required'}, status=400, safe=False)
+        
+        # check if the health number is unique except for 0
+        if  'health_number' in request.data:
+            if  request.data['health_number'] != 0 and request.data['type_user'] == 'paciente':
+                if db.healthData_customuser.find_one({'health_number': request.data['health_number'], 'id': pk}):
+                    pass
+                elif db.healthData_customuser.find_one({'health_number': request.data['health_number']}):
+                    return JsonResponse({'error': 'Health number already exists'}, status=400, safe=False)
+        
+        # check if the user email already exists except for the same user
+        if db.healthData_customuser.find_one({'email': request.data['email'], 'id': pk}):
+            pass
+        elif db.healthData_customuser.find_one({'email': request.data['email']}):
+            return JsonResponse({'error': 'Email already exists'}, status=400, safe=False)       
+        
+        
+        # phone number must be unique except for the same user
+        if db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone'], 'id': pk}):
+            pass
+        elif db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
         
-        # check if the user health_number or taxpayer_number already exists
-        if user['type_user'] == 'profissional':
-            if db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number']}) and request.data['taxpayer_number'] != user['taxpayer_number']:
-                return JsonResponse({'error': 'Taxpayer number already exists'}, status=400, safe=False)
-        elif user['type_user'] == 'paciente':
-            if db.healthData_customuser.find_one({'health_number': request.data['health_number']}) and request.data['health_number'] != user['health_number']:
-                return JsonResponse({'error': 'Health number already exists'}, status=400, safe=False)
-            
+           
         if request.data.get('password') == "":
             # get the user password
             password = db.healthData_customuser.find_one({'id': pk})['password']

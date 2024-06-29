@@ -58,7 +58,7 @@ const router = createRouter({
       component: PatientEdit
     },
     {
-      path: '/employees',
+      path: '/usersList',
       name: 'EmployeesListing',
       component: EmployeesListing
     },

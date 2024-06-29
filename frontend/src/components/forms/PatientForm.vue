@@ -97,7 +97,7 @@
 
                 <v-col :cols="smAndDown ? '12' : '6'">
                   <v-select v-model="vital.tipo" label="Vital Sign"
-                    :items="['Frequência Cardíaca', 'Blood pressure', 'Saturação Oxigênio', 'Temperatura', 'Calories burned']">
+                    :items="['Frequência Cardíaca', 'Saturação Oxigênio', 'Temperatura']">
                   </v-select>
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '2'">

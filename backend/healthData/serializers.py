@@ -109,14 +109,24 @@ class CustomUserSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(default=True)
     is_staff = serializers.BooleanField(default=False)
     is_superuser = serializers.BooleanField(default=False)
-    mobile_phone = serializers.IntegerField(default=0)
-    health_number = serializers.IntegerField(default=0, required=False)
-    taxpayer_number = serializers.IntegerField(default=0, required=False)
+    mobile_phone = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
+    health_number = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
+    taxpayer_number = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
     type_user = serializers.CharField(max_length=100)  
     role = serializers.CharField(max_length=100, write_only=True)
     
     #updae
     def update(self, instance, validated_data):
+        if not validated_data['health_number']:
+            health_number=None
+        else:
+            health_number=validated_data['health_number']
+            
+        if not validated_data['taxpayer_number']:
+            taxpayer_number=None
+        else:
+            taxpayer_number=validated_data['taxpayer_number']       
+        
         customer = CustomUser.objects.get(email=validated_data['email'])
         customer.full_name = validated_data['full_name']
         customer.is_active = validated_data['is_active']
@@ -124,7 +134,6 @@ class CustomUserSerializer(serializers.Serializer):
         customer.is_superuser = validated_data['is_superuser']
         customer.mobile_phone = validated_data['mobile_phone']
         customer.health_number = validated_data['health_number']
-        customer.taxpayer_number = validated_data['taxpayer_number']
         customer.type_user = validated_data['type_user']
         customer.set_password(validated_data['password'])
         customer.save()
@@ -138,6 +147,16 @@ class CustomUserSerializer(serializers.Serializer):
         else:
             group = group[0]
             
+        if not validated_data['health_number']:
+            health_number=None
+        else:
+            health_number=validated_data['health_number']
+            
+        if not validated_data['taxpayer_number']:
+            taxpayer_number=None
+        else:
+            taxpayer_number=validated_data['taxpayer_number']
+            
         customUser = CustomUser.objects.create_user(
             email=validated_data['email'],
             full_name=validated_data['full_name'],
@@ -145,8 +164,8 @@ class CustomUserSerializer(serializers.Serializer):
             is_staff=validated_data['is_staff'],
             is_superuser=validated_data['is_superuser'],
             mobile_phone=validated_data['mobile_phone'],
-            health_number=validated_data['health_number'],
-            taxpayer_number=validated_data['taxpayer_number'],
+            health_number=health_number,
+            taxpayer_number=taxpayer_number,
             password=validated_data['password'],
         )
         if customUser:

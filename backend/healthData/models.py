@@ -36,9 +36,9 @@ class CustomUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    mobile_phone = models.IntegerField(default=0, unique=True)
-    health_number = models.IntegerField(default=0)
-    taxpayer_number = models.IntegerField(default=0)
+    mobile_phone = models.CharField(max_length=9, blank=True, null=True)
+    health_number = models.CharField(max_length=9, blank=True, null=True)
+    taxpayer_number = models.CharField(max_length=9, blank=True, null=True)
     type_user = models.CharField(max_length=255, choices=TYPE_USERS, default='profissional')
     groups = models.ManyToManyField('auth.Group', related_name='users', blank=True)
 

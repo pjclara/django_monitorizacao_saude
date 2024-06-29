@@ -35,8 +35,8 @@
                                 <v-row no-gutters justify="space-between" v-if="!isPatient">
                                     <v-btn color="blue-darken-3" size="small" width="100px" class="mt-2"
                                         @click="voltar">{{ $t("Return") }}</v-btn>
-                                    <v-btn color="green" size="small" width="100px" class="mt-2"
-                                        @click="callPatient">{{ $t("Call") }}</v-btn>
+                                    <v-btn color="green" size="small" width="100px" class="mt-2" @click="callPatient">{{
+                                        $t("Call") }}</v-btn>
                                     <v-btn color="blue" size="small" width="100px" class="mt-2"
                                         @click="edit(patient?.sns)">{{ $t("Edit") }}</v-btn>
                                 </v-row>
@@ -50,27 +50,27 @@
                     <v-tabs v-model="tab">
                         <v-tab value="devices" class="tab-border mr-1">
                             <span class="text-blue">
-                                Devices of the patient
+                                {{ $t('Devices of the patient') }}
                             </span>
                         </v-tab>
                         <v-tab value="vitals" class="tab-border mr-1">
                             <span class="text-blue">
-                                Vital Signs
+                                {{ $t('Vital Signs') }}
                             </span>
                         </v-tab>
                         <v-tab value="estatistics" class="tab-border mr-1">
                             <span class="text-blue">
-                                Estatistics
+                                {{ $t('Statistics') }}
                             </span>
                         </v-tab>
                         <v-tab value="notifications" class="tab-border">
                             <span class="text-blue">
-                                Notifications
+                                {{ $t('Notifications') }}
                             </span>
                         </v-tab>
                         <v-tab value="history" class="tab-border">
                             <span class="text-blue">
-                                History
+                                {{ $t('History') }}
                             </span>
                         </v-tab>
                     </v-tabs>
@@ -86,7 +86,7 @@
                                             <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
 
                                         </v-card-text>
-                                            <v-btn color="secondary" @click="deleteDevice(index)">Delete device</v-btn>
+                                        <v-btn color="secondary" @click="deleteDevice(index)" v-if="!isPatient">Delete device</v-btn>
                                     </v-card>
                                 </div>
                             </v-window-item>
@@ -99,9 +99,9 @@
                                                 <v-card-title>
                                                     <h4>{{ sinal.nome }} ({{ sinal.modelo }})</h4>
                                                     <v-btn color="secondary"
-                                                        @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)">
+                                                        @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)" v-if="!isPatient">
                                                         Delete sinal
-                                                        
+
                                                     </v-btn>
                                                 </v-card-title>
                                                 <v-card-text class="d-flex flex-wrap">
@@ -165,7 +165,7 @@
                                             <td>{{ item.sinal }}</td>
                                             <td>{{ item.data }}</td>
                                             <td>{{ item.valor }}</td>
-                                            <td>
+                                            <td v-if="!isPatient">
                                                 <v-btn color="blue" @click="read(item.idBotao)">Visto</v-btn>
                                             </td>
                                         </tr>
@@ -252,11 +252,33 @@ const chartOptions = {
     }
 };
 
+const user = useUsersStore().user;
+
+console.log(user.type_user);
+
 const router = useRouter();
 
 const props = defineProps(['alert'])
 
+const notificationsHeaders = ref([]);
+
 const isPatient = computed(() => {
+    if (useUsersStore().user?.groups.includes('paciente')) {
+        notificationsHeaders.value = [
+            { title: 'Dispositivo', key: 'dispositivo' },
+            { title: 'Sinal', key: 'sinal' },
+            { title: 'Data', key: 'data' },
+            { title: 'Valor', key: 'valor' }
+        ]
+    }else{
+        notificationsHeaders.value = [
+            { title: 'Dispositivo', key: 'dispositivo' },
+            { title: 'Sinal', key: 'sinal' },
+            { title: 'Data', key: 'data' },
+            { title: 'Valor', key: 'valor' },
+            { title: 'Actions', key: 'idBotao', sortable: false }
+        ]
+    }
     return useUsersStore().user?.groups.includes('paciente') ? true : false
 });
 
@@ -353,15 +375,6 @@ const callPatient = () => {
     window.location.href = `tel:${patient?.value?.telefone}`;
 }
 
-const notificationsHeaders = ref([
-    { title: 'Dispositivo', key: 'dispositivo' },
-    { title: 'Sinal', key: 'sinal' },
-    { title: 'Data', key: 'data' },
-    { title: 'Valor', key: 'valor' },
-    { title: 'Actions', key: 'idBotao', sortable: false }
-])
-
-
 // get patient data from api
 const fetchPatientData = async () => {
     try {
@@ -407,7 +420,7 @@ const formattedChartData = computed(() => {
         label: device.sinaisVitais[sinal.value].tipo + "(" + device.sinaisVitais[0].unidade + ")",
         data: device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => entry.valor),
         fill: false,
-        borderColor: 'rgb(75, 192, 192)',
+        borderColor: colors[1],
         tension: 0.5,
         pointBackgroundColor: device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => {
             if (entry.valor < device.sinaisVitais[sinal.value].minimo || entry.valor > device.sinaisVitais[sinal.value].maximo) {
@@ -470,19 +483,22 @@ const fetchNotifications = async () => {
             throw new Error('Failed to fetch data');
         }
         const data = await response.json();
-        // explode data by device, vital sign and value
 
         dataTeste.value = data;
+
         data.forEach(notification => {
             if (notification.read)
                 return;
             let parts = notification.message.split(',');
+            
             notificacoesData.value.push({
                 dispositivo: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].modelo,
-                sinal: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])].tipo,
-                valor: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])].valores[parseInt(parts[2].split(':')[1])] ? patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])].valores[parseInt(parts[2].split(':')[1])].valor : 'No value',
+                sinal: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])]?.tipo,
+                valor: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])]?.valores[parseInt(parts[2].split(':')[1])] ? patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])].valores[parseInt(parts[2].split(':')[1])].valor : 'No value',
                 read: notification.read
-            });
+
+            })
+
         });
     } catch (error) {
         console.error(error);
@@ -490,6 +506,7 @@ const fetchNotifications = async () => {
 };
 
 const processedNotifications = computed(() => {
+
     if (!dataTeste.value.length) {
         return []
     }
