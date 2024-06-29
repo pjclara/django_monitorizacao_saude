@@ -33,10 +33,12 @@
                                     <span class="text-h6">{{ identifier?.telefone }}</span>
                                 </div>
                                 <v-row no-gutters justify="space-between" v-if="!isPatient">
+                                    <v-btn color="blue-darken-3" size="small" width="100px" class="mt-2"
+                                        @click="voltar">{{ $t("Return") }}</v-btn>
                                     <v-btn color="green" size="small" width="100px" class="mt-2"
-                                        @click="callPatient">Call</v-btn>
+                                        @click="callPatient">{{ $t("Call") }}</v-btn>
                                     <v-btn color="blue" size="small" width="100px" class="mt-2"
-                                        @click="edit(patient?.sns)">Edit</v-btn>
+                                        @click="edit(patient?.sns)">{{ $t("Edit") }}</v-btn>
                                 </v-row>
                             </v-col>
                         </v-row>
@@ -84,9 +86,7 @@
                                             <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
 
                                         </v-card-text>
-                                        <v-card-footer>
                                             <v-btn color="secondary" @click="deleteDevice(index)">Delete device</v-btn>
-                                        </v-card-footer>
                                     </v-card>
                                 </div>
                             </v-window-item>
@@ -261,6 +261,10 @@ const isPatient = computed(() => {
 });
 
 const sinal = ref(0);
+
+const voltar = () => {
+    router.go(-1);
+};
 
 // variables
 

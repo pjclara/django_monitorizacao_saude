@@ -50,9 +50,10 @@ def get_all_users(request):
             return JsonResponse({'error': 'Taxpayer number is required'}, status=400, safe=False)
         
         # check if the taxpayer_number is unique except for 0
-        if  request.data['taxpayer_number'] != 0 and request.data['type_user'] == 'profissional' and 'taxpayer_number' in request.data:
-            if db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number']}):
-                return JsonResponse({'error': 'Taxpayer number already exists'}, status=400, safe=False)
+        if 'taxpayer_number' in request.data:
+            if  request.data['taxpayer_number'] != 0 and (request.data['type_user'] == 'profissional'):
+                if db.healthData_customuser.find_one({'taxpayer_number': request.data['taxpayer_number']}):
+                    return JsonResponse({'error': 'Taxpayer number already exists'}, status=400, safe=False)
        
         if (request.data['type_user'] == 'paciente') and not 'health_number' in request.data:
             return JsonResponse({'error': 'Health number number is required'}, status=400, safe=False)
@@ -456,12 +457,23 @@ def listar_notificacoes_por_sns(request, sns):
 
 @api_view(['PUT'])
 def update_notificacao(request, notificacao_id):
-    notificacao = db.notificacoes.find_one({"_id": ObjectId(notificacao_id)})
-    # find document with notificacao
-    
-    documento = db.minha_colecao.find_one({"sns": notificacao['utente']})
+    notificacao = db.notificacoes.find_one({"_id": ObjectId(notificacao_id)})   
     if not notificacao:
         return Response({"error": "Notificação não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # explode message dispositivo_idx: 0, sinal_idx: 0, valor_idx: 0, valor: 0.0 para notificar o profissional
+    message = notificacao['message']
+    if message:
+        dispositivo_idx = int(message.split(",")[0].split(":")[1].strip())
+        sinal_idx = int(message.split(",")[1].split(":")[1].strip())
+        valor_idx = int(message.split(",")[2].split(":")[1].strip())
+        documento = db.minha_colecao.find_one({"sns": notificacao['utente']})
+        #valor passa a lido
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'][valor_idx]['lida'] = True
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'][valor_idx]['dataLida'] = datetime.now()
+        #save   
+        db.minha_colecao.update_one({"sns": notificacao['utente']}, {"$set": documento})
+        
     serializer = NotificationSerializer(data=request.data)
     if serializer.is_valid():
         data = serializer.validated_data
@@ -495,8 +507,7 @@ def desativar_sinal_vital(request, sns):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 # ativar sinal vital por dispositivo, sinais vitais e sns
-import random
-from time import sleep
+
 @api_view(['PUT'])
 def ativar_sinal_vital(request, sns):
     try:
@@ -507,32 +518,58 @@ def ativar_sinal_vital(request, sns):
         sinal_idx = request.data.get('sinal_idx')
         documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['ativo'] = True
         documento['dispositivos'][dispositivo_idx]['ativo'] = True
+        if request.data.get('valor') < documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['minimo'] or request.data.get('valor') > documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['maximo']:
+            alert = True
+        else:
+            alert = False
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'].append(
+            {
+                "valor": request.data.get('valor'),
+                "alerta": alert,
+                "data": datetime.now(),
+                "dataLida": None,
+                "lida": False
+                
+            }
+        )
         db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
-        # criar valores para o sinal vital
-        valores = []
-        id = 0
-        maximo = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['maximo']
-        minimo = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['minimo']
-        
-        valores = documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores']
+        send_update(sns, "sinal_vital_ativado", f"room{sns}")
        
-        while id < 5:
-            random_value = random.randint(minimo, maximo)
-            valores.append(
-                {
-                    "valor": random_value,
-                    "alerta": False,
-                    "data": datetime.now(),
-                    "lida": False,
-                    "dataLida": ""                    
-                })
-            id += 1
-            send_update(sns, "valores", f"room{sns}")
-            documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'] = valores
-            # save the document
-            db.minha_colecao.update_one({"sns": sns}, {"$set": documento})       
-            sleep(5)            
-             
+       #notificação
+        if request.data.get('valor') > documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['maximo'] or request.data.get('valor') < documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['minimo']:
+            #last valor index
+            valor_idx = len(documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores']) - 1
+            notificacaoSerializado = NotificationSerializer(data={
+                "title": "Alerta",
+                "message": f"dispositivo_idx: {dispositivo_idx}, sinal_idx: {sinal_idx}, valor_idx: {valor_idx}, valor: {request.data.get('valor')}",
+                "utente": documento['sns'],
+                "read": False,
+            })
+            if notificacaoSerializado.is_valid():
+                notificacao = notificacaoSerializado.validated_data
+                profissional = documento['dispositivos'][dispositivo_idx].get('profissionais', [])[0].get('id')
+                latest_notification = db.notificacoes.find_one(
+                    {
+                        "utente": sns,
+                        "message": {
+                            "$regex": f"dispositivo_idx: {dispositivo_idx}, sinal_idx: {sinal_idx}"
+                        }
+                    }, sort=[("_id", -1)])
+                db.notificacoes.insert_one(notificacao)
+                if latest_notification and not latest_notification.get('read', True):
+                    # If the latest notification is unread, skip sending a new notification
+                    pass
+                else:
+                    try:
+                        send_notification(
+                            documento['sns'],
+                            documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['tipo'],
+                            f"room{profissional}")
+                    except Exception as e:
+                        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response(notificacaoSerializado.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         return Response({"message": "Sinal vital ativado com sucesso."}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

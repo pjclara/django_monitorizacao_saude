@@ -5,7 +5,7 @@
     </v-row> -->
     <PatientForm :patient="patient" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
-      <v-btn @click="voltar()" color="blue-darken-3">Return</v-btn>
+      <v-btn @click="voltar()" color="blue-darken-3">{{ $t("Return") }}</v-btn>
 
       <v-btn @click="atualizarPaciente" :disabled="!isValid" color="green-darken-3">Save</v-btn>
 

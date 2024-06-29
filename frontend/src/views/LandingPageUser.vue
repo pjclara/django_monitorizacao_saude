@@ -64,7 +64,7 @@
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
-                {{ $t('noData') }}
+                {{ $t('No active devices') }}
               </v-card-title>
             </div>
           </div>

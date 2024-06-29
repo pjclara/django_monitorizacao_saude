@@ -111,7 +111,7 @@ class CustomUserSerializer(serializers.Serializer):
     is_superuser = serializers.BooleanField(default=False)
     mobile_phone = serializers.IntegerField(default=0)
     health_number = serializers.IntegerField(default=0, required=False)
-    taxpayer_number = serializers.IntegerField(default=0)
+    taxpayer_number = serializers.IntegerField(default=0, required=False)
     type_user = serializers.CharField(max_length=100)  
     role = serializers.CharField(max_length=100, write_only=True)
     

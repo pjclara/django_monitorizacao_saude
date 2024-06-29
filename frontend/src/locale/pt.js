@@ -62,6 +62,11 @@ const pt ={
     'Return': 'Voltar',
     'Without data': 'Sem dados',
     'Delete': 'Eliminar',
+    'No active devices': 'Sem dispositivos ativos',
+    'Call': 'Chamar',
+    'Edit': 'Editar',
+    'Activate': 'Ativar',
+    'Deactivate': 'Desativar',
 }
 
 export default pt;

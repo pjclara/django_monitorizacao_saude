@@ -62,6 +62,9 @@ const en = {
     'Return': 'Return',
     'Without data': 'Without data',
     'Delete': 'Delete',
+    'No active devices': 'No active devices',
+    "Activate": "Activate",
+    "Deactivate": "Deactivate",
 }
 
 
