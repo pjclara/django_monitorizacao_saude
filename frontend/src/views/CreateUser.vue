@@ -5,21 +5,21 @@
     </v-row>
     <v-form v-model="isFormValid" @input="validationStatus">
       <v-row>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <v-text-field v-model="user.full_name" label="Name" :rules="full_name_rules" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <v-text-field v-model="user.email" label="Email" :rules="email_rules" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="4">
+        <!-- <v-col cols="12" sm="4">
           <v-text-field v-model="user.password" label="Password" :rules="password_rules" required></v-text-field>
-        </v-col>
+        </v-col> -->
       </v-row>
       <v-row>
-        <v-col cols="12" sm="3" v-if="user.type_user != 'profissional'">
+        <v-col cols="12" sm="3" v-if="user.type_user == 'paciente'">
           <v-text-field v-model="user.health_number" label="Health number" :rules="health_number_rules" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="3" v-if="user.type_user == 'profissional'">
+        <v-col cols="12" sm="3" v-if="user.type_user != 'paciente'">
           <v-text-field v-model="user.taxpayer_number" label="Taxpayer number"  :rules="taxpayer_number" required></v-text-field>
         </v-col>
         <v-col cols="12" sm="3">
@@ -55,7 +55,7 @@ const loaderStore = useLoaderStore();
 const user = ref({
   full_name: '',
   email: '',
-  password: '',
+  password: 'test',
   health_number: 0,
   taxpayer_number: 0,
   mobile_phone: '',
@@ -143,10 +143,10 @@ const email_rules = [
   v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
 ]
 
-const password_rules = [
-  v => !!v || 'Password is required',
-  v => (v && v.length >= 8) || 'Password must be at least 8 characters',
-]
+// const password_rules = [
+//   v => !!v || 'Password is required',
+//   v => (v && v.length >= 8) || 'Password must be at least 8 characters',
+// ]
 
 const health_number_rules = [
   v => !!v || 'Health number is required',

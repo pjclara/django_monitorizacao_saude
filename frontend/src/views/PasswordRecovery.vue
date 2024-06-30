@@ -2,11 +2,11 @@
     <v-container>
         <v-row no-gutters>
             <v-col cols="12" align="center">
-                <p class="text-h5 my-4"> Introduza o seu username para receber uma nova password no email.</p>
+                <p class="text-h5 my-4"> {{ $t("passwordRecovery") }}</p>
                 <v-col :cols="smAndDown ? '12' : '6'">
-                    <v-text-field label="Username" color="primary" v-model="username"/>
+                    <v-text-field label="Email" color="primary" v-model="email"/>
                 </v-col>
-                <v-btn :disabled="!username" @click="passwordRecovery">Recuperar</v-btn>
+                <v-btn :disabled="!email" @click="passwordRecovery">{{ $t("recover") }}</v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -23,12 +23,12 @@ const router = useRouter();
 
 const loaderStore = useLoaderStore();
 
-const username = ref(null)
+const email = ref(null)
 
 const passwordRecovery = async () => {
   loaderStore.setLoading(true);
   try {
-    const response = await fetch(window.URL + '/api/password_recovery/' + username.value + '/');
+    const response = await fetch(window.URL + '/api/password_recovery/' + email.value + '/');
     if (!response.ok) {
         throw new Error('Failed to fetch data');
     }else{

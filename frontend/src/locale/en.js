@@ -86,8 +86,14 @@ const en = {
     'Height (cm)': 'Height (cm)',
     'Serial Number': 'Serial Number',
     'manufacturer': 'Manufacturer',
+<<<<<<< Updated upstream
     'readingFrequency': 'Reading Frequency',
     'secounds': 'secounds',
+=======
+    'passwordRecovery': 'Write your email to receive a new password.',
+    'recover': 'Recover',
+    'deleteUser': 'Delete user'
+>>>>>>> Stashed changes
     
 }
 

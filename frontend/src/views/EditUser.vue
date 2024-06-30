@@ -47,7 +47,7 @@
     </v-form>
     <v-row class="d-flex my-2 justify-space-between">
       <v-btn :disabled="!isFormValid" @click="cancel" color="lightdark">{{ $t('Return') }}</v-btn>
-
+      <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="indigo-darken-3">{{ $t('Delete') }}</v-btn>
       <v-btn :disabled="!isFormValid" @click="updateUser" color="indigo-darken-3">{{ $t('Save') }}</v-btn>
     </v-row>
   </v-container>
@@ -146,7 +146,6 @@ const fetchUserData = async () => {
       throw new Error('Failed to fetch data');
     }
     const userData = await response.json();
-    console.log('userData: ', userData)
     user.value.email = userData.email;
     user.value.health_number = userData.health_number ? userData.health_number : 0;
     user.value.mobile_phone = userData.mobile_phone;
@@ -179,6 +178,29 @@ const fetchRolesFromApi = async () => {
     console.error(error);
   }
   loaderStore.setLoading(false);
+};
+
+const deleteUser = async () => {
+  try {
+    const response = await fetch(window.URL + '/api/users/', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: user.value.email }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message || 'User deleted successfully');
+      cancel();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.error || 'Error deleting user');
+    }
+  } catch (error) {
+    alert('Network error');
+  }
 };
 
 const usersList = () => {

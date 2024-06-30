@@ -43,5 +43,8 @@ urlpatterns = [
     #notifications
     path('listar_notificacoes/<int:sns>/', views.listar_notificacoes_por_sns, name='listar_notificacoes_por_sns'),
     path('update_notificacao/<str:notificacao_id>/', views.update_notificacao, name='update_notificacao'),
+
+    #Password Recovery
+    path('password_recovery/<str:email>/', views.recover_password, name='password_recovery')
 ]
 

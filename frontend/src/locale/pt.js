@@ -90,6 +90,9 @@ const pt ={
     'manufacturer': 'Fabricante',
     'readingFrequency': 'Frequência de Leitura',
     'secounds': 'segundos',
+    'passwordRecovery': 'Introduza o seu email para receber uma nova password no email.',
+    'recover': 'Recuperar',
+    'deleteUser': 'Eliminar Utilizador'
 }
 
 export default pt;

@@ -12,10 +12,15 @@ from rest_framework import status
 from bson.objectid import ObjectId
 from django.contrib.auth.models import Group,Permission
 
+from django.conf import settings
+from django.core.mail import send_mail
+import secrets
+import string
+
 from datetime import datetime
 
 # users crud
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 def get_all_users(request):
     if request.method == 'GET':
         users =  db.healthData_customuser.find()
@@ -31,8 +36,8 @@ def get_all_users(request):
         if not 'email' in request.data:
             return JsonResponse({'error': 'Email is required'}, status=400, safe=False)
         
-        if not 'password' in request.data:
-            return JsonResponse({'error': 'Password is required'}, status=400, safe=False)
+        # if not 'password' in request.data:
+        #     return JsonResponse({'error': 'Password is required'}, status=400, safe=False)
         
         if not 'type_user' in request.data:
             return JsonResponse({'error': 'Type user is required'}, status=400, safe=False)
@@ -71,12 +76,30 @@ def get_all_users(request):
         if db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)       
         
+        random_password = generate_random_password()
 
-        serializer = CustomUserSerializer(data=request.data)
+        user_data = request.data.copy()
+        user_data['password'] = random_password
+
+        fullName = user_data['full_name']
+        message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is < {random_password} > .'
+        send_email(user_data['email'], message)
+
+        serializer = CustomUserSerializer(data=user_data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201, safe=False)
         return JsonResponse(serializer.errors, status=400, safe=False)
+    
+    elif request.method == 'DELETE':
+        if 'email' not in request.data:
+            return JsonResponse({'error': 'Email is required to delete a user'}, status=400, safe=False)
+        
+        result = db.healthData_customuser.delete_one({'email': request.data['email']})
+        if result.deleted_count == 1:
+            return JsonResponse({'message': 'User deleted successfully'}, status=200, safe=False)
+        else:
+            return JsonResponse({'error': 'User not found'}, status=404, safe=False)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 #@permission_classes([IsAuthenticated])
@@ -635,3 +658,45 @@ def delete_device(request, sns):
         return Response({"message": "Dispositivo eleminado com sucesso."}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def recover_password(request, email):
+    user = db.healthData_customuser.find_one({'email': email})
+
+    if user is not None:
+        fullName = user['full_name']
+        random_password = generate_random_password()
+        
+        user_data = {}
+        user_data['email'] = user['email']
+        user_data['full_name'] = fullName
+        user_data['health_number'] = user['health_number']
+        user_data['is_active'] = user['is_active']
+        user_data['is_staff'] = user['is_staff']
+        user_data['mobile_phone'] = user['mobile_phone']
+        user_data['role'] = user['type_user']
+        user_data['taxpayer_number'] = user['taxpayer_number']
+        user_data['type_user'] = user['type_user']
+        user_data['password'] = random_password
+
+        serializer = CustomUserSerializer(user, data=user_data)
+        if serializer.is_valid():
+            serializer.save()
+            message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'
+            send_email(email, message)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    else: 
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+def generate_random_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    random_password = ''.join(secrets.choice(characters) for i in range(length))
+    return random_password
+
+def send_email(email, message):
+    subject = 'Access to the Health Monitor App'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+    send_mail(subject, message, email_from, recipient_list )
+    
