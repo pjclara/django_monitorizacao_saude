@@ -25,9 +25,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    start.value[index] = false
     toast.success('Data creation stopped')
-    loading.value[index] = false
   }
 
   const ativarSinal = async (patient, indexSinal, index) => {
@@ -55,20 +53,18 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    start.value[index] = true
   }
 
   let intervalId = []
 
   const startGenerateData = (patient, indexSinal, index) => {
-    start.value[index] = true
     const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
     toast.success('Data creation started')
     if (!intervalId[index]) {
       intervalId[index] = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
       }, readingFrequency * 1000)
-      console.log(intervalId)
+
     }
   }
 
@@ -80,5 +76,15 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     }
   }
 
-  return { activation, startGenerateData, stopGeneratingData, disabled, start, loading }
+  const updateStart = (sns, indexSinal, index, value) => {
+    const item = start.value.find((item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index);
+    if (item) {
+      item.start = value
+    } else {
+      console.log('Error updating start')
+    }
+
+  }
+
+  return { activation, startGenerateData, stopGeneratingData, disabled, start, loading, updateStart }
 })

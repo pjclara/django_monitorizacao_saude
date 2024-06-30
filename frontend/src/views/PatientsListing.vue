@@ -32,7 +32,7 @@
                         <v-col>
                             <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index">
                                 <v-col>
-                                    <v-btn @click="startGenerateData(item, indexSinal, index)" v-if="!useVitalSignsStore().start[index]" :loading="useVitalSignsStore().loading[index]" 
+                                    <v-btn @click="startGenerateData(item, indexSinal, index)" v-if="!getStartValue(item.sns, indexSinal, index)" 
                                     color="primary" width="150px" >                                        
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
                                             <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
@@ -45,7 +45,7 @@
                                         </span>
                                         <span class="ml-2">{{ $t("Activate") }}</span>
                                     </v-btn>
-                                    <v-btn @click="stopGeneratingData(item, indexSinal, index)" v-if="useVitalSignsStore().start[index]" color="secondary" width="150px" >
+                                    <v-btn @click="stopGeneratingData(item, indexSinal, index)" v-if="getStartValue(item.sns, indexSinal, index)" color="secondary" width="150px" >
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
                                             <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
                                         </span>
@@ -204,6 +204,7 @@ const startGenerateData = (patient, indexSinal, index) => {
       (sinal) => sinal.ativo
     )
     useVitalSignsStore().startGenerateData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
 }
 
 const stopGeneratingData = async (patient, indexSinal, index) => {
@@ -212,6 +213,7 @@ const stopGeneratingData = async (patient, indexSinal, index) => {
       (sinal) => sinal.ativo
     )
     useVitalSignsStore().stopGeneratingData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
 }
 
 onMounted(() => {
@@ -233,6 +235,20 @@ const fetchDataFromApi = async () => {
         }
         const data = await response.json();
         patients.value = data;
+        const start = [];
+        patients.value.forEach(patient => {            
+            patient.dispositivos.forEach((dispositivo, indexSinal) => {
+                dispositivo.sinaisVitais.forEach((sinal, index) => {
+                    start.push({
+                        patient: patient.sns,
+                        start: false,
+                        indexSinal: indexSinal,
+                        index: index
+                    });
+                });
+            });
+            useVitalSignsStore().start = start;
+        });
         console.log(data);
 
     } catch (error) {
@@ -240,6 +256,12 @@ const fetchDataFromApi = async () => {
     }
     loaderStore.setLoading(false);
 };
+
+const getStartValue = (sns, indexSinal, index) => {
+    const start = useVitalSignsStore().start;
+    const value = start.find((item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index);
+    return value ? value.start : true;
+}
 
 const viewItem = (item) => {
     // redirect to patient profile
