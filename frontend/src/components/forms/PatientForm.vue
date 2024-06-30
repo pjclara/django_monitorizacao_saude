@@ -4,14 +4,14 @@
       <v-tabs v-model="tab">
         <v-tab value="patient" class="tab-border mr-1">
           <span class="text-blue">
-            <v-icon>mdi-account</v-icon>Patient Data
+            <v-icon>mdi-account</v-icon>{{$t('Patient Data')}}
           </span>
         </v-tab>
         <template v-for="(dispositivo, i) in patient.dispositivos" :key="i">
           <v-tab :value="i" class="tab-border mr-1">
             <span class="text-blue">
-              <v-icon>mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? "Device " +
-                patient.dispositivos[i].numeroSerie : 'New Device' }}
+              <v-icon>mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? $t('Device') +" " +
+                patient.dispositivos[i].numeroSerie : $t('New Device') }}
             </span>
           </v-tab>
         </template>
@@ -20,38 +20,38 @@
         <v-row class="justify-end mb-2"
           v-if="patient.sns && patient.nome && patient.dataNascimento && patient.peso && patient.altura && patient.genero && patient.telefone">
           <v-btn @click="addDevice(patient.dispositivos)" color="indigo-darken-3" :disabled="!isSnsFilled">
-            Adicionar Dispositivo
+            {{ $t('Add device') }}
           </v-btn>
         </v-row>
         <v-window v-model="tab">
           <v-window-item value="patient">
             <v-row>
               <v-col :cols="smAndDown ? '12' : '4'">
-                <v-text-field label="SNS" placeholder="999999999" color="primary" v-model="patient.sns"
+                <v-text-field :label="$t('Health care number')" placeholder="999999999" color="primary" v-model="patient.sns"
                   :disabled="routeName == 'PatientEdit'" :rules="snsRules" maxlength="9" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '8'">
-                <v-text-field label="Nome" placeholder="John" color="primary" v-model="patient.nome" :rules="nameRules"
+                <v-text-field :label="$t('Name')" placeholder="John" color="primary" v-model="patient.nome" :rules="nameRules"
                   maxlength="50" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
-                <v-select label="Gender" :items="['Masculino', 'Feminino']" v-model="patient.genero"
+                <v-select :label="$t('Gender')" :items="['Masculino', 'Feminino']" v-model="patient.genero"
                   :rules="genderRules" :disabled="!isSnsFilled"></v-select>
               </v-col>
               <v-col :cols="smAndDown ? '12' : '3'">
-                <v-text-field label="Data de Nascimento" placeholder="aaaa-mm-dd" color="primary"
+                <v-text-field :label="$t('Birthdate')" placeholder="aaaa-mm-dd" color="primary"
                   v-model="patient.dataNascimento" :rules="dateRules" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
-                <v-text-field label="Peso (kg)" color="primary" v-model="patient.peso" :rules="weightRules"
+                <v-text-field :label="$t('Weight (kg)')" color="primary" v-model="patient.peso" :rules="weightRules"
                   maxlength="3" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
-                <v-text-field label="Altura (cm)" color="primary" v-model="patient.altura" :rules="heightRules"
+                <v-text-field :label="$t('Height (cm)')" color="primary" v-model="patient.altura" :rules="heightRules"
                   maxlength="3" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '3'">
-                <v-text-field label="Telemovel" placeholder="910123456" color="primary" v-model="patient.telefone"
+                <v-text-field :label="$t('phoneNumber')" placeholder="910123456" color="primary" v-model="patient.telefone"
                   :rules="phoneRules" maxlength="9" :disabled="!isSnsFilled" />
               </v-col>
             </v-row>
@@ -61,11 +61,11 @@
             <div v-if="tab !== 'patient'">
               <v-row style="background-color: antiquewhite; padding: 10px;">
                 <v-col xs="12" :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="Serial Number" color="primary"
+                  <v-text-field :label="$t('Serial Number')" color="primary"
                     v-model="patient.dispositivos[indexDispositivo].numeroSerie" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="Manufacturer" color="primary"
+                  <v-text-field :label="$t('manufacturer')" color="primary"
                     v-model="patient.dispositivos[indexDispositivo].fabricante" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
@@ -89,7 +89,7 @@
                 </v-col>
                 <v-btn @click="addSinalVital(patient.dispositivos[indexDispositivo].sinaisVitais)"
                   v-if="patient.dispositivos[indexDispositivo].numeroSerie" color="indigo-darken-3">
-                  Adicionar sinal vital
+                  {{$t('Add vital sign')}}
                 </v-btn>
               </v-row>
               <v-row v-for="(vital, index) in patient.dispositivos[indexDispositivo].sinaisVitais" :key="index"

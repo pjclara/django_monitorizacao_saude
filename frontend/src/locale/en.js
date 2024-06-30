@@ -73,6 +73,20 @@ const en = {
     'Statistics': 'Statistics',
     'History': 'History',
     'Search': 'Search',
+    'Add device': 'Add device',
+    'Add vital sign': 'Add vital sign',
+    'Patient Data': 'Patient Data',
+    'New Device': 'New Device',
+    'Device': 'Device',
+    'Health care number': 'Health care number',
+    'Name': 'Name',
+    'Gender': 'Gender',
+    'Birthdate': 'Birthdate',
+    'Weight (kg)': 'Weight (kg)',
+    'Height (cm)': 'Height (cm)',
+    'Serial Number': 'Serial Number',
+    'manufacturer': 'Manufacturer',
+    
 }
 
 

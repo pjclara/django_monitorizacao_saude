@@ -75,6 +75,19 @@ const pt ={
     'Statistics': 'Estatísticas',
     'History': 'Histórico',
     'Search': 'Procurar',
+    'Add device': 'Adicionar dispositivo',
+    'Add vital sign': 'Adicionar sinal vital',
+    'Patient Data': 'Dados do Paciente',
+    'New Device': 'Novo Dispositivo',
+    'Device': 'Dispositivo',
+    'Health care number': 'Número Segurança Social',
+    'Name': 'Nome',
+    'Gender': 'Género',
+    'Birthdate': 'Data de Nascimento',
+    'Weight (kg)': 'Peso (kg)',
+    'Height (cm)': 'Altura (cm)',
+    'Serial Number': 'Número de Série',
+    'manufacturer': 'Fabricante',
 }
 
 export default pt;
