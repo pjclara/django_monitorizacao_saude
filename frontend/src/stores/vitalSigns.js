@@ -64,7 +64,6 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       intervalId[index] = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
       }, readingFrequency * 1000)
-
     }
   }
 
@@ -77,14 +76,44 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
   }
 
   const updateStart = (sns, indexSinal, index, value) => {
-    const item = start.value.find((item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index);
+    const item = start.value.find(
+      (item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index
+    )
     if (item) {
       item.start = value
     } else {
       console.log('Error updating start')
     }
-
   }
 
-  return { activation, startGenerateData, stopGeneratingData, disabled, start, loading, updateStart }
+  const createStart = (patients) => {
+    if (start.value.length > 0) {
+      return
+    }
+    const items = []
+    patients.forEach((patient) => {
+      patient.dispositivos.forEach((dispositivo, indexSinal) => {
+        dispositivo.sinaisVitais.forEach((sinal, index) => {
+          items.push({
+            patient: patient.sns,
+            start: false,
+            indexSinal: indexSinal,
+            index: index
+          })
+        })
+      })
+    })
+    start.value = items
+  }
+
+  return {
+    activation,
+    startGenerateData,
+    stopGeneratingData,
+    disabled,
+    start,
+    loading,
+    updateStart,
+    createStart
+  }
 })

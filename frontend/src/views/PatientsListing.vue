@@ -235,21 +235,7 @@ const fetchDataFromApi = async () => {
         }
         const data = await response.json();
         patients.value = data;
-        const start = [];
-        patients.value.forEach(patient => {            
-            patient.dispositivos.forEach((dispositivo, indexSinal) => {
-                dispositivo.sinaisVitais.forEach((sinal, index) => {
-                    start.push({
-                        patient: patient.sns,
-                        start: false,
-                        indexSinal: indexSinal,
-                        index: index
-                    });
-                });
-            });
-            useVitalSignsStore().start = start;
-        });
-        console.log(data);
+        useVitalSignsStore().createStart(data);
 
     } catch (error) {
         console.error(error);
