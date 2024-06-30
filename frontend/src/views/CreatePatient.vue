@@ -117,7 +117,7 @@ const criarPaciente = async () => {
     }
     const data = await response.json();
     // response 200 OK
-    if (response.status === 200) {
+    if (response.status === 201) {
       toast.success('Patient created successfully')
       router.push({ name: 'PatientsListing' })
     } else {
