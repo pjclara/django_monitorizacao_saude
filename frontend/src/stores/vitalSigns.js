@@ -33,10 +33,10 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const ativarSinal = async (patient, indexSinal, index) => {
     const max =
       patient.dispositivos[indexSinal].sinaisVitais[index].maximo +
-      patient.dispositivos[indexSinal].sinaisVitais[index].maximo * 0.2
+      patient.dispositivos[indexSinal].sinaisVitais[index].maximo * 0.1
     const min =
       patient.dispositivos[indexSinal].sinaisVitais[index].minimo -
-      patient.dispositivos[indexSinal].sinaisVitais[index].minimo * 0.2
+      patient.dispositivos[indexSinal].sinaisVitais[index].minimo * 0.1
     const randomValue = Math.floor(Math.random() * (max - min + 1) + min)
     const response = await fetch(
       window.URL + `/api/documentos/ativar_sinal_vital/${patient.sns}/`,
