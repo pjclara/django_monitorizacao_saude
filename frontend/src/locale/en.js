@@ -86,6 +86,8 @@ const en = {
     'Height (cm)': 'Height (cm)',
     'Serial Number': 'Serial Number',
     'manufacturer': 'Manufacturer',
+    'readingFrequency': 'Reading Frequency',
+    'secounds': 'secounds',
     
 }
 

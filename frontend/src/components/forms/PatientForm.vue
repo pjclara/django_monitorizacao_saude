@@ -95,7 +95,7 @@
               <v-row v-for="(vital, index) in patient.dispositivos[indexDispositivo].sinaisVitais" :key="index"
                 style="background-color: lightcyan; padding: 10px;">
 
-                <v-col :cols="smAndDown ? '12' : '6'">
+                <v-col :cols="smAndDown ? '12' : '4'">
                   <v-select v-model="vital.tipo" label="Vital Sign"
                     :items="['Frequência Cardíaca', 'Saturação Oxigênio', 'Temperatura']">
                   </v-select>
@@ -105,11 +105,14 @@
                     :value="vital.unidade = unidade(vital.tipo)" />
                 </v-col>
 
-                <v-col :cols="smAndDown ? '12' : '2'">
+                <v-col :cols="smAndDown ? '12' : '1'">
                   <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" />
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '2'">
+                <v-col :cols="smAndDown ? '12' : '1'">
                   <v-text-field label="Min" type="number" color="primary" v-model="vital.minimo" />
+                </v-col>
+                <v-col :cols="smAndDown ? '12' : '3'">
+                  <v-text-field :label="$t('readingFrequency')" type="number" color="primary" v-model="vital.readingFrequency" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '1'">
                   <v-btn color="red"
@@ -166,7 +169,8 @@ const addSinalVital = (vital) => {
     maximo: null,
     minimo: null,
     valores: [],
-    ativo: false
+    ativo: false,
+    readingFrequency: 5
   })
 }
 

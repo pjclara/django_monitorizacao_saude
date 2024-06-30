@@ -88,6 +88,8 @@ const pt ={
     'Height (cm)': 'Altura (cm)',
     'Serial Number': 'Número de Série',
     'manufacturer': 'Fabricante',
+    'readingFrequency': 'Frequência de Leitura',
+    'secounds': 'segundos',
 }
 
 export default pt;

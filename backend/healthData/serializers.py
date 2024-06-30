@@ -20,6 +20,7 @@ class SinaisVitaisSerializer(serializers.Serializer):
     unidade = serializers.CharField(max_length=10)
     valores = ValoresSerializer(many=True)
     ativo = serializers.BooleanField(default=False)
+    readingFrequency = serializers.IntegerField()
 
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()

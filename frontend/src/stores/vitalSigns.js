@@ -62,11 +62,12 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
 
   const startGenerateData = (patient, indexSinal, index) => {
     start.value[index] = true
+    const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
     toast.success('Data creation started')
     if (!intervalId[index]) {
       intervalId[index] = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
-      }, 5000)
+      }, readingFrequency * 1000)
       console.log(intervalId)
     }
   }
