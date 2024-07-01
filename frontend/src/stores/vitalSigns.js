@@ -60,19 +60,25 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const startGenerateData = (patient, indexSinal, index) => {
     const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
     toast.success('Data creation started')
-    if (!intervalId[index]) {
-      intervalId[index] = setInterval(async () => {
+    if (getintervalId(patient.sns, indexSinal, index).valor === 0) {
+      getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
       }, readingFrequency * 1000)
     }
   }
 
   const stopGeneratingData = async (patient, indexSinal, index) => {
-    if (intervalId[index]) {
-      clearInterval(intervalId[index])
+    if (getintervalId(patient.sns, indexSinal, index).valor !== 0) {
+      clearInterval(getintervalId(patient.sns, indexSinal, index).valor)
       await desativarSinal(patient, indexSinal, index)
-      intervalId[index] = null
+      getintervalId(patient.sns, indexSinal, index).valor = 0
     }
+  }
+
+  const getintervalId = (sns, indexSinal, index) => {
+    return intervalId.find(
+      (item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index
+    )
   }
 
   const updateStart = (sns, indexSinal, index, value) => {
@@ -99,6 +105,12 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
             start: false,
             indexSinal: indexSinal,
             index: index
+          })
+          intervalId.push({
+            patient: patient.sns,
+            indexSinal: indexSinal,
+            index: index,
+            valor: 0
           })
         })
       })
