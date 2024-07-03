@@ -700,3 +700,14 @@ def send_email(email, message):
     recipient_list = [email]
     send_mail(subject, message, email_from, recipient_list )
     
+@api_view(['GET'])
+def procurar_por_sns(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if documento:
+            documento_serializado = DocumentoSerializer(documento).data
+            return JsonResponse(documento_serializado, status=status.HTTP_200_OK, safe=False)
+        else:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -94,7 +94,7 @@
             <v-row no-gutters justify="center" class="mb-2">
                 <div class="text-h4 text-center text-center">{{ $t('PatientsListing') }}</div>
                 <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
-                <v-btn class="my-3" color="#FFFF00" elevation to="/create-patient">
+                <v-btn class="my-3" color="#FFFF00" elevated to="/create-patient">
                     {{ $t('CreatePatient') }}
                 </v-btn>
             </v-row>
@@ -164,12 +164,11 @@ import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users';
 import { useDisplay } from 'vuetify'
 import { useVitalSignsStore } from '@/stores/vitalSigns'
+import { usePatientsStore } from '@/stores/patients';
 
 const { smAndDown } = useDisplay()
 
 const user = useUsersStore().user
-
-const loaderStore = useLoaderStore();
 
 const router = useRouter();
 
@@ -177,14 +176,11 @@ const loopAtivo = ref(false);
 
 const expanded = ref([]);
 
-const patients = ref([])
-
 const disabled = ref(useVitalSignsStore().disabled);
 
 const showMonitoredPatients = ref(true);
 
 const search = ref(null)
-
 
 const headers = ref([
     { title: 'Name', key: 'nome', width: '20%', align: 'center' },
@@ -195,7 +191,7 @@ const headers = ref([
 ]);
 
 const patientsList = computed(() => {
-    return showMonitoredPatients.value ? patients.value.filter(patient => patient.dispositivos.some(dispositivo => dispositivo.ativo)) : patients.value;
+    return showMonitoredPatients.value ? usePatientsStore().patients.filter(patient => patient.dispositivos.some(dispositivo => dispositivo.ativo)) : usePatientsStore().patients;
 })
 
 const hasAlertSignal = (sinalVital) => {
@@ -213,6 +209,7 @@ const startGenerateData = (patient, indexSinal, index) => {
     )
     useVitalSignsStore().startGenerateData(patient, indexSinal, index);
     useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
+
 }
 
 const stopGeneratingData = async (patient, indexSinal, index) => {
@@ -225,7 +222,9 @@ const stopGeneratingData = async (patient, indexSinal, index) => {
 }
 
 onMounted(() => {
-    fetchDataFromApi();
+    if (usePatientsStore().patients.length === 0)
+        usePatientsStore().fetchPatients(user.user_id);
+    
 });
 
 const formatDate = (date) => {
@@ -234,27 +233,11 @@ const formatDate = (date) => {
     return diff + ' years';
 };
 
-const fetchDataFromApi = async () => {
-    try {
-        loaderStore.setLoading(true);
-        const response = await fetch(window.URL + '/api/patients/listar_documentos_com_profissionais/' + user.user_id + '/');
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        patients.value = data;
-        useVitalSignsStore().createStart(data);
-
-    } catch (error) {
-        console.error(error);
-    }
-    loaderStore.setLoading(false);
-};
 
 const getStartValue = (sns, indexSinal, index) => {
     const start = useVitalSignsStore().start;
     const value = start.find((item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index);
-    return value ? value.start : true;
+    return value ? value.start : false;
 }
 
 const viewItem = (item) => {
@@ -280,7 +263,7 @@ const redirectNotifications = (item, hasAlert, dispositivo) => {
 
 .v-container .v-toolbar__content {
     background-color: #006400;
-    color: #E0E0E0;    
+    color: #E0E0E0;
 }
 
 .v-data-table-footer {
