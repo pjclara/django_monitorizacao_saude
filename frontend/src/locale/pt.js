@@ -97,6 +97,7 @@ const pt = {
   'Choose a Device': 'Escolha um Dispositivo',
   'notifications read': 'Notificações lidas',
   'notifications not read': 'Notificações não lidas',
+  'Password': 'Palavra-passe',
 }
 
 export default pt

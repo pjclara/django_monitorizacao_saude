@@ -3,16 +3,16 @@
     <v-row>
       <v-col cols="6" offset="3" class="d-flex flex-column align-center">
         <div class="d-flex mt-10">
-          <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('Welcome') }}</div>
+          <div class="text-h4 text-center font-weight-bold" style="color: #006400;">{{ $t('Welcome') }}</div>
         </div>
         <div class="d-flex flex-column login-inputs mt-10 align-center"
           style="background-color: #E0E0E0;box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5); border-radius: 10px; padding: 20px;">
-          <v-text-field label="email" placeholder="email" v-model="email" color="primary" class="w-100" />
-          <v-text-field label="Password" :placeholder="$t('enterPassword')" class="mt-10 w-100" :type="passwordType"
+          <v-text-field label="Email" placeholder="email" v-model="email" color="primary" class="w-100" />
+          <v-text-field :label="$t('Password')" :placeholder="$t('enterPassword')" class="mt-10 w-100" :type="passwordType"
             color="primary" v-model="password" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append-inner="toggleShowPassword" />
           <span class="text-black cursor-pointer" @click="recoverPassword">{{ $t('forgotPassword') }}</span>
-          <v-btn class="mt-10 bg-deep-purple-darken-4 text-white" rounded="lg" size="x-large" @click="logIn">{{
+          <v-btn class="mt-10" style="color: #006400;" rounded="lg" size="x-large" @click="logIn"><v-icon class="mr-2">mdi-login</v-icon>{{
             $t('logIn') }}</v-btn>
         </div>
       </v-col>

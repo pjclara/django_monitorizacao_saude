@@ -95,6 +95,7 @@ const en = {
     'Choose a Device': 'Choose a Device',
     'notifications read': 'Notifications read',
     'notifications not read': 'Notifications not read',
+    'Password': 'Password',
     
 }
 
