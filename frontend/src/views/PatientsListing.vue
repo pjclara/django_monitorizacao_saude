@@ -4,9 +4,9 @@
         <v-col v-if="!smAndDown">
             <v-text-field v-model="search" :label="$t('Search for Patients')" class="mb-4" outlined></v-text-field>
             <v-data-table :headers="headers" :items="patientsList" v-model:expanded="expanded" :search="search"
-                :mobile="smAndDown" item-value="sns">
+                :mobile="smAndDown" item-value="sns" class="custom_table_class">
                 <template v-slot:top>
-                    <v-toolbar flat>
+                    <v-toolbar flat style="background-color: #425C5A; color: white;">
                         <v-col cols="3">
                             <v-toolbar-title>{{ $t('PatientsListing') }}</v-toolbar-title>
                         </v-col>
@@ -16,8 +16,8 @@
                                 :label="$t('Show Patients being monitored')"></v-checkbox>
                         </v-col>
                         <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-col cols="3">
-                            <v-btn class="mb-2" color="primary" dark to="/create-patient">
+                        <v-col cols="3" class="d-flex justify-center">
+                            <v-btn color="#FFFF00" elevated to="/create-patient">
                                 {{ $t('CreatePatient') }}
                             </v-btn>
                         </v-col>
@@ -32,31 +32,40 @@
                         <v-col>
                             <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index">
                                 <v-col>
-                                    <v-btn @click="startGenerateData(item, indexSinal, index)" v-if="!getStartValue(item.sns, indexSinal, index)" 
-                                    color="primary" width="150px" >                                        
+                                    <v-btn @click="startGenerateData(item, indexSinal, index)"
+                                        v-if="!getStartValue(item.sns, indexSinal, index)" color="primary"
+                                        width="150px">
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img class="rounded p-2"  src="/oxigenio.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span v-else>
-                                            <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span class="ml-2">{{ $t("Activate") }}</span>
                                     </v-btn>
-                                    <v-btn @click="stopGeneratingData(item, indexSinal, index)" v-if="getStartValue(item.sns, indexSinal, index)" color="secondary" width="150px" >
+                                    <v-btn @click="stopGeneratingData(item, indexSinal, index)"
+                                        v-if="getStartValue(item.sns, indexSinal, index)" color="secondary"
+                                        width="150px">
                                         <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img class="rounded p-2"  src="/temperatura.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img class="rounded p-2"  src="/oxigenio.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span v-else>
-                                            <img class="rounded p-2"  src="/heart_beat.png" alt="" width="20px" height="20px">
+                                            <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
+                                                height="20px">
                                         </span>
                                         <span class="ml-2">{{ $t("Deactivate") }}</span>
-                                    </v-btn>                                    
+                                    </v-btn>
                                 </v-col>
                                 <v-col>
                                     <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
@@ -84,10 +93,10 @@
         <v-col v-else>
             <v-row no-gutters justify="center" class="mb-2">
                 <div class="text-h4 text-center text-center">{{ $t('PatientsListing') }}</div>
-                <v-btn class="my-3" color="primary" dark to="/create-patient">
+                <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
+                <v-btn class="my-3" color="#FFFF00" elevation to="/create-patient">
                     {{ $t('CreatePatient') }}
                 </v-btn>
-                <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
             </v-row>
             <v-card v-for="(patient, index) in patientsList" :key="index" class="d-flex my-2">
                 <v-col cols="12" class="align-center">
@@ -102,7 +111,6 @@
                                     <span class="font-weight-bold"> {{ dispositivo.modelo }} </span>
                                     <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
                                         class="my-3 mx-1">
-
                                         <v-chip :disabled="disabled"
                                             @click="activate(item, indexSinal, index, loopAtivo)"
                                             :color="sinalVital.ativo ? 'success' : 'primary'">
@@ -201,7 +209,7 @@ const hasAlertSignal = (sinalVital) => {
 const startGenerateData = (patient, indexSinal, index) => {
     patient.dispositivos[indexSinal].sinaisVitais[index].ativo = true
     patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
-      (sinal) => sinal.ativo
+        (sinal) => sinal.ativo
     )
     useVitalSignsStore().startGenerateData(patient, indexSinal, index);
     useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
@@ -210,7 +218,7 @@ const startGenerateData = (patient, indexSinal, index) => {
 const stopGeneratingData = async (patient, indexSinal, index) => {
     patient.dispositivos[indexSinal].sinaisVitais[index].ativo = false
     patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
-      (sinal) => sinal.ativo
+        (sinal) => sinal.ativo
     )
     useVitalSignsStore().stopGeneratingData(patient, indexSinal, index);
     useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
@@ -264,9 +272,18 @@ const redirectNotifications = (item, hasAlert, dispositivo) => {
 }
 </script>
 
-<style scoped>
+<style>
 .mobile-item-border {
     border: 1px solid lightblue;
     border-radius: 10px;
+}
+
+.v-container .v-toolbar__content {
+    background-color: #006400;
+    color: #E0E0E0;    
+}
+
+.v-data-table-footer {
+    background-color: white;
 }
 </style>

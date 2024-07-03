@@ -77,38 +77,45 @@
                     <v-card-text class="flex-grow-1">
                         <v-window v-model="tab">
                             <v-window-item value="devices">
-                                <div v-for="(device, index) in decicesList">
-                                    <v-card class="border-md border-info" elevation="16">
-                                        <v-card-title>
-                                            <h3>{{ device.modelo }}</h3>
-                                        </v-card-title>
-                                        <v-card-text>
-                                            <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
+                                <v-row no-gutters>
+                                    <v-col v-for="(device, index) in decicesList" :key="index" cols="12" sm="3">
+                                        <v-sheet class="ma-2">
+                                            <v-card
+                                                :class="getStartValue().start ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
+                                                <v-card-title>
+                                                    <h4>{{ device.modelo }} - {{ getStartValue().start ? 'On' : 'Off' }}
+                                                    </h4>
+                                                </v-card-title>
+                                                <v-card-text>
+                                                    <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
 
-                                        </v-card-text>
-                                        <v-btn color="secondary" @click="deleteDevice(index)" v-if="!isPatient">Delete device</v-btn>
-                                    </v-card>
-                                </div>
+                                                </v-card-text>
+                                                <v-spacer></v-spacer>
+                                                <v-card-actions class="justify-end">
+                                                    <v-btn @click="deleteDevice(index)" v-if="!isPatient">
+                                                        <v-icon color="red">mdi-trash-can</v-icon>
+                                                    </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-sheet>
+                                    </v-col>
+                                </v-row>
                             </v-window-item>
 
                             <v-window-item value="vitals">
                                 <v-row no-gutters>
-                                    <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="4">
+                                    <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="3">
                                         <v-sheet class="ma-2">
-                                            <v-card class="border-md border-info">
+                                            <v-card
+                                                :class="getStartValue().start ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
-                                                    <h4>{{ sinal.nome }} ({{ sinal.modelo }})</h4>
-                                                    <v-btn color="secondary"
-                                                        @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)" v-if="!isPatient">
-                                                        Delete sinal
-
-                                                    </v-btn>
+                                                    <span>{{ sinal.nome }} ({{ sinal.modelo }})</span>
                                                 </v-card-title>
                                                 <v-card-text class="d-flex flex-wrap">
                                                     <v-row no-gutters class="w-100 justify-center"
                                                         v-if="sinal.valor?.valor">
                                                         <p v-if="sinal.min <= sinal.valor.valor && sinal.max >= sinal.valor.valor"
-                                                            class="text-h6 text-green">{{
+                                                            class="text-h6 text-white">{{
                                                                 sinal.valor.valor }}</p>
                                                         <p v-else class="text-h6 text-red">{{ sinal.valor.valor }} {{
                                                             sinal.unidade }}</p>
@@ -123,6 +130,27 @@
                                                             sinal.unidade }}</p>
                                                     </v-row>
                                                 </v-card-text>
+                                                <v-card-actions class="justify-end">
+                                                    <v-row v-if="!isPatient">
+                                                        <v-col>
+                                                            <v-btn color="red" size="small"
+                                                                @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)">
+                                                                <v-icon>mdi-trash-can</v-icon>
+                                                            </v-btn>
+                                                        </v-col>
+                                                        <v-col class="d-flex justify-end">
+                                                            <v-btn color="white" size="small"
+                                                                v-if="!getStartValue().start"
+                                                                @click="startGenerateData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
+                                                                <v-icon>mdi-led-on</v-icon> on
+                                                            </v-btn>
+                                                            <v-btn color="white" size="small" v-else
+                                                                @click="stopGeneratingData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
+                                                                <v-icon>mdi-led-off</v-icon>off
+                                                            </v-btn>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-card-actions>
                                             </v-card>
                                         </v-sheet>
                                     </v-col>
@@ -132,8 +160,8 @@
                             <v-window-item value="estatistics">
                                 <div v-if="!smAndDown">
                                     <div>
-                                        <v-select v-model="deviceId" :items="decicesList" item-title="modelo"
-                                            item-value="id" label="Choose a Device" return-object>
+                                        <v-select v-model="deviceId" :items="decicesList" item-title="nome"
+                                            item-value="id" :label="$t('Choose a Device')" return-object>
                                         </v-select>
                                     </div>
                                     <div>
@@ -212,6 +240,7 @@ import { differenceInYears } from 'date-fns';
 import { toast } from 'vue3-toastify';
 import { format, compareDesc } from 'date-fns'
 import { useUsersStore } from '@/stores/users'
+import { useVitalSignsStore } from '@/stores/vitalSigns'
 import {
     Chart as ChartJS, CategoryScale,
     LinearScale,
@@ -252,6 +281,10 @@ const chartOptions = {
     }
 };
 
+const getStartValue = () => {
+    return useVitalSignsStore().start.find(value => value.patient === patient.value.sns) ?? false;
+};
+
 const user = useUsersStore().user;
 
 console.log(user.type_user);
@@ -270,7 +303,7 @@ const isPatient = computed(() => {
             { title: 'Data', key: 'data' },
             { title: 'Valor', key: 'valor' }
         ]
-    }else{
+    } else {
         notificationsHeaders.value = [
             { title: 'Dispositivo', key: 'dispositivo' },
             { title: 'Sinal', key: 'sinal' },
@@ -281,6 +314,24 @@ const isPatient = computed(() => {
     }
     return useUsersStore().user?.groups.includes('paciente') ? true : false
 });
+
+const startGenerateData = (patient, indexSinal, index) => {
+    patient.dispositivos[indexSinal].sinaisVitais[index].ativo = true
+    patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
+        (sinal) => sinal.ativo
+    )
+    useVitalSignsStore().startGenerateData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
+}
+
+const stopGeneratingData = (patient, indexSinal, index) => {
+    patient.dispositivos[indexSinal].sinaisVitais[index].ativo = false
+    patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
+        (sinal) => sinal.ativo
+    )
+    useVitalSignsStore().stopGeneratingData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
+}
 
 const sinal = ref(0);
 
@@ -335,7 +386,9 @@ const decicesList = computed(() => {
         return [];
     }
     return patient.value.dispositivos?.map(device => {
+        console.log(device);
         return {
+            nome: device.modelo + ' - ' + device.descricao + ' - ' + device.numeroSerie,
             modelo: device.modelo,
             descricao: device.descricao,
             numeroSerie: device.numeroSerie,
@@ -490,7 +543,7 @@ const fetchNotifications = async () => {
             if (notification.read)
                 return;
             let parts = notification.message.split(',');
-            
+
             notificacoesData.value.push({
                 dispositivo: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].modelo,
                 sinal: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])]?.tipo,

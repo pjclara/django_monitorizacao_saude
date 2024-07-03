@@ -90,7 +90,9 @@ const en = {
     'secounds': 'secounds',
     'passwordRecovery': 'Write your email to receive a new password.',
     'recover': 'Recover',
-    'deleteUser': 'Delete user'
+    'deleteUser': 'Delete user',
+    'Delete vital sign': 'Delete vital sign',
+    'Choose a Device': 'Choose a Device',
     
 }
 

@@ -61,9 +61,7 @@
                         {{ $t('logIn') }}
                     </v-btn>
                 </v-list-item>
-
                 <v-spacer class="spacer mx-2 my-4" />
-
                 <v-list-item class="d-flex justify-center">
                     <v-btn variant="outlined" class="mr-2" @click="changeLocale('PT')">
                         <img height="32" src="/portugal-48.png" />
@@ -72,6 +70,7 @@
                         <img height="32" src="/united-kingdom-48.png" />
                     </v-btn>
                 </v-list-item>
+                <v-spacer class="spacer mx-2 my-6" />
             </v-list>
         </template>
     </v-navigation-drawer>

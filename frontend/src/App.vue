@@ -12,7 +12,7 @@
         <v-progress-circular color="blue-lighten-3" indeterminate size="128" width="12" />
       </v-overlay>
     </v-main>
-    <footer class="d-flex flex-column">
+    <footer class="d-flex flex-column footer-first-plane">
       IPleiria - ESTG - 2024 - &copy; Luís Marques & Paulo Clara
     </footer>
   </v-app>
@@ -65,13 +65,17 @@ const redirectNotifications = (sns) => {
 </script>
 
 <style>
-footer {
-  border-top: 1px solid black;
-  background-color: lightgray;
-  color: lightslategrey;
-  text-align: right;
+.footer-first-plane {
+  position: fixed;
+  bottom: 0;
+  left: 0; 
+  width: 100%; 
+  z-index: 9999; 
+  background-color: #E0E0E0;
+  color: darkgreen; 
   padding: 10px;
-  font-weight: bold ;
-  z-index: 1000;
+  text-align: right; 
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5); 
 }
+
 </style>

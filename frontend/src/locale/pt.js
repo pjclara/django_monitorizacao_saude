@@ -92,7 +92,10 @@ const pt ={
     'secounds': 'segundos',
     'passwordRecovery': 'Introduza o seu email para receber uma nova password no email.',
     'recover': 'Recuperar',
-    'deleteUser': 'Eliminar Utilizador'
+    'deleteUser': 'Eliminar Utilizador',
+
+     'Delete vital sign': 'Eliminar sinal vital',
+        'Choose a Device': 'Escolha um Dispositivo',
 }
 
 export default pt;
