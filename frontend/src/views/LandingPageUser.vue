@@ -57,11 +57,11 @@
 
     <v-row>
       <v-col v-for="data in patientsWithDevicesActives" v-if="patientsWithDevicesActives.length > 0" cols="6">
-        <v-card class="rounded-xl" height="300" style="padding: 16px;" >
-          <Line id="id_w" :data="data" :options="chartOptions"/>
+        <v-card class="rounded-xl" height="300" style="padding: 16px;">
+          <Line id="id_w" :data="data" :options="chartOptions" />
         </v-card>
       </v-col>
-      <v-col v-else>
+      <v-col cols="6" v-else>
         <v-card color="#425C5A" theme="dark" class="rounded-xl" height="150">
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>

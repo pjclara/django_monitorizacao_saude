@@ -4,7 +4,7 @@
 
     <CustomSidebar />
 
-    <v-main style="background-color: lightgray">
+    <v-main style="background-color: lightgray; padding-bottom: 40px;">
 
       <router-view />
 
@@ -74,6 +74,7 @@ const redirectNotifications = (sns) => {
   background-color: #E0E0E0;
   color: darkgreen; 
   padding: 10px;
+  margin-top: 30px;
   text-align: right; 
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5); 
 }

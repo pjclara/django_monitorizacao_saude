@@ -8,13 +8,14 @@
                             <v-col class="d-flex justify-center align-center" v-if="!smAndDown">
                                 <img src="/userAnoon.png" width="120px" height="120px" alt="userStockPhoto">
                             </v-col>
-                            <v-col class="d-flex flex-column justify-space-between">
+                            <v-col class="d-flex flex-column justify-space-between border-dashed ">
                                 <div class="d-flex justify-center my-2" v-if="smAndDown">
                                     <img src="/userAnoon.png" width="120px" height="120px" alt="userStockPhoto">
                                 </div>
-                                <div>
-                                    <span class="text-h6 font-weight-bold">{{ $t('name') }}: </span>
-                                    <span class="text-h6">{{ identifier?.nome }}</span>
+                                <div class="d-flex justify-space-between align-center pa-1">
+                                    <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome }}</span>
+                                    <v-btn color="red" size="small" width="100px" @click="callPatient">{{
+                                        $t("Call") }}</v-btn>
                                 </div>
                                 <div class="mt-2">
                                     <span class="text-h6 font-weight-bold">{{ $t('age') }}: </span>
@@ -35,9 +36,8 @@
                                 <v-row no-gutters justify="space-between" v-if="!isPatient">
                                     <v-btn color="blue-darken-3" size="small" width="100px" class="mt-2"
                                         @click="voltar">{{ $t("Return") }}</v-btn>
-                                    <v-btn color="green" size="small" width="100px" class="mt-2" @click="callPatient">{{
-                                        $t("Call") }}</v-btn>
-                                    <v-btn color="blue" size="small" width="100px" class="mt-2"
+
+                                    <v-btn color="green" size="small" width="100px" class="mt-2"
                                         @click="edit(patient?.sns)">{{ $t("Edit") }}</v-btn>
                                 </v-row>
                             </v-col>
@@ -184,7 +184,7 @@
                                     :items-per-page="5" v-if="!smAndDown">
                                     <template v-slot:top>
                                         <v-toolbar flat>
-                                            <v-toolbar-title>{{ $t('notifications') }}</v-toolbar-title>
+                                            <v-toolbar-title>{{ $t('notifications not read') }}</v-toolbar-title>
                                         </v-toolbar>
                                     </template>
                                     <template v-slot:item="{ item }">
@@ -209,7 +209,7 @@
                                 <v-data-table :items="historyNotifications" :items-per-page="5" v-if="!smAndDown">
                                     <template v-slot:top>
                                         <v-toolbar flat>
-                                            <v-toolbar-title>{{ $t('notifications') }}</v-toolbar-title>
+                                            <v-toolbar-title>{{ $t('notifications read') }}</v-toolbar-title>
                                         </v-toolbar>
                                     </template>
                                     <template v-slot:item="{ item }">
@@ -233,7 +233,7 @@
 </template>
 <script setup>
 import MobileTable from '@/components/table/MobileTable.vue';
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Line } from 'vue-chartjs'
 import { useRoute, useRouter } from 'vue-router';
 import { differenceInYears } from 'date-fns';
@@ -241,6 +241,9 @@ import { toast } from 'vue3-toastify';
 import { format, compareDesc } from 'date-fns'
 import { useUsersStore } from '@/stores/users'
 import { useVitalSignsStore } from '@/stores/vitalSigns'
+import { useNotificationsStore } from '@/stores/notifications'
+import { usePatientsStore } from '@/stores/patients';
+import { useLoaderStore } from '@/stores/loader'
 import {
     Chart as ChartJS, CategoryScale,
     LinearScale,
@@ -252,9 +255,6 @@ import {
 } from 'chart.js'
 import { useDisplay } from 'vuetify'
 const { smAndDown } = useDisplay()
-
-import { useLoaderStore } from '@/stores/loader'
-
 const loaderStore = useLoaderStore();
 
 ChartJS.register(CategoryScale,
@@ -267,33 +267,59 @@ ChartJS.register(CategoryScale,
 
 
 const chartOptions = {
-    responsive: true,
     maintainAspectRatio: false,
     type: 'line',
     backgroundColor: 'rgba(75, 192, 192, 0.2)',
     borderColor: 'rgba(75, 192, 192, 1)',
     borderWidth: 1,
-    responsive: true,
-    scales: {
-        y: {
-            beginAtZero: true
-        }
-    }
+    responsive: true
 };
 
 const getStartValue = () => {
     return useVitalSignsStore().start.find(value => value.patient === patient.value.sns) ?? false;
 };
 
-const user = useUsersStore().user;
-
-console.log(user.type_user);
-
 const router = useRouter();
 
 const props = defineProps(['alert'])
 
 const notificationsHeaders = ref([]);
+
+const patientSns = useRoute().params.patientSns;
+
+const patient = computed(() => {
+    if (usePatientsStore().patients.length === 0)
+        usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+    useNotificationsStore().fetchNotifications(patientSns);
+    const data = usePatientsStore().patients.find(patient => patient.sns == patientSns)
+    return data;
+});
+
+
+
+onMounted(() => {
+    try {
+        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
+        ws.onopen = () => {
+            console.log('Connected to the websocket server')
+        }
+        ws.onmessage = (event) => {
+            // fetchPatientData();
+            // fetchNotifications();
+        }
+    }
+    catch (error) {
+        console.error('Error:', error);
+    }
+    if (router.currentRoute.value.query.notifications) {
+        tab.value = 'notifications';
+    }
+    if (router.currentRoute.value.query.estatistics && router.currentRoute.value.query.modelo) {
+        tab.value = 'estatistics';
+        deviceId.value = decicesList.value.find(device => device.modelo === router.currentRoute.value.query.modelo);
+
+    }
+});
 
 const isPatient = computed(() => {
     if (useUsersStore().user?.groups.includes('paciente')) {
@@ -342,9 +368,7 @@ const voltar = () => {
 // variables
 
 const tab = ref(null);
-const patient = ref([]);
 
-const patientSns = useRoute().params.patientSns;
 const deviceId = ref(null);
 
 const sinaisVitais = computed(() => {
@@ -386,7 +410,6 @@ const decicesList = computed(() => {
         return [];
     }
     return patient.value.dispositivos?.map(device => {
-        console.log(device);
         return {
             nome: device.modelo + ' - ' + device.descricao + ' - ' + device.numeroSerie,
             modelo: device.modelo,
@@ -397,56 +420,11 @@ const decicesList = computed(() => {
     });
 });
 
-
-onMounted(async () => {
-    await fetchPatientData();
-    await fetchNotifications();
-    try {
-        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
-        ws.onopen = () => {
-            console.log('Connected to the websocket server')
-        }
-        ws.onmessage = (event) => {
-            fetchPatientData();
-            fetchNotifications();
-        }
-    }
-    catch (error) {
-        console.error('Error:', error);
-    }
-    if (router.currentRoute.value.query.notifications) {
-        tab.value = 'notifications';
-    }
-    if (router.currentRoute.value.query.estatistics && router.currentRoute.value.query.modelo) {
-        tab.value = 'estatistics';
-        deviceId.value = decicesList.value.find(device => device.modelo === router.currentRoute.value.query.modelo);
-
-    }
-});
-
 const callPatient = () => {
     window.location.href = `tel:${patient?.value?.telefone}`;
 }
 
-// get patient data from api
-const fetchPatientData = async () => {
-    try {
-        loaderStore.setLoading(true);
-
-        const response = await fetch(window.URL + '/api/documentos/buscar_por_sns/' + patientSns + '/');
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        patient.value = await response.json();
-    } catch (error) {
-        console.error(error);
-    }
-    loaderStore.setLoading(false);
-
-};
-
-
-// chart data
+// grafico de sinais vitais
 
 const chartData = ref({
     labels: [],
@@ -481,9 +459,7 @@ const formattedChartData = computed(() => {
             }
             return 'blue';
         })
-
     }
-
     chartData.value.datasets.push(data);
     chartData.value.labels = device.sinaisVitais[0].valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString());
 
@@ -493,79 +469,15 @@ const formattedChartData = computed(() => {
 
 const atualizarGrafico = (index) => {
     clean();
-
-    console.log(index);
-
     sinal.value = index;
-
-
 };
 
 const edit = (sns) => {
     router.push({ name: 'PatientEdit', params: { patientSns: sns } });
 };
 
-const notificacoes = computed(() => {
-    if (!patient.value) {
-        return [];
-    }
-    const notificacoes = [];
-    patient.value.dispositivos.forEach(device => {
-        device.sinaisVitais.forEach(sign => {
-            sign.valores.forEach(value => {
-                if (value.valor < sign.minimo || value.valor > sign.maximo)
-                    notificacoes.push({
-                        dispositivo: device.modelo,
-                        sinalVital: sign.tipo,
-                        valor: value.valor,
-                        data: new Date(value.data).toLocaleString('pt-PT', { timeZone: 'UTC' })
-                    });
-            });
-        });
-    });
-    return notificacoes;
-});
-
-const notificacoesData = ref([]);
-const dataTeste = ref([]);
-
-const fetchNotifications = async () => {
-    try {
-        const response = await fetch(window.URL + '/api/listar_notificacoes/' + patientSns + '/');
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-
-        dataTeste.value = data;
-
-        data.forEach(notification => {
-            if (notification.read)
-                return;
-            let parts = notification.message.split(',');
-
-            notificacoesData.value.push({
-                dispositivo: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].modelo,
-                sinal: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])]?.tipo,
-                valor: patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])]?.valores[parseInt(parts[2].split(':')[1])] ? patient.value.dispositivos[parseInt(parts[0].split(':')[1])].sinaisVitais[parseInt(parts[1].split(':')[1])].valores[parseInt(parts[2].split(':')[1])].valor : 'No value',
-                read: notification.read
-
-            })
-
-        });
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 const processedNotifications = computed(() => {
-
-    if (!dataTeste.value.length) {
-        return []
-    }
-
-    return dataTeste.value
-        .filter(notification => notification.read === false)
+    return useNotificationsStore().notificationsNotRead
         .sort((a, b) => compareDesc(new Date(a.created_at), new Date(b.created_at)))
         .map(notification => {
             let parts = notification.message.split(',');
@@ -573,19 +485,17 @@ const processedNotifications = computed(() => {
             let sinalIdx = parseInt(parts[1].split(':')[1].trim());
             let valorIdx = parseInt(parts[2].split(':')[1].trim());
             return {
-                dispositivo: patient.value.dispositivos[dispositivoIdx].modelo,
-                sinal: patient.value.dispositivos[dispositivoIdx].sinaisVitais[sinalIdx].tipo,
+                dispositivo: patient.value.dispositivos[dispositivoIdx]?.modelo,
+                sinal: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx].tipo,
                 data: format(new Date(notification.created_at), 'dd-MM-yyyy - HH:mm:ss'),
-                valor: patient.value.dispositivos[dispositivoIdx].sinaisVitais[sinalIdx].valores[valorIdx].valor,
+                valor: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.valores[valorIdx]?.valor,
                 idBotao: notification._id
             };
         });
 });
 
-
 const historyNotifications = computed(() => {
-    return dataTeste.value
-        .filter(notification => notification.read === true)
+    return useNotificationsStore().notificationsRead
         .sort((a, b) => compareDesc(new Date(a.created_at), new Date(b.created_at)))
         .map(notification => {
             let parts = notification.message.split(',');
@@ -593,18 +503,16 @@ const historyNotifications = computed(() => {
             let sinalIdx = parseInt(parts[1].split(':')[1].trim());
             let valorIdx = parseInt(parts[2].split(':')[1].trim());
             return {
-                dispositivo: patient.value.dispositivos[dispositivoIdx].modelo,
-                sinal: patient.value.dispositivos[dispositivoIdx].sinaisVitais[sinalIdx].tipo,
+                dispositivo: patient.value.dispositivos[dispositivoIdx]?.modelo,
+                sinal: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.tipo,
                 data: format(new Date(notification.created_at), 'dd-MM-yyyy - HH:mm:ss'),
-                valor: patient.value.dispositivos[dispositivoIdx].sinaisVitais[sinalIdx].valores[valorIdx].valor
+                valor: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.valores[valorIdx]?.valor
             };
         });
 });
 
 const read = async (id) => {
-    dataTeste.value.find(notification => notification._id === id).read = true;
-
-    const data = dataTeste.value.find(notification => notification._id === id)
+    const data = useNotificationsStore().notificationsNotRead.find(notification => notification._id === id)
     try {
         const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {
             method: 'PUT',
@@ -657,7 +565,6 @@ const deleteSinal = async (sinal_idx, dispositivo_idx) => {
 };
 
 const deleteDevice = async (index) => {
-    // confirm the deletion
     if (!confirm('Are you sure you want to delete this device?')) {
         return;
     }

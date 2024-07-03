@@ -25,6 +25,16 @@ export const usePatientsStore = defineStore('patients', () => {
 
     }
 
+    const fetchPatient = async (patient_id) => {
+      const response = await fetch(window.URL + '/api/patients/listar_documentos_com_profissionais/' + patient_id + '/');
+      if (!response.ok) {
+        console.log('Error loading patient')
+        return
+      }
+      const data = await response.json()
+      patient.value = data
+    }
+
     const getAllAtiveDevicesAndVitalSigns = () => {
       devices.value = []
       vitalSigns.value = []
@@ -46,5 +56,5 @@ export const usePatientsStore = defineStore('patients', () => {
       })
     }
     
-    return { patient, patients, fetchPatients, devices, devicesActive, vitalSigns, vitalSignActive, getAllAtiveDevicesAndVitalSigns }
+    return { patient, patients, fetchPatients, fetchPatient, devices, devicesActive, vitalSigns, vitalSignActive, getAllAtiveDevicesAndVitalSigns }
 })

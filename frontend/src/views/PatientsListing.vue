@@ -111,8 +111,7 @@
                                     <span class="font-weight-bold"> {{ dispositivo.modelo }} </span>
                                     <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
                                         class="my-3 mx-1">
-                                        <v-chip :disabled="disabled"
-                                            @click="activate(item, indexSinal, index, loopAtivo)"
+                                        <v-chip :disabled="disabled" @click="activate(item, indexSinal, index)"
                                             :color="sinalVital.ativo ? 'success' : 'primary'">
                                             <v-tooltip :text="sinalVital.tipo" activator="parent" />
                                             <span v-if="sinalVital.tipo == 'Temperatura'">
@@ -160,7 +159,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { differenceInYears } from 'date-fns';
 import { useRouter } from 'vue-router';
-import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users';
 import { useDisplay } from 'vuetify'
 import { useVitalSignsStore } from '@/stores/vitalSigns'
@@ -171,8 +169,6 @@ const { smAndDown } = useDisplay()
 const user = useUsersStore().user
 
 const router = useRouter();
-
-const loopAtivo = ref(false);
 
 const expanded = ref([]);
 
@@ -189,6 +185,12 @@ const headers = ref([
     { title: 'Dispositivos', key: 'dispositivos', width: '45%', align: 'center' },
     { title: 'Actions', key: 'actions', sortable: false, width: '15%', align: 'center' },
 ]);
+
+onMounted(() => {
+    if (usePatientsStore().patients.length === 0)
+        usePatientsStore().fetchPatients(user.user_id);
+
+});
 
 const patientsList = computed(() => {
     return showMonitoredPatients.value ? usePatientsStore().patients.filter(patient => patient.dispositivos.some(dispositivo => dispositivo.ativo)) : usePatientsStore().patients;
@@ -221,11 +223,7 @@ const stopGeneratingData = async (patient, indexSinal, index) => {
     useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
 }
 
-onMounted(() => {
-    if (usePatientsStore().patients.length === 0)
-        usePatientsStore().fetchPatients(user.user_id);
-    
-});
+
 
 const formatDate = (date) => {
     const dob = new Date(date);

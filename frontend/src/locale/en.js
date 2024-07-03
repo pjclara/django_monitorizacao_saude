@@ -93,6 +93,8 @@ const en = {
     'deleteUser': 'Delete user',
     'Delete vital sign': 'Delete vital sign',
     'Choose a Device': 'Choose a Device',
+    'notifications read': 'Notifications read',
+    'notifications not read': 'Notifications not read',
     
 }
 

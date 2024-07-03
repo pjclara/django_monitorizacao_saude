@@ -1,0 +1,58 @@
+{
+  "_id": { "$oid": "668343268835bd9428ae2f59" }, //id do paciente
+  "sns": { "$numberInt": "123456677" }, //numero de sns
+  "nome": "Paciente 1", //nome do paciente
+  "dataNascimento": { "$date": { "$numberLong": "655516800000" } }, //data de nascimento
+  "genero": "Masculino", //genero
+  "telefone": "912123123", //telefone
+  "peso": { "$numberDouble": "123.0" }, //peso
+  "altura": { "$numberDouble": "123.0" }, //altura
+  "dispositivos": [
+    {
+      "profissionais": [
+        //profissionais associados
+        {
+          "id": { "$numberInt": "1" }, //id do profissional
+          "role": "profissional" //role do profissional
+        }
+      ],
+      "data_inicio": { "$date": { "$numberLong": "1719792000000" } }, //data de inicio
+      "data_fim": { "$date": { "$numberLong": "1719964800000" } }, //data de fim
+      "ativo": false, // se o dispositivo está ativo
+      "modelo": "X1", //modelo do dispositivo
+      "fabricante": "Health", //fabricante
+      "numeroSerie": { "$numberInt": "12345" }, //numero de serie
+      "descricao": "Smartband", //descricao
+      "sinaisVitais": [
+        //sinais vitais
+        {
+          "maximo": { "$numberDouble": "100.0" }, //valor maximo
+          "minimo": { "$numberDouble": "55.0" }, //valor minimo
+          "tipo": "Frequência Cardíaca", //tipo
+          "unidade": "bpm", //unidade
+          "valores": [
+            //valores lidos
+            {
+              "valor": { "$numberDouble": "106.0" }, //valor
+              "data": { "$date": { "$numberLong": "1719882079910" } }, //data
+              "alerta": true, //alerta
+              "lida": false, //lida
+              "dataLida": null //data lida
+            }
+          ],
+          "ativo": false, //ativo
+          "readingFrequency": { "$numberInt": "5" } //frequencia de leitura
+        }
+      ]
+    }
+  ]
+},
+
+{
+    "_id":{"$oid":"66806a752640914ba1ffb41d"}, //id do paciente
+    "title":"Alerta","message":"dispositivo_idx: 0, sinal_idx: 0, valor_idx: 0, valor: 57", //mensagem
+    "utente":{"$numberInt":"123456789"}, //numero de sns
+    "read":true, // se foi lida
+    "created_at":{"$date":{"$numberLong":"1719691893445"}}, //data de criacao
+    "updated_at":{"$date":{"$numberLong":"1719739587634"}} //data de atualizacao
+}
