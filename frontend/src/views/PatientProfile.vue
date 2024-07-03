@@ -14,7 +14,7 @@
                                 </div>
                                 <div class="d-flex justify-space-between align-center pa-1">
                                     <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome }}</span>
-                                    <v-btn color="red" size="small" width="100px" @click="callPatient">{{
+                                    <v-btn color="red" size="small" width="100px" @click="callPatient"><v-icon class="mr-2">mdi-phone-plus</v-icon>{{
                                         $t("Call") }}</v-btn>
                                 </div>
                                 <div class="mt-2">
@@ -35,10 +35,10 @@
                                 </div>
                                 <v-row no-gutters justify="space-between" v-if="!isPatient">
                                     <v-btn color="blue-darken-3" size="small" width="100px" class="mt-2"
-                                        @click="voltar">{{ $t("Return") }}</v-btn>
+                                        @click="voltar"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return') }}</v-btn>
 
                                     <v-btn color="green" size="small" width="100px" class="mt-2"
-                                        @click="edit(patient?.sns)">{{ $t("Edit") }}</v-btn>
+                                        @click="edit(patient?.sns)"><v-icon class="mr-2">mdi-pencil</v-icon>{{ $t("Edit") }}</v-btn>
                                 </v-row>
                             </v-col>
                         </v-row>
