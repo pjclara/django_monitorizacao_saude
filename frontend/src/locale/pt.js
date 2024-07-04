@@ -107,8 +107,10 @@ const pt = {
   'Age': 'Idade',
   'Alert': 'Alerta',
   'No Alert': 'Sem Alerta',
-  'Turn on': 'Ligar',
-  'Turn off': 'Desligar',
+  'Turn On': 'Ligar',
+  'Turn Off': 'Desligar',
+  'Edit': 'Editar',
+  'Call': 'Chamar',
 }
 
 export default pt

@@ -107,6 +107,8 @@ const en = {
     'No Alert': 'No Alert',
     'Turn Off': 'Turn Off',
     'Turn On': 'Turn On',
+    'Edit': 'Edit',
+    'Call': 'Call',
     
 }
 

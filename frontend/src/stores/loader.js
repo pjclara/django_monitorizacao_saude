@@ -14,13 +14,13 @@ export const useLoaderStore = defineStore('loader', () => {
     createData.value = !createData.value
   }
 
-  // const url = 'backend-api-health-monitor.fly.dev'
-  // window.URL = 'https://' + url
+  const url = 'backend-projecto.fly.dev'
+  window.URL = 'https://' + url
 
-
+/*
   const url = '127.0.0.1:8000'
   window.URL = 'http://' + url
-
+*/
 
   return {
     showLoading,
