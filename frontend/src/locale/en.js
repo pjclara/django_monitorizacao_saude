@@ -110,6 +110,7 @@ const en = {
     'Edit': 'Edit',
     'Call': 'Call',
     'Email': 'Email',
+    'Notification read': 'Notification read',
     
 }
 

@@ -112,6 +112,7 @@ const pt = {
   'Edit': 'Editar',
   'Call': 'Chamar',
   'Email': 'Email',
+  'Notification read': 'Notificação lida',
 }
 
 export default pt

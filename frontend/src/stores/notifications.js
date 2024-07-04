@@ -1,12 +1,15 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify'
+import { useI18n } from 'vue-i18n'
 
 export const useNotificationsStore = defineStore('notifications', () => {
   const notifications = ref([])
   const notification = ref({})
   const notificationsRead = ref([])
   const notificationsNotRead = ref([])
+
+  const { t } = useI18n()
 
   const fetchNotifications = async (user_id) => {
     const response = await fetch(window.URL + '/api/listar_notificacoes/' + user_id + '/')
@@ -39,9 +42,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   const markAsRead = async (id) => {
-    const data = notificationsNotRead.value.find(
-      (notification) => notification._id === id
-    )
+    const data = notificationsNotRead.value.find((notification) => notification._id === id)
     data.read = true
     try {
       const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {
@@ -54,7 +55,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       if (!response.ok) {
         throw new Error('Failed to fetch data')
       } else {
-        toast.success('Notification read')
+        toast.success(t('Notification read'))
         getNotificationsRead()
         getNotificationsNotRead()
       }
