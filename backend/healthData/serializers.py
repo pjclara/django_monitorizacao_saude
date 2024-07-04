@@ -45,6 +45,7 @@ class DocumentoSerializer(serializers.Serializer):
     telefone = serializers.CharField(max_length=9)
     peso = serializers.FloatField()
     altura = serializers.FloatField()
+    email = serializers.EmailField()
     dispositivos = DispositivoSerializer(many=True)
     
     def validate_sns(self, value):
@@ -60,6 +61,7 @@ class DocumentoSemDispositivosSerializer(serializers.Serializer):
     telefone = serializers.CharField(max_length=9)
     peso = serializers.FloatField()
     altura = serializers.FloatField()
+    email = serializers.EmailField()
     
     def validate_sns(self, value):
         if not (100000000 <= value <= 999999999):

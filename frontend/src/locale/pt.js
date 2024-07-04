@@ -111,6 +111,7 @@ const pt = {
   'Turn Off': 'Desligar',
   'Edit': 'Editar',
   'Call': 'Chamar',
+  'Email': 'Email',
 }
 
 export default pt

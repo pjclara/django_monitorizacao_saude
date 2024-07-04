@@ -30,8 +30,12 @@
                 <v-text-field :label="$t('Health care number')" placeholder="999999999" color="primary" v-model="patient.sns"
                   :disabled="routeName == 'PatientEdit'" :rules="snsRules" maxlength="9" />
               </v-col>
-              <v-col :cols="smAndDown ? '12' : '8'">
+              <v-col :cols="smAndDown ? '12' : '4'">
                 <v-text-field :label="$t('Name')" placeholder="John" color="primary" v-model="patient.nome" :rules="nameRules"
+                  maxlength="50" :disabled="!isSnsFilled" />
+              </v-col>
+              <v-col :cols="smAndDown ? '12' : '4'">
+                <v-text-field :label="$t('Email')" placeholder="@email" color="primary" v-model="patient.email" type="email" :rules="emailRules"
                   maxlength="50" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
@@ -294,6 +298,11 @@ const dataInicioRules = [
     const today = new Date()
     return (isAfter(date, today) || isSameDay(date, today)) || 'Date must be after or equal to today'
   }
+]
+
+const emailRules = [
+  v => !!v || 'Email is required',
+  v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
 ]
 
 const dataFimRules = [

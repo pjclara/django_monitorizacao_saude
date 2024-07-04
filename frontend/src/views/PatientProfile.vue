@@ -322,6 +322,7 @@ const patient = computed(() => {
 
 
 onMounted(() => {
+    useNotificationsStore().fetchNotifications(patientSns);
     try {
         const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
         ws.onopen = () => {
@@ -535,26 +536,8 @@ const historyNotifications = computed(() => {
         });
 });
 
-const read = async (id) => {
-    const data = useNotificationsStore().notificationsNotRead.find(notification => notification._id === id)
-    try {
-        const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        else {
-            toast.success('Notification read');
-        }
-    } catch (error) {
-        console.error(error);
-    }
+const read = (_id) => {
+    useNotificationsStore().markAsRead(_id);
 };
 
 const deleteSinal = async (sinal_idx, dispositivo_idx) => {

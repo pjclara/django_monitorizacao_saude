@@ -125,8 +125,7 @@ def user_detail(request, pk):
             'health_number': user['health_number'],
             'taxpayer_number': user['taxpayer_number'],
             'type_user': user['type_user'],
-            'groups': user['groups'] 
-            
+            'groups': user['groups']             
         })
 
     elif request.method == 'PUT':
@@ -224,10 +223,36 @@ def criar_documento(request):
     sns = request.data.get('sns')
     if db.minha_colecao.find_one({"sns": sns}):
         return JsonResponse({"error": "Já existe um documento com esse sns"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if db.healthData_customuser.find_one({'email': request.data['email']}):
+        return JsonResponse({'error': 'Email already exists'}, status=400, safe=False)
+    
     serializer = DocumentoSerializer(data=request.data)
     if serializer.is_valid():
         data = serializer.validated_data
         resultado = db.minha_colecao.insert_one(data)
+        
+        random_password = generate_random_password()
+        
+        # criar um user com o email e password
+        user_data = {
+            "email": data['email'],
+            "password": data['nome'] + "123",
+            "full_name": data['nome'],
+            "is_active": True,
+            "is_staff": False,
+            "is_superuser": False,
+            "mobile_phone": data['telefone'],
+            "health_number": data['sns'],
+            "taxpayer_number": "",
+            "type_user": "paciente",
+            "role": "paciente"
+        }
+        user_serializer = CustomUserSerializer(data=user_data)
+        if user_serializer.is_valid():
+            user_serializer.save()
+        else:
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"_id": str(resultado.inserted_id)}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -251,6 +276,15 @@ def document_detail(request, pk):
 
     elif request.method == 'PUT':
         serializer = DocumentoSerializer(document, data=request.data)
+        
+        # sns unique menos para o mesmo documento
+        if db.minha_colecao.find_one({"sns": request.data['sns'], "_id": {"$ne": ObjectId(pk)}}):
+            return JsonResponse({"error": "Já existe um documento com esse sns"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # email unique menos para o mesmo documento
+        if db.minha_colecao.find_one({"email": request.data['email'], "_id": {"$ne": ObjectId(pk)}}):
+            return JsonResponse({"error": "Já existe um documento com esse email"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if serializer.is_valid():
             data = serializer.validated_data
             db.minha_colecao.update_one({'_id': ObjectId(pk)}, {'$set': data})
@@ -289,12 +323,51 @@ def atualizar_dados_paciente_por_sns(request, sns):
         documento = db.minha_colecao.find_one({"sns": sns})
         if not documento:
             return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # email unique menos para o mesmo documento
+        if db.minha_colecao.find_one({"email": request.data['email'], "sns": {"$ne": sns}}):
+            return JsonResponse({"error": "Já existe um documento com esse email"}, status=status.HTTP_400_BAD_REQUEST)
+        
         # Serializar os dados recebidos da requisição
         serializer = DocumentoSerializer(data=request.data) 
         if serializer.is_valid():
             data = serializer.validated_data
             # Atualizar o documento com base no _id
+            
             db.minha_colecao.update_one({"sns": sns}, {"$set": data})
+            
+            # Atualizar o usuário com base no email
+            user = db.healthData_customuser.find_one({"email": documento['email']})
+            if not user:
+                # criar um user com o email e password
+                # random_password = generate_random_password()
+                random_password = data['nome'].replace(" ", "_") + "123"
+                
+                user_data = {
+                    "email": data['email'],
+                    "password": random_password,
+                    "full_name": data['nome'],
+                    "is_active": True,
+                    "is_staff": False,
+                    "is_superuser": False,
+                    "mobile_phone": data['telefone'],
+                    "health_number": data['sns'],
+                    "taxpayer_number": "",
+                    "type_user": "paciente",
+                    "role": "paciente"
+                }
+                user_serializer = CustomUserSerializer(data=user_data)
+                if user_serializer.is_valid():
+                    user_serializer.save()
+                else:
+                    return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:              
+                user['email'] = data['email']
+                user['full_name'] = data['nome']
+                user['mobile_phone'] = data['telefone']
+                user['health_number'] = data['sns']
+                db.healthData_customuser.update_one({"email":documento['email']}, {"$set": user})            
+            
             documento_serializado = DocumentoSerializer(data).data
             return Response({
                 "message": "Documento atualizado com sucesso.", 
@@ -364,6 +437,7 @@ def atualizar_documento_por_sns(request, sns):
             data = serializer.validated_data
             # Atualizar o documento com base no _id
             db.minha_colecao.update_one({"sns": sns}, {"$set": data})
+            
             documento_serializado = DocumentoSerializer(data).data
             send_update(sns, "documento_serializado", f"room{sns}")
             return Response({

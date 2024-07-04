@@ -35,6 +35,7 @@ const patient = ref({
   sns: null,
   nome: null,
   dataNascimento: null,
+  email: null,
   genero: null,
   peso: null,
   altura: null,

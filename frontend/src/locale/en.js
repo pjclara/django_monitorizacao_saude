@@ -109,6 +109,7 @@ const en = {
     'Turn On': 'Turn On',
     'Edit': 'Edit',
     'Call': 'Call',
+    'Email': 'Email',
     
 }
 

@@ -19,7 +19,6 @@ import PatientForm from '@/components/forms/PatientForm.vue'
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router';
 import { useLoaderStore } from '@/stores/loader'
-import { useUsersStore } from '@/stores/users';
 import { toast } from 'vue3-toastify';
 
 const loaderStore = useLoaderStore();
@@ -34,7 +33,6 @@ const areAllFieldsNonEmpty = (data) => {
 }
 
 const patientSns = useRoute().params.patientSns;
-
 
 // get patient data from api
 const fetchPatientData = async () => {
@@ -64,8 +62,6 @@ onMounted(() => {
 
 const atualizarPaciente = async () => {
   loaderStore.setLoading(true);
-
-  
   try {
     const response = await fetch(window.URL + '/api/documentos/atualizar_dados_paciente_por_sns/' + patientSns + '/', {
       method: 'PUT',
