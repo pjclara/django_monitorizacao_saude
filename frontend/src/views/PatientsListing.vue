@@ -5,6 +5,11 @@
             <v-text-field v-model="search" :label="$t('Search for Patients')" class="mb-4" outlined></v-text-field>
             <v-data-table :headers="headers" :items="patientsList" v-model:expanded="expanded" :search="search"
                 :mobile="smAndDown" item-value="sns" class="custom_table_class">
+                <template v-slot:headers>
+                    <tr>
+                        <th v-for="header in headers" :key="header.title" class="text-center">{{ $t(header.title) }}</th>
+                    </tr>
+                </template>
                 <template v-slot:top>
                     <v-toolbar flat style="background-color: #425C5A; color: white;">
                         <v-col cols="3">
@@ -71,8 +76,8 @@
                                     <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
                                         <span>
                                             <span v-if="hasAlertSignal(sinalVital)" class="cursor-pointer"
-                                                @click="redirectNotifications(item, hasAlertSignal(sinalVital), dispositivo)">Alert</span>
-                                            <span v-else>No Alert</span>
+                                                @click="redirectNotifications(item, hasAlertSignal(sinalVital), dispositivo)">{{$t('Alert')}}</span>
+                                            <span v-else>{{$t('No Alert')}}</span>
                                         </span>
                                     </v-chip>
                                 </v-col>
@@ -180,9 +185,9 @@ const search = ref(null)
 
 const headers = ref([
     { title: 'Name', key: 'nome', width: '20%', align: 'center' },
-    { title: 'SNS', key: 'sns', width: '10%', align: 'center' },
+    { title: 'Health number', key: 'sns', width: '10%', align: 'center' },
     { title: 'Age', key: 'dataNascimento', width: '10%', align: 'center' },
-    { title: 'Dispositivos', key: 'dispositivos', width: '45%', align: 'center' },
+    { title: 'devices', key: 'dispositivos', width: '45%', align: 'center' },
     { title: 'Actions', key: 'actions', sortable: false, width: '15%', align: 'center' },
 ]);
 

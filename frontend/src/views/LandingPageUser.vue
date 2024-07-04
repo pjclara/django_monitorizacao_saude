@@ -56,7 +56,7 @@
     </v-row>
 
     <v-row>
-      <v-col v-for="data in patientsWithDevicesActives" v-if="patientsWithDevicesActives.length > 0" cols="6">
+      <v-col v-for="data in patientsWithDevicesActives" v-if="patientsWithDevicesActives.length > 0" cols="12" sm="4">
         <v-card class="rounded-xl" height="300" style="padding: 16px;">
           <Line id="id_w" :data="data" :options="chartOptions" />
         </v-card>

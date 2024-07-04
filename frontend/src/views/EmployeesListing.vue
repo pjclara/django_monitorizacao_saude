@@ -8,6 +8,12 @@
                 outlined
             ></v-text-field>
             <v-data-table :headers="headers" :items="users" :items-per-page="5" :search="search" class="elevation-1" v-if="!smAndDown">
+                <template v-slot:headers >
+                    <tr>
+                        <th v-for="header in headers" :key="header.title" class="text-left">{{ $t(header.title) }}</th>
+                    </tr>
+
+                </template>
                 <template v-slot:top>
                     <v-toolbar flat>
                         <v-toolbar-title>{{ $t('UsersListing') }}</v-toolbar-title>

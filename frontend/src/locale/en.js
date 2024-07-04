@@ -96,6 +96,17 @@ const en = {
     'notifications read': 'Notifications read',
     'notifications not read': 'Notifications not read',
     'Password': 'Password',
+    'Health number': 'Health number',
+    'Taxpayer number': 'Tax number',
+    'Mobile phone': 'Mobile Phone',
+    'Type user': 'Type of User',
+    'Active': 'Active',
+    'Actions': 'Actions',
+    'Age': 'Age',
+    'Alert': 'Alert',
+    'No Alert': 'No Alert',
+    'Turn Off': 'Turn Off',
+    'Turn On': 'Turn On',
     
 }
 

@@ -98,6 +98,17 @@ const pt = {
   'notifications read': 'Notificações lidas',
   'notifications not read': 'Notificações não lidas',
   'Password': 'Palavra-passe',
+  'Health number': 'Número de Saúde',
+  'Taxpayer number': 'Número de Contribuinte',
+  'Mobile phone': 'Telemóvel',
+  'Type user': 'Tipo de Utilizador',
+  'Active': 'Ativo',
+  'Actions': 'Ações',
+  'Age': 'Idade',
+  'Alert': 'Alerta',
+  'No Alert': 'Sem Alerta',
+  'Turn on': 'Ligar',
+  'Turn off': 'Desligar',
 }
 
 export default pt

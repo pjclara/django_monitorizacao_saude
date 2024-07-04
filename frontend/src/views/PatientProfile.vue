@@ -13,9 +13,11 @@
                                     <img src="/userAnoon.png" width="120px" height="120px" alt="userStockPhoto">
                                 </div>
                                 <div class="d-flex justify-space-between align-center pa-1">
-                                    <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome }}</span>
-                                    <v-btn color="red" size="small" width="100px" @click="callPatient"><v-icon class="mr-2">mdi-phone-plus</v-icon>{{
-                                        $t("Call") }}</v-btn>
+                                    <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome
+                                        }}</span>
+                                    <v-btn color="red" size="small" width="100px" @click="callPatient"><v-icon
+                                            class="mr-2">mdi-phone-plus</v-icon>{{
+                                                $t("Call") }}</v-btn>
                                 </div>
                                 <div class="mt-2">
                                     <span class="text-h6 font-weight-bold">{{ $t('age') }}: </span>
@@ -35,10 +37,12 @@
                                 </div>
                                 <v-row no-gutters justify="space-between" v-if="!isPatient">
                                     <v-btn color="blue-darken-3" size="small" width="100px" class="mt-2"
-                                        @click="voltar"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return') }}</v-btn>
+                                        @click="voltar"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{
+                                            $t('Return') }}</v-btn>
 
                                     <v-btn color="green" size="small" width="100px" class="mt-2"
-                                        @click="edit(patient?.sns)"><v-icon class="mr-2">mdi-pencil</v-icon>{{ $t("Edit") }}</v-btn>
+                                        @click="edit(patient?.sns)"><v-icon class="mr-2">mdi-pencil</v-icon>{{
+                                            $t("Edit") }}</v-btn>
                                 </v-row>
                             </v-col>
                         </v-row>
@@ -142,11 +146,11 @@
                                                             <v-btn color="white" size="small"
                                                                 v-if="!getStartValue().start"
                                                                 @click="startGenerateData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
-                                                                <v-icon>mdi-led-on</v-icon> on
+                                                                <v-icon>mdi-led-on</v-icon> {{ $t('Turn On') }}
                                                             </v-btn>
                                                             <v-btn color="white" size="small" v-else
                                                                 @click="stopGeneratingData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
-                                                                <v-icon>mdi-led-off</v-icon>off
+                                                                <v-icon>mdi-led-off</v-icon> {{ $t('Turn Off') }}
                                                             </v-btn>
                                                         </v-col>
                                                     </v-row>
@@ -156,7 +160,6 @@
                                     </v-col>
                                 </v-row>
                             </v-window-item>
-
                             <v-window-item value="estatistics">
                                 <div v-if="!smAndDown">
                                     <div>
@@ -165,20 +168,40 @@
                                         </v-select>
                                     </div>
                                     <div>
-                                        <v-btn v-for="(sinalVital, index) in sinaisVitais"
-                                            :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
-                                            @click="atualizarGrafico(index)">{{
-                                                sinalVital.nome }}</v-btn>
+                                        <v-row>
+                                            <v-btn v-for="(sinalVital, index) in sinaisVitais"
+                                                :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
+                                                @click="atualizarGrafico(index)">{{
+                                                    sinalVital.nome }}
+                                            </v-btn>
+                                        </v-row>
                                     </div>
                                     <div v-if="deviceId != null">
-                                        <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />
+                                        <v-row>
+                                            <v-col cols="12" sm="3">
+                                                data inicio
+                                            </v-col>
+                                            <v-col cols="12" sm="3">
+                                                hora inicio
+                                            </v-col>
+                                            <v-col cols="12" sm="3">
+                                                data fim
+                                            </v-col>
+                                            <v-col cols="12" sm="3">
+                                                hora fim
+                                            </v-col>
+                                        </v-row>
+                                    </div>
+                                    <div v-if="deviceId != null">
+                                        <v-card height="400" style="padding: 16px;">
+                                            <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />
+                                        </v-card>
                                     </div>
                                 </div>
                                 <div v-else>
                                     <p class="text-center text-h5">{{ $t('OnlyDesktop') }}</p>
                                 </div>
                             </v-window-item>
-
                             <v-window-item value="notifications">
                                 <v-data-table :headers="notificationsHeaders" :items="processedNotifications"
                                     :items-per-page="5" v-if="!smAndDown">
@@ -290,8 +313,9 @@ const patientSns = useRoute().params.patientSns;
 const patient = computed(() => {
     if (usePatientsStore().patients.length === 0)
         usePatientsStore().fetchPatients(useUsersStore().user.user_id);
-    useNotificationsStore().fetchNotifications(patientSns);
+    //useNotificationsStore().fetchNotifications(patientSns);
     const data = usePatientsStore().patients.find(patient => patient.sns == patientSns)
+
     return data;
 });
 
