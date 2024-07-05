@@ -13,6 +13,7 @@ import LandingPageAdmin from '@/views/LandingPageAdmin.vue'
 import LandingPageUser from '@/views/LandingPageUser.vue'
 import RolesAndPermissions from '@/views/RolesAndPermissions.vue'
 import RolesAndPermissionsEdit from '@/views/RolesAndPermissionsEdit.vue'
+import NotFound from '@/views/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +87,11 @@ const router = createRouter({
       name: 'PasswordRecovery',
       component: PasswordRecovery
     },
+    {
+      path: '/notFound',
+      name: 'NotFound',
+      component: () => NotFound
+    }
   ]
 })
 

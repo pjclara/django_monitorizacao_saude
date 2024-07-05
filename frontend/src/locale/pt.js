@@ -113,6 +113,7 @@ const pt = {
   'Call': 'Chamar',
   'Email': 'Email',
   'Notification read': 'Notificação lida',
+  'Patient updated successfully': 'Paciente atualizado com sucesso',
 }
 
 export default pt

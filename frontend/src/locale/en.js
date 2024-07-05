@@ -111,6 +111,7 @@ const en = {
     'Call': 'Call',
     'Email': 'Email',
     'Notification read': 'Notification read',
+    'Patient updated successfully': 'Patient updated successfully',
     
 }
 

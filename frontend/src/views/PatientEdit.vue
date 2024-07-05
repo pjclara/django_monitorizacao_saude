@@ -16,10 +16,15 @@
 
 <script setup>
 import PatientForm from '@/components/forms/PatientForm.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted} from 'vue'
 import { useRoute } from 'vue-router';
 import { useLoaderStore } from '@/stores/loader'
+import { usePatientsStore } from '@/stores/patients';
+import router from '@/router';
+import { useUsersStore } from '@/stores/users';
 import { toast } from 'vue3-toastify';
+
+const user = useUsersStore().user
 
 const loaderStore = useLoaderStore();
 
@@ -34,15 +39,12 @@ const areAllFieldsNonEmpty = (data) => {
 
 const patientSns = useRoute().params.patientSns;
 
-// get patient data from api
-const fetchPatientData = async () => {
-  loaderStore.setLoading(true);
-  try {
-    const response = await fetch(window.URL + '/api/documentos/buscar_por_sns/' + patientSns + '/');
-    if (!response.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    const patientData = await response.json();
+onMounted(() => {
+  if(usePatientsStore().patients.length == 0){
+    usePatientsStore().fetchPatients(user.user_id);
+  }
+  const patientData = usePatientsStore().getPaciente(patientSns);
+  if (patientData) {
     patient.value = {
       ...patientData,
       dataNascimento: patientData.dataNascimento.split('T')[0],
@@ -50,42 +52,17 @@ const fetchPatientData = async () => {
         return { ...dispositivo, data_inicio: dispositivo.data_inicio.split('T')[0], data_fim: dispositivo.data_fim.split('T')[0] }
       })
     };
-  } catch (error) {
-    console.error(error);
-  }
-  loaderStore.setLoading(false);
-};
-
-onMounted(() => {
-  fetchPatientData();
+  } else {
+    router.push({ name: 'PatientsListing' });
+    toast.error('Patient not found');
+  } 
 });
 
-const atualizarPaciente = async () => {
-  loaderStore.setLoading(true);
-  try {
-    const response = await fetch(window.URL + '/api/documentos/atualizar_dados_paciente_por_sns/' + patientSns + '/', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(patient.value),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to update data');
-    }
-    toast.success('Success! Data updated successfully.', { position: 'bottom-right' });
-  } catch (error) {
-    console.error(error);
-    toast.error('Error! Data was not updated. Please try again.');
-  }
-  loaderStore.setLoading(false);
+const atualizarPaciente = () => {
+  usePatientsStore().atualizarPaciente(patient.value);
 }
 
 const voltar = () => {
   window.history.back();
 }
-
-
-
-
 </script>
