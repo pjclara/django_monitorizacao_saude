@@ -1,8 +1,9 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useVitalSignsStore } from './vitalSigns'
-import { toast } from 'vue3-toastify';
+import { toast } from 'vue3-toastify'
 import { useI18n } from 'vue-i18n'
+import { useUsersStore } from './users'
 
 export const usePatientsStore = defineStore('patients', () => {
   const patients = ref([])
@@ -11,12 +12,20 @@ export const usePatientsStore = defineStore('patients', () => {
   const devicesActive = ref([])
   const vitalSigns = ref([])
   const vitalSignActive = ref([])
+  const token = useUsersStore().token
 
   const { t } = useI18n()
 
   const fetchPatients = async (user_id) => {
     const response = await fetch(
-      window.URL + '/api/patients/listar_documentos_com_profissionais/' + user_id + '/'
+      window.URL + '/api/patients/listar_documentos_com_profissionais/' + user_id + '/',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token
+        }
+      }
     )
     if (!response.ok) {
       console.log('Error loading patients')
@@ -57,7 +66,8 @@ export const usePatientsStore = defineStore('patients', () => {
       {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + token          
         },
         body: JSON.stringify(patient)
       }
@@ -76,7 +86,6 @@ export const usePatientsStore = defineStore('patients', () => {
   const getPaciente = (sns) => {
     patient.value = patients.value.find((p) => p.sns == sns)
     return patient.value
-    
   }
 
   return {

@@ -2,17 +2,26 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
 import { useI18n } from 'vue-i18n'
+import { useUsersStore } from './users'
 
 export const useNotificationsStore = defineStore('notifications', () => {
   const notifications = ref([])
   const notification = ref({})
   const notificationsRead = ref([])
   const notificationsNotRead = ref([])
+  const token = useUsersStore().token
 
   const { t } = useI18n()
 
   const fetchNotifications = async (user_id) => {
-    const response = await fetch(window.URL + '/api/listar_notificacoes/' + user_id + '/')
+    const response = await fetch(window.URL + '/api/listar_notificacoes/' + user_id + '/',{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    
+    })
     if (!response.ok) {
       console.log('Error loading notifications')
       return
@@ -48,7 +57,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
       const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+          
         },
         body: JSON.stringify(data)
       })

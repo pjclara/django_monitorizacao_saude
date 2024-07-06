@@ -35,9 +35,9 @@
           </div>
         </v-card>
       </v-col>
-      
+
     </v-row>
-    
+
   </v-container>
 </template>
 
@@ -47,13 +47,11 @@ import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users';
 import { useRouter } from 'vue-router';
 
-const user = useUsersStore().user
-
 const loaderStore = useLoaderStore();
 
 onMounted(() => {
-  fetchDataFromApi();
   getUsers();
+  getRoles();
 });
 const router = useRouter();
 const roles = ref([]);
@@ -64,35 +62,28 @@ const goToUsers = () => {
   router.push({ name: 'EmployeesListing' });
 };
 
-const fetchDataFromApi = async () => {
-  try {
-    loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/get_groups/');
-    if (!response.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    const data = await response.json();
-
-    roles.value = data;
-
-  } catch (error) {
-    console.error(error);
-  }
+const getUsers = async () => {  
+  loaderStore.setLoading(true);
+  useUsersStore().fetchUsers()
+    .then((response) => {
+      users.value = response;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   loaderStore.setLoading(false);
-};
+}
 
-const getUsers = async () => {
-    loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/users/')
-    if (response.status !== 200) {
-        console.log("Error: ", response)
-        return
-    } else {
-        const data = await response.json()
-        users.value = data
-        console.log("Success: ", data)
-    }
-    loaderStore.setLoading(false);
+const getRoles = async () => {
+  loaderStore.setLoading(true);
+  useUsersStore().fetchRoles()
+    .then((response) => {
+      roles.value = response;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  loaderStore.setLoading(false);
 }
 
 

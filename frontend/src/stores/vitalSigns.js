@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
+import { useUsersStore } from './users'
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
@@ -14,7 +15,8 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
         },
         body: JSON.stringify({
           dispositivo_idx: indexSinal,
@@ -41,7 +43,8 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
         },
         body: JSON.stringify({
           dispositivo_idx: indexSinal,

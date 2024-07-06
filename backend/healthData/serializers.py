@@ -107,7 +107,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField()
-    password = serializers.CharField(max_length=128)
+    password = serializers.CharField(max_length=128, write_only=True)
     full_name = serializers.CharField(max_length=255, default='', allow_blank=True,)
     is_active = serializers.BooleanField(default=True)
     is_staff = serializers.BooleanField(default=False)

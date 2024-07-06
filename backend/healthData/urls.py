@@ -19,6 +19,7 @@ urlpatterns = [
     path('get_groups/', views.get_groups, name='get_groups'),
     path('get_group/<int:id>/', views.get_group, name='get_group'),
     path("create_group/", views.create_group, name="create_group"),
+    
     # permissões
     path('get_permissions/', views.get_permissions, name='get_permissions'),
     path('get_permission/<int:id>/', views.get_permission, name='get_permission'),

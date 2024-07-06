@@ -18,7 +18,7 @@
                     <v-toolbar flat>
                         <v-toolbar-title>{{ $t('UsersListing') }}</v-toolbar-title>
                         <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-btn class="mb-2" color="primary" dark to="/create-user">
+                        <v-btn class="mb-2" color="#FFFF00" dark to="/create-user">
                             {{ $t('CreateUser') }}
                         </v-btn>
                     </v-toolbar>
@@ -41,6 +41,7 @@ import MobileTable from '@/components/table/MobileTable.vue';
 
 import { onMounted, ref } from 'vue'
 import { useLoaderStore } from '@/stores/loader'
+import { useUsersStore } from '@/stores/users';
 import router from '@/router';
 import { useDisplay } from 'vuetify'
 const { smAndDown } = useDisplay()
@@ -57,27 +58,19 @@ const headers = ref([
     { title: 'Actions', key: 'actions', sortable: false }
 ])
 
-const users = ref([])
+const users = ref([]);
 
-const search = ref(null)
-
-onMounted(() => {
-    getUsers()
-})
-
-const getUsers = async () => {
+onMounted(async () => {
     loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/users/')
-    if (response.status !== 200) {
-        console.log("Error: ", response)
-        return
-    } else {
-        const data = await response.json()
-        users.value = data
-        console.log("Success: ", data)
+    if (useUsersStore().users.length == 0) {
+        users.value = await useUsersStore().fetchUsers();
+    }else{
+        users.value = useUsersStore().users;
     }
     loaderStore.setLoading(false);
-}
+});
+
+const search = ref(null)
 
 const editItem = (item) => {
     router.push({ name: 'EditUser', params: { id: item.id } })

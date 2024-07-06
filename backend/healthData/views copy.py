@@ -25,7 +25,6 @@ from datetime import datetime
 def get_all_users(request):
     if request.method == 'GET':
         users =  db.healthData_customuser.find()
-        
         serializer = CustomUserSerializer(users, many=True)
         return JsonResponse(serializer.data, safe=False)
 
@@ -631,9 +630,59 @@ def recover_password(request, email):
         return Response(status=status.HTTP_404_NOT_FOUND)
     else: 
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+######################################
+# login view
+@api_view(['POST'])
+def login(request):
+    if request.method == 'POST':
+        user = db.healthData_customuser.find_one({'email': request.data['email']})  
+        if user:
+            if user['password'] == request.data['password']:
+                return JsonResponse({'message': 'Login successful!'}, status=200, safe=False)
+            return JsonResponse({'error': 'Invalid password'}, status=400, safe=False)
+        return JsonResponse({'error': 'User does not exist'}, status=404, safe=False)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def document_detail(request, pk):
+    try:
+        document = db.minha_colecao.find_one({'_id': ObjectId(pk)})
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'Document does not exist'}, status=404, safe=False)
+
+    if request.method == 'GET':
+        serializer = DocumentoSerializer(document)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        serializer = DocumentoSerializer(document, data=request.data)
+        
+        # sns unique menos para o mesmo documento
+        if db.minha_colecao.find_one({"sns": request.data['sns'], "_id": {"$ne": ObjectId(pk)}}):
+            return JsonResponse({"error": "Já existe um documento com esse sns"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # email unique menos para o mesmo documento
+        if db.minha_colecao.find_one({"email": request.data['email'], "_id": {"$ne": ObjectId(pk)}}):
+            return JsonResponse({"error": "Já existe um documento com esse email"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if serializer.is_valid():
+            data = serializer.validated_data
+            db.minha_colecao.update_one({'_id': ObjectId(pk)}, {'$set': data})
+            data_serialized = DocumentoSerializer(data).data
+            return JsonResponse(data_serialized, safe=False)
+        return JsonResponse(serializer.errors, status=400, safe=False)
+
+    elif request.method == 'DELETE':
+        document.delete()
+        return JsonResponse({'message': 'Document was deleted successfully!'}, status=204, safe=False)
+    
+    
+
+
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
 def atualizar_documento_por_sns(request, sns):
     try:
         # Verificar se o documento existe
@@ -704,9 +753,6 @@ def atualizar_documento_por_sns(request, sns):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-######################################
-# auxiliar functions
-
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -731,6 +777,18 @@ def send_update(sns, message, room_name):
         }
     ) 
 
+  
+
+@api_view(['GET'])
+def listar_notificacoes(request):
+    notificacoes = db.notificacoes.find()
+    notificacoesSerializer = [NotificationSerializer(notificacao).data for notificacao in notificacoes]    
+    return Response(notificacoesSerializer, status=status.HTTP_200_OK)
+
+
+
+
+
 def generate_random_password(length=12):
     characters = string.ascii_letters + string.digits + string.punctuation
     random_password = ''.join(secrets.choice(characters) for i in range(length))
@@ -741,3 +799,15 @@ def send_email(email, message):
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [email]
     send_mail(subject, message, email_from, recipient_list )
+    
+@api_view(['GET'])
+def procurar_por_sns(request, sns):
+    try:
+        documento = db.minha_colecao.find_one({"sns": sns})
+        if documento:
+            documento_serializado = DocumentoSerializer(documento).data
+            return JsonResponse(documento_serializado, status=status.HTTP_200_OK, safe=False)
+        else:
+            return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

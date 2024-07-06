@@ -1,20 +1,11 @@
 <template>
   <v-container>
-    <div v-if="showSuccess" class="success-message">
-      {{ $t('SuccessYourActionWasCompleted') }}
-    </div>
-    <div v-if="showErrors" class="error-message">
-      {{ $t('ErrorYourActionWasNotCompleted') }}
-
-    </div>
     <v-row class="d-flex my-2 justify-center">
-      <v-col cols="12" sm="8">
+      <v-col cols="12" sm="12">
         <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('EditUser') }}</div>
       </v-col>
-      <v-col cols="12" sm="4" v-if="isAdmin"><v-btn @click="usersList">{{ $t('UsersListing') }}</v-btn></v-col>
-
     </v-row>
-    <v-form v-model="isFormValid" @input="validationStatus">
+    <v-form v-model="isFormValid" @input="validationStatus" class="border-dashed pa-4">
       <v-row>
         <v-col cols="12" sm="4">
           <v-text-field v-model="user.full_name" label="Name" required></v-text-field>
@@ -46,9 +37,10 @@
       </v-row>
     </v-form>
     <v-row class="d-flex my-2 justify-space-between">
-      <v-btn :disabled="!isFormValid" @click="cancel" color="lightdark">{{ $t('Return') }}</v-btn>
-      <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="indigo-darken-3">{{ $t('Delete') }}</v-btn>
-      <v-btn :disabled="!isFormValid" @click="updateUser" color="indigo-darken-3">{{ $t('Save') }}</v-btn>
+      <v-btn :disabled="!isFormValid" @click="cancel" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return') }}</v-btn>
+      <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="red"><v-icon class="mr-2">mdi-trash-can</v-icon>{{ $t('Delete')
+        }}</v-btn>
+      <v-btn :disabled="!isFormValid" @click="updateUser" color="indigo-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{ $t('Save') }}</v-btn>
     </v-row>
   </v-container>
 
@@ -93,9 +85,40 @@ const user = ref({
 
 const form = ref(null)
 
-onMounted(() => {
-  fetchUserData(),
-    fetchRolesFromApi()
+onMounted(async () => {
+  loaderStore.setLoading(true);
+  if (useUsersStore().groups.length === 0) {
+    useUsersStore().fetchRoles()
+      .then((response) => {
+        const groups = useUsersStore().groups;
+        groups.forEach(group => {
+          roles.value.push(group.name)
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    const groups = useUsersStore().groups;
+    groups.forEach(group => {
+      roles.value.push(group.name)
+    });
+  }
+  useUsersStore().fetchUserData(3)
+  const data  = await useUsersStore().fetchUserData(userId)
+
+  user.value.email = data.email
+  user.value.full_name = data.full_name
+  user.value.health_number = data.health_number
+  user.value.mobile_phone = data.mobile_phone
+  user.value.taxpayer_number = data.taxpayer_number
+  user.value.type_user = data.type_user
+  user.value.role = data.groups[0]
+  user.value.is_active = data.is_active
+  user.value.is_staff = data.is_staff
+
+  loaderStore.setLoading(false);
+ 
 })
 
 const isFormValid = ref(false)
@@ -122,6 +145,7 @@ const updateUser = async () => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify(user.value)
     })
@@ -138,47 +162,13 @@ const updateUser = async () => {
   loaderStore.setLoading(false);
 }
 
-const fetchUserData = async () => {
+const fetchUserData = () => {
   loaderStore.setLoading(true);
-  try {
-    const response = await fetch(window.URL + '/api/users/' + userId + '/');
-    if (!response.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    const userData = await response.json();
-    user.value.email = userData.email;
-    user.value.health_number = userData.health_number ? userData.health_number : 0;
-    user.value.mobile_phone = userData.mobile_phone;
-    user.value.taxpayer_number = userData.taxpayer_number? userData.taxpayer_number : 0;
-    user.value.type_user = userData.type_user;
-    user.value.full_name = userData.full_name;
-    user.value.is_active = userData.is_active;
-    user.value.is_staff = userData.is_staff;
-    user.value.role = userData.groups[0];
-
-  } catch (error) {
-    console.error(error);
-    toast.error('Error fetching user data');
-  }
+  user.value = useUsersStore().fetchUserData(userId)
   loaderStore.setLoading(false);
 };
 
-const fetchRolesFromApi = async () => {
-  try {
-    loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/get_groups/');
-    if (!response.ok) {
-      throw new Error('Failed to fetch data');
-    }
-    const data = await response.json();
-    for (let i = 0; i < data.length; i++) {
-      roles.value.push(data[i].name)
-    }
-  } catch (error) {
-    console.error(error);
-  }
-  loaderStore.setLoading(false);
-};
+
 
 const deleteUser = async () => {
   try {
