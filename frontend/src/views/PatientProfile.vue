@@ -323,8 +323,24 @@ const patient = computed(() => {
 
 onMounted(() => {
     useNotificationsStore().fetchNotifications(patientSns);
+    const wsArray = [];
     try {
-        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
+        /*
+        patient.value.dispositivos.forEach(device => {
+            device.sinaisVitais.forEach((sinal, index) => {
+                wsArray.push(new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/sns-' + patientSns + '/device-' + device.numeroSerie + '-sinal-' + index + '/'));
+                wsArray[wsArray.length - 1].onopen = () => {
+                    console.log('Connected to the websocket server')
+                }
+                wsArray[wsArray.length - 1].onmessage = (event) => {
+                    fetchPatientData();
+                    //fetchNotifications();
+                }
+            });
+        });
+        */
+        /*const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
+        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/sns-' + patientSns + '/device- -sinal-/');
         ws.onopen = () => {
             console.log('Connected to the websocket server')
         }
@@ -332,6 +348,7 @@ onMounted(() => {
             // fetchPatientData();
             // fetchNotifications();
         }
+            */
     }
     catch (error) {
         console.error('Error:', error);

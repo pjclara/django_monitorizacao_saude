@@ -1,14 +1,10 @@
 <template>
   <v-container>
-    <!-- <v-row class="d-flex my-2 justify-center" v-if="patient.sns">
-      <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">Edit Patient {{ patient.nome }} ( {{ patient.sns }} )</div>
-    </v-row> -->
     <PatientForm :patient="patient" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
-      <v-btn @click="voltar()" color="blue-darken-3">{{ $t("Return") }}</v-btn>
+      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t("Return") }}</v-btn>
 
-      <v-btn @click="atualizarPaciente" :disabled="!isValid" color="green-darken-3">Save</v-btn>
-
+      <v-btn @click="atualizarPaciente" :disabled="!isValid" color="green-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{ $t("Save") }}</v-btn>
     </v-row>
   </v-container>
 
@@ -59,7 +55,10 @@ onMounted(() => {
 });
 
 const atualizarPaciente = () => {
+  loaderStore.setLoading(true);
+  console.log(patient.value);
   usePatientsStore().atualizarPaciente(patient.value);
+  loaderStore.setLoading(false);
 }
 
 const voltar = () => {

@@ -12,8 +12,8 @@
     </v-row>
     <PatientForm :patient="patient" ref="form" @validationChanged="updateButtonState" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
-      <v-btn @click="voltar()" color="blue-darken-3">Return</v-btn>
-      <v-btn :disabled="!isFormValid || !isValid" @click="criarPaciente" color="indigo-darken-3">Save</v-btn>
+      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{$t('Return')}}</v-btn>
+      <v-btn :disabled="!isFormValid || !isValid" @click="criarPaciente" color="indigo-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{$t('Save')}}</v-btn>
     </v-row>
   </v-container>
 </template>
