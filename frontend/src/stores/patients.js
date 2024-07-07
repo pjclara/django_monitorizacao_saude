@@ -2,8 +2,11 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useVitalSignsStore } from './vitalSigns'
 import { toast } from 'vue3-toastify'
-import { useI18n } from 'vue-i18n'
 import { useUsersStore } from './users'
+import router from '@/router'
+import { useI18n } from 'vue-i18n';
+
+
 
 export const usePatientsStore = defineStore('patients', () => {
   const patients = ref([])
@@ -15,6 +18,7 @@ export const usePatientsStore = defineStore('patients', () => {
   const token = useUsersStore().token
 
   const { t } = useI18n()
+
 
   const fetchPatients = async (user_id) => {
     const response = await fetch(
@@ -67,13 +71,14 @@ export const usePatientsStore = defineStore('patients', () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token          
+          Authorization: 'Bearer ' + token
         },
         body: JSON.stringify(patient)
       }
     )
     if (!response.ok) {
-      console.log('Error updating patient')
+      const data = await response.json()
+      console.log('Error updating patient', data)
       return
     }
     const data = await response.json()
@@ -83,9 +88,55 @@ export const usePatientsStore = defineStore('patients', () => {
     toast.success(t('Patient updated successfully'))
   }
 
+  const criarPaciente = async (patient) => {
+    const response = await fetch(window.URL + '/api/documentos/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify(patient)
+    })
+    if (!response.ok) {
+      console.log('Error creating patient')
+      return
+    }
+    // get the new patient created
+    const data = await buscarPaciente(patient.sns)
+    patients.value.push(data)
+    toast.success('Patient created successfully')
+    router.push({ name: 'PatientsListing' });
+  }
+
   const getPaciente = (sns) => {
     patient.value = patients.value.find((p) => p.sns == sns)
     return patient.value
+  }
+
+  const buscarPaciente = async (sns) => {
+    try {
+      const response = await fetch(window.URL + '/api/documentos/buscar_por_sns/' + sns + '/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      })
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.log('Error loading patient')
+      return
+    }
+  }
+
+  const reset = () => {
+    patient.value = {}
+    patients.value = []
+    devices.value = []
+    devicesActive.value = []
+    vitalSigns.value = []
+    vitalSignActive.value = []
   }
 
   return {
@@ -98,6 +149,9 @@ export const usePatientsStore = defineStore('patients', () => {
     vitalSignActive,
     getAllAtiveDevicesAndVitalSigns,
     getPaciente,
-    atualizarPaciente
+    atualizarPaciente,
+    buscarPaciente,
+    criarPaciente,
+    reset
   }
 })

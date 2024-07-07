@@ -2,97 +2,119 @@
     <v-container>
         <!-- DESKTOP -->
         <v-col v-if="!smAndDown">
-            <v-text-field v-model="search" :label="$t('Search for Patients')" class="mb-4" outlined></v-text-field>
-            <v-data-table :headers="headers" :items="patientsList" v-model:expanded="expanded" :search="search"
-                :mobile="smAndDown" item-value="sns" class="custom_table_class">
-                <template v-slot:headers>
-                    <tr>
-                        <th v-for="header in headers" :key="header.title" class="text-center">{{ $t(header.title) }}</th>
-                    </tr>
-                </template>
-                <template v-slot:top>
-                    <v-toolbar flat style="background-color: #425C5A; color: white;">
-                        <v-col cols="3">
-                            <v-toolbar-title>{{ $t('PatientsListing') }}</v-toolbar-title>
-                        </v-col>
-                        <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-col cols="5" class="d-flex justify-center pt-8">
-                            <v-checkbox v-model="showMonitoredPatients"
-                                :label="$t('Show Patients being monitored')"></v-checkbox>
-                        </v-col>
-                        <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-col cols="3" class="d-flex justify-center">
-                            <v-btn color="#FFFF00" elevated to="/create-patient">
-                                {{ $t('CreatePatient') }}
-                            </v-btn>
-                        </v-col>
-                    </v-toolbar>
-                </template>
-                <template v-slot:item.dispositivos="{ item }">
-                    <v-row v-for="(dispositivo, indexSinal) in item.dispositivos" :key="indexSinal" class="my-1">
-                        <v-col cols="4">
-                            <v-chip color="success" v-if="dispositivo.ativo">{{ dispositivo.modelo }}:
-                                On</v-chip><v-chip color="primary" v-else>{{ dispositivo.modelo }}: Off</v-chip>
-                        </v-col>
-                        <v-col>
-                            <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index">
-                                <v-col>
-                                    <v-btn @click="startGenerateData(item, indexSinal, index)"
-                                        v-if="!getStartValue(item.sns, indexSinal, index)" color="primary"
-                                        width="150px">
-                                        <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span v-else>
-                                            <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span class="ml-2">{{ $t("Activate") }}</span>
-                                    </v-btn>
-                                    <v-btn @click="stopGeneratingData(item, indexSinal, index)"
-                                        v-if="getStartValue(item.sns, indexSinal, index)" color="secondary"
-                                        width="150px">
-                                        <span v-if="sinalVital.tipo == 'Temperatura'">
-                                            <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                            <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span v-else>
-                                            <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
-                                                height="20px">
-                                        </span>
-                                        <span class="ml-2">{{ $t("Deactivate") }}</span>
-                                    </v-btn>
-                                </v-col>
-                                <v-col>
-                                    <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
-                                        <span>
-                                            <span v-if="hasAlertSignal(sinalVital)" class="cursor-pointer"
-                                                @click="redirectNotifications(item, hasAlertSignal(sinalVital), dispositivo)">{{$t('Alert')}}</span>
-                                            <span v-else>{{$t('No Alert')}}</span>
-                                        </span>
-                                    </v-chip>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                    </v-row>
-                </template>
-                <template v-slot:item.dataNascimento="{ item }">
-                    {{ formatDate(item.dataNascimento) }}
-                </template>
-                <template v-slot:item.actions="{ item }">
-                    <v-icon :disabled="disabled" @click="viewItem(item)" class="mr-10">mdi-eye</v-icon>
-                    <v-icon :disabled="disabled" @click="editItem(item)">mdi-pencil</v-icon>
-                </template>
-            </v-data-table>
+            <v-row>
+                <v-col class="d-flex justify-start">
+                    <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
+                        $t('dashboard') }}</v-btn>
+                </v-col>
+                <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('PatientsListing')
+                    }}
+                </v-col>
+                <v-col class="d-flex justify-end">
+                    <v-btn color="indigo-darken-3" elevated to="/create-patient">
+                        <v-icon color="white" class="mr-2">mdi-plus</v-icon>{{ $t('AddPatient') }}
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-data-table :headers="headers" :items="patientsList" v-model:expanded="expanded" :search="search"
+                    :mobile="smAndDown" item-value="sns" class="custom_table_class">
+                    <template v-slot:headers>
+                        <tr>
+                            <th v-for="header in headers" :key="header.title" class="text-center">{{ $t(header.title) }}
+                            </th>
+                        </tr>
+                    </template>
+                    <template v-slot:top>
+                        <v-toolbar flat style="background-color: #425C5A; color: white;">
+                            <v-col cols="3">
+                                <v-toolbar-title>{{ $t('PatientsListing') }}</v-toolbar-title>
+                            </v-col>
+                            <v-divider class="mx-4" inset vertical></v-divider>
+                            <v-col cols="5" class="d-flex justify-center pt-8">
+                                <v-checkbox v-model="showMonitoredPatients"
+                                    :label="$t('Show Patients being monitored')"></v-checkbox>
+                            </v-col>
+                            <v-divider class="mx-4" inset vertical></v-divider>
+                            <v-col cols="3" class="d-flex justify-center align-center">
+                                <div class="search-container">
+                                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" height="24"
+                                        viewBox="0 96 960 960" width="24" fill="#888">
+                                        <path
+                                            d="M796 936 536 676q-28 24-62 36.5T400 725q-95 0-161.5-66.5T172 496q0-95 66.5-161.5T400 268q95 0 161.5 66.5T628 496q0 36-12.5 70T580 628l260 260-44 48Zm-396-292q66 0 112-46t46-112q0-66-46-112t-112-46q-66 0-112 46t-46 112q0 66 46 112t112 46Z" />
+                                    </svg>
+                                    <input type="search" class="search-input" :placeholder="$t('Search for Patients')" v-model="search">
+                                </div>
+                            </v-col>
+                        </v-toolbar>
+                    </template>
+                    <template v-slot:item.dispositivos="{ item }">
+                        <v-row v-for="(dispositivo, indexSinal) in item.dispositivos" :key="indexSinal" class="my-1">
+                            <v-col cols="4">
+                                <v-chip color="success" v-if="dispositivo.ativo">{{ dispositivo.modelo }}:
+                                    On</v-chip><v-chip color="primary" v-else>{{ dispositivo.modelo }}: Off</v-chip>
+                            </v-col>
+                            <v-col>
+                                <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index">
+                                    <v-col>
+                                        <v-btn @click="startGenerateData(item, indexSinal, index)"
+                                            v-if="!getStartValue(item.sns, indexSinal, index)" color="primary"
+                                            width="150px">
+                                            <span v-if="sinalVital.tipo == 'Temperatura'">
+                                                <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
+                                                <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span v-else>
+                                                <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span class="ml-2">{{ $t("Activate") }}</span>
+                                        </v-btn>
+                                        <v-btn @click="stopGeneratingData(item, indexSinal, index)"
+                                            v-if="getStartValue(item.sns, indexSinal, index)" color="secondary"
+                                            width="150px">
+                                            <span v-if="sinalVital.tipo == 'Temperatura'">
+                                                <img class="rounded p-2" src="/temperatura.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
+                                                <img class="rounded p-2" src="/oxigenio.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span v-else>
+                                                <img class="rounded p-2" src="/heart_beat.png" alt="" width="20px"
+                                                    height="20px">
+                                            </span>
+                                            <span class="ml-2">{{ $t("Deactivate") }}</span>
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col>
+                                        <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
+                                            <span>
+                                                <span v-if="hasAlertSignal(sinalVital)" class="cursor-pointer"
+                                                    @click="redirectNotifications(item, hasAlertSignal(sinalVital), dispositivo)">{{
+                                                        $t('Alert') }}</span>
+                                                <span v-else>{{ $t('No Alert') }}</span>
+                                            </span>
+                                        </v-chip>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </template>
+                    <template v-slot:item.dataNascimento="{ item }">
+                        {{ formatDate(item.dataNascimento) }}
+                    </template>
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon :disabled="disabled" @click="viewItem(item)" class="mr-10">mdi-eye</v-icon>
+                        <v-icon :disabled="disabled" @click="editItem(item)">mdi-pencil</v-icon>
+                    </template>
+                </v-data-table>
+            </v-row>
         </v-col>
         <!-- MOBILE -->
         <v-col v-else>
@@ -228,6 +250,9 @@ const stopGeneratingData = async (patient, indexSinal, index) => {
     useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
 }
 
+const voltarPainel = () => {
+    router.push({ name: 'HomeUser' });
+}
 
 
 const formatDate = (date) => {
@@ -271,5 +296,32 @@ const redirectNotifications = (item, hasAlert, dispositivo) => {
 
 .v-data-table-footer {
     background-color: white;
+}
+</style>
+<style scoped>
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    background-color: aliceblue;
+}
+
+.search-input:focus {
+    border-color: #007BFF;
 }
 </style>

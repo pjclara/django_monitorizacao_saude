@@ -1,19 +1,15 @@
 <template>
   <v-container>
-    <div v-if="showSuccess" class="success-message">
-      {{ $t('SuccessYourActionWasCompleted') }}
-    </div>
-    <div v-if="showErrors" class="error-message">
-      {{ $t('ErrorYourActionWasNotCompleted') }}
-
-    </div>
     <v-row class="d-flex my-2 justify-center" no-gutters>
       <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('CreatePatient') }}</div>
     </v-row>
-    <PatientForm :patient="patient" ref="form" @validationChanged="updateButtonState" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
+    <PatientForm :patient="patient" ref="form" @validationChanged="updateButtonState"
+      @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
-      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{$t('Return')}}</v-btn>
-      <v-btn :disabled="!isFormValid || !isValid" @click="criarPaciente" color="indigo-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{$t('Save')}}</v-btn>
+      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return')
+        }}</v-btn>
+      <v-btn :disabled="!isFormValid || !isValid" @click="criarPaciente" color="indigo-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{ $t('Save')
+        }}</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -25,11 +21,12 @@ import { ref, computed, watch } from 'vue'
 import { useLoaderStore } from '@/stores/loader'
 import { toast } from 'vue3-toastify';
 import { format } from 'date-fns';
+import { usePatientsStore } from '@/stores/patients';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const loaderStore = useLoaderStore();
-
-const showSuccess = ref(false)
-const showErrors = ref(false)
 
 const patient = ref({
   sns: null,
@@ -47,7 +44,7 @@ const patient = ref({
 const isValid = ref(false);
 
 const areAllFieldsNonEmpty = (data) => {
-  isValid.value = data; 
+  isValid.value = data;
 }
 
 const patientId = computed(() => {
@@ -79,14 +76,22 @@ const validateSns = (sns) => {
 const findPatient = async (sns) => {
   try {
     loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/documentos/buscar_por_sns/' + sns + '/');
+    const response = await fetch(window.URL + '/api/documentos/buscar_por_sns/' + sns + '/',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }
+    );
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
     if (data.sns) {
-      router.push({ name: 'PatientEdit', params: { patientSns: sns } })
       patient.value = formatData(data)
+      router.push({ name: 'PatientEdit', params: { patientSns:  patient.value.sns } });
     }
   } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -103,34 +108,25 @@ const updateButtonState = (isValid) => {
 }
 
 const criarPaciente = async () => {
-  try {
-    loaderStore.setLoading(true);
-    const response = await fetch(window.URL + '/api/documentos/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(patient.value)
-    });
+  // chek if patient has at least one device e at least one vital sign
+  if (patient.value.dispositivos.length === 0) {
+    toast.error(t('Patient must have at least one device'))
+    return
+  }
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    // response 200 OK
-    if (response.status === 201) {
-      toast.success('Patient created successfully')
-      router.push({ name: 'PatientsListing' })
-    } else {
-      toast.error('Error creating patient')
-    }
-  } catch (error) {
-    toast.error('Error creating patient')
+  loaderStore.setLoading(true);
+  // check if patient already exists
+  const patientExists = await usePatientsStore().buscarPaciente(patient.value.sns);
+  console.log(patientExists)
+  if (patientExists.length > 0) {
+    usePatientsStore().atualizarPaciente(patient.value);
+  } else {
+    usePatientsStore().criarPaciente(patient.value);
   }
   loaderStore.setLoading(false);
 }
 
-const formattedDate = (date) => format(date, 'dd-MM-yyyy')
+const formattedDate = (date) => format(date, 'yyyy-MM-dd')
 
 const formatData = (data) => {
   const devices = [];
@@ -144,6 +140,7 @@ const formatData = (data) => {
             unidade: vital.unidade,
             maximo: vital.maximo,
             minimo: vital.minimo,
+            readingFrequency: vital.readingFrequency,
             valores: []
           })
         }
@@ -169,12 +166,12 @@ const formatData = (data) => {
     genero: data.genero,
     peso: data.peso,
     altura: data.altura,
+    email: data.email,
     telefone: data.telefone,
     dispositivos: [
       ...devices
     ]
   }
 };
-
 
 </script>

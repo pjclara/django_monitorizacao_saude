@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
+import { usePatientsStore } from './patients'
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
@@ -56,6 +57,25 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
+    const data = await response.json()
+    const patientStore = usePatientsStore().patients.find((item) => item.sns == patient.sns)
+    const device = patientStore.dispositivos[indexSinal]
+    const vitalSign = device.sinaisVitais[index]
+    vitalSign.valores.push({
+      valor: data.data.valor,
+      data: data.data.data,
+      alerta: data.data.alerta,
+      dataLida: data.data.dataLida,
+      lida: data.data.lida
+    })
+   
+  }
+
+  const reset = () => {
+    activation.value = []
+    disabled.value = false
+    start.value = []
+    loading.value = []
   }
 
   let intervalId = []
@@ -129,6 +149,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     start,
     loading,
     updateStart,
-    createStart
+    createStart,
+    reset
   }
 })

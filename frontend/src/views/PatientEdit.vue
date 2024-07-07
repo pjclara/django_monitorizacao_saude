@@ -56,7 +56,6 @@ onMounted(() => {
 
 const atualizarPaciente = () => {
   loaderStore.setLoading(true);
-  console.log(patient.value);
   usePatientsStore().atualizarPaciente(patient.value);
   loaderStore.setLoading(false);
 }

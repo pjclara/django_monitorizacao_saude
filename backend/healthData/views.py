@@ -459,16 +459,15 @@ def ativar_sinal_vital(request, sns):
             alert = True
         else:
             alert = False
-        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'].append(
-            {
-                "valor": request.data.get('valor'),
-                "alerta": alert,
-                "data": datetime.now(),
-                "dataLida": None,
-                "lida": False
-                
-            }
-        )
+            
+        dataToApend = {
+            "valor": request.data.get('valor'),
+            "alerta": alert,
+            "data": datetime.now(),
+            "dataLida": None,
+            "lida": False
+        }
+        documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'].append(dataToApend)
         db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
         send_update(sns, "sinal_vital_ativado", f"room{sns}")
        
@@ -506,8 +505,8 @@ def ativar_sinal_vital(request, sns):
                         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
                 return Response(notificacaoSerializado.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response({"message": "Sinal vital ativado com sucesso."}, status=status.HTTP_200_OK)
+       
+        return JsonResponse({"message": "Sinal vital ativado com sucesso.","data": dataToApend}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -694,7 +693,8 @@ def atualizar_documento_por_sns(request, sns):
             db.minha_colecao.update_one({"sns": sns}, {"$set": data})
             
             documento_serializado = DocumentoSerializer(data).data
-            send_update(sns, "documento_serializado", f"room{sns}")
+            teste = "room" + sns
+            send_update(sns, "documento_serializado", teste, documento_serializado)
             return Response({
                 "message": "Documento atualizado com sucesso.", 
                 "data": documento_serializado}, 
@@ -727,7 +727,7 @@ def send_update(sns, message, room_name):
         room_name,
         {
             'type': 'send_update',
-            'message': message,
+            'message': message            
         }
     ) 
 

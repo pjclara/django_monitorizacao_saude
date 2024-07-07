@@ -1,5 +1,11 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { toast } from 'vue3-toastify';
+import { useI18n } from 'vue-i18n';
+import { usePatientsStore } from './patients';
+import { useVitalSignsStore } from './vitalSigns';
+import { useNotificationsStore } from './notifications';
+
 
 export const useUsersStore = defineStore('users', () => {
   const user = ref(null)
@@ -10,11 +16,16 @@ export const useUsersStore = defineStore('users', () => {
   const isAdmin = ref(false)
   const isPatient = ref(false)
 
+  const { t } = useI18n()
+
   const groups = ref([])
 
   const loopAtivo = ref(false)
 
   const logOut = () => {
+    usePatientsStore().reset()
+    useVitalSignsStore().reset()
+    useNotificationsStore().reset()
     user.value = null
     token.value = null
     refreshToken.value = null
@@ -22,6 +33,7 @@ export const useUsersStore = defineStore('users', () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
+
     
   }
 
@@ -34,6 +46,7 @@ export const useUsersStore = defineStore('users', () => {
       body: JSON.stringify({ email, password })
     })
     if (response.status !== 200) {
+      toast.error(t('Username or password is invalid!'))
       return
     }
     const data = await response.json()

@@ -4,13 +4,13 @@
       <v-tabs v-model="tab">
         <v-tab value="patient" class="tab-border mr-1">
           <span class="text-blue">
-            <v-icon>mdi-account</v-icon>{{$t('Patient Data')}}
+            <v-icon class="mr-2">mdi-account</v-icon>{{$t('Patient Data')}}
           </span>
         </v-tab>
         <template v-for="(dispositivo, i) in patient.dispositivos" :key="i">
           <v-tab :value="i" class="tab-border mr-1">
             <span class="text-blue">
-              <v-icon>mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? $t('Device') +" " +
+              <v-icon class="mr-2">mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? $t('Device') +" " +
                 patient.dispositivos[i].numeroSerie : $t('New Device') }}
             </span>
           </v-tab>
@@ -20,6 +20,7 @@
         <v-row class="justify-end mb-2"
           v-if="patient.sns && patient.nome && patient.dataNascimento && patient.peso && patient.altura && patient.genero && patient.telefone">
           <v-btn @click="addDevice(patient.dispositivos)" color="indigo-darken-3" :disabled="!isSnsFilled">
+            <v-icon class="mr-2" color="white">mdi-plus</v-icon>
             {{ $t('Add device') }}
           </v-btn>
         </v-row>
@@ -93,6 +94,7 @@
                 </v-col>
                 <v-btn @click="addSinalVital(patient.dispositivos[indexDispositivo].sinaisVitais)"
                   v-if="patient.dispositivos[indexDispositivo].numeroSerie" color="indigo-darken-3">
+                  <v-icon class="mr-2" color="white">mdi-plus</v-icon>
                   {{$t('Add vital sign')}}
                 </v-btn>
               </v-row>
@@ -222,7 +224,6 @@ const deleteSinal = (indexDispositivo, index) => {
 }
 
 const unidade = (tipo) => {
-  console.log(tipo)
   if (tipo == 'Frequência Cardíaca') {
     return 'bpm'
   } else if (tipo == 'Blood pressure') {

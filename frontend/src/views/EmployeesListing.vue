@@ -1,18 +1,14 @@
 <template>
     <v-container>
         <v-col class="d-flex flex-column">
-            <v-text-field
-                v-model="search"
-                :label="$t('Search')"
-                class="mb-4"
-                outlined
-            ></v-text-field>
-            <v-data-table :headers="headers" :items="users" :items-per-page="5" :search="search" class="elevation-1" v-if="!smAndDown">
-                <template v-slot:headers >
+            <v-text-field v-model="search" :label="$t('Search')" class="mb-4" outlined></v-text-field>
+            <v-data-table :headers="headers" :items="users" :items-per-page="5" :search="search" class="elevation-1"
+                v-if="!smAndDown">
+                <template v-slot:headers>
                     <tr>
-                        <th v-for="header in headers" :key="header.title" class="text-left">{{ $t(header.title) }}</th>
+                        <th v-for="header in headers" :key="header.title" class="text-center">{{ $t(header.title) }}
+                        </th>
                     </tr>
-
                 </template>
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -23,6 +19,14 @@
                         </v-btn>
                     </v-toolbar>
                 </template>
+                <template v-slot:item.taxpayer_number="{ item }">
+                    <span v-if="!item.taxpayer_number || item.taxpayer_number == '0'">-----</span>
+                    <span v-else>{{ item.taxpayer_number }}</span>
+                </template>
+                <template v-slot:item.health_number="{ item }">
+                    <span v-if="!item.health_number || item.health_number == '0'">-----</span>
+                    <span v-else>{{ item.health_number }}</span>
+                </template>
                 <template v-slot:item.is_active="{ item }">
                     <v-icon v-if="item.is_active" class="green">mdi-check-circle</v-icon>
                     <v-icon v-else class="red">mdi-close-circle</v-icon>
@@ -31,7 +35,9 @@
                     <v-icon @click="editItem(item)">mdi-pencil</v-icon>
                 </template>
             </v-data-table>
-            <MobileTable v-else :data="users" :keys="['id', 'username', 'email', 'is_active', 'actions']" :isUser="true"></MobileTable>
+            <MobileTable v-else :data="users" :keys="['id', 'username', 'email', 'is_active', 'actions']"
+                :isUser="true">
+            </MobileTable>
         </v-col>
     </v-container>
 </template>
@@ -50,8 +56,8 @@ const loaderStore = useLoaderStore();
 const headers = ref([
     { title: 'Name', key: 'full_name' },
     { title: 'Email', key: 'email' },
-    { title: 'Taxpayer number', key: 'taxpayer_number'},
-    { title: 'Health number', key: 'health_number'},
+    { title: 'Taxpayer number', key: 'taxpayer_number' },
+    { title: 'Health number', key: 'health_number' },
     { title: 'Mobile phone', key: 'mobile_phone' },
     { title: 'Type user', key: 'type_user' },
     { title: 'Active', key: 'is_active' },
@@ -64,7 +70,7 @@ onMounted(async () => {
     loaderStore.setLoading(true);
     if (useUsersStore().users.length == 0) {
         users.value = await useUsersStore().fetchUsers();
-    }else{
+    } else {
         users.value = useUsersStore().users;
     }
     loaderStore.setLoading(false);

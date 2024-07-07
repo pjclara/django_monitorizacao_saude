@@ -17,16 +17,20 @@
       </v-row>
       <v-row>
         <v-col cols="12" sm="3" v-if="user.type_user == 'paciente'">
-          <v-text-field v-model="user.health_number" label="Health number" :rules="health_number_rules" required></v-text-field>
+          <v-text-field v-model="user.health_number" label="Health number" :rules="health_number_rules"
+            required></v-text-field>
         </v-col>
         <v-col cols="12" sm="3" v-if="user.type_user != 'paciente'">
-          <v-text-field v-model="user.taxpayer_number" label="Taxpayer number"  :rules="taxpayer_number" required></v-text-field>
+          <v-text-field v-model="user.taxpayer_number" label="Taxpayer number" :rules="taxpayer_number"
+            required></v-text-field>
         </v-col>
         <v-col cols="12" sm="3">
-          <v-text-field v-model="user.mobile_phone" label="Mobile phone" :rules="mobile_phone_rules" required></v-text-field>
+          <v-text-field v-model="user.mobile_phone" label="Mobile phone" :rules="mobile_phone_rules"
+            required></v-text-field>
         </v-col>
         <v-col cols="12" sm="3" v-if="isAdmin">
-          <v-select v-model="user.type_user" :items="typeUser" label="Type user" :rules="type_user_rules" required></v-select>
+          <v-select v-model="user.type_user" :items="typeUser" label="Type user" :rules="type_user_rules"
+            required></v-select>
         </v-col>
 
         <v-col cols="12" sm="3" v-if="isAdmin">
@@ -37,15 +41,17 @@
         </v-col>
       </v-row>
     </v-form>
-    <v-row class="d-flex my-2 justify-center">
-      <v-btn :disabled="!isFormValid" @click="criarUser" color="indigo-darken-3">Save</v-btn>
+    <v-row class="d-flex my-2 justify-space-between">
+      <v-btn @click="cancel" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return')
+        }}</v-btn>
+      <v-btn :disabled="!isFormValid" @click="criarUser" color="indigo-darken-3"><v-icon
+          class="mr-2">mdi-content-save</v-icon>{{ $t('Save') }}</v-btn>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref, computed, onMounted } from 'vue'
 import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users'
 import { toast } from 'vue3-toastify';
@@ -87,22 +93,17 @@ onMounted(() => {
 })
 
 const getRoles = async () => {
-    loaderStore.setLoading(true);
-    try {
-        const response = await fetch(window.URL + '/api/get_groups/');
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        const data = await response.json()
-        data.forEach(role => {
-          //push role to the start
-          roles.value.push(role.name)
-        })
-        roles.value.push('add new role')
-    } catch (error) {
-        console.error(error)
-    }
-    loaderStore.setLoading(false);
+  loaderStore.setLoading(true);
+  useUsersStore().fetchRoles()
+    .then((response) => {
+      response.forEach(role => {
+        roles.value.push(role.name)
+      })
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  loaderStore.setLoading(false);
 }
 
 const criarUser = async () => {
@@ -116,11 +117,13 @@ const criarUser = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify(user.value)
     })
     if (response.status !== 201) {
-      toast.error('Error creating user')
+      const error = await response.json()
+      toast.error(error.error)
       return
     }
     toast.success('User created successfully')
@@ -129,6 +132,11 @@ const criarUser = async () => {
     console.error(error)
     toast.error('Error creating user')
   }
+}
+
+const cancel = () => {
+  // go to the previous page
+  router.go(-1)
 }
 
 // validation rules

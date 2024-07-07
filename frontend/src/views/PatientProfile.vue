@@ -313,8 +313,31 @@ const patientSns = useRoute().params.patientSns;
 const patient = computed(() => {
     if (usePatientsStore().patients.length === 0)
         usePatientsStore().fetchPatients(useUsersStore().user.user_id);
-    //useNotificationsStore().fetchNotifications(patientSns);
+
+      
     const data = usePatientsStore().patients.find(patient => patient.sns == patientSns)
+      /*
+    const wsArray = [];
+    data?.dispositivos.forEach((device, deviceIdx) => {
+        device.sinaisVitais.forEach((sinal, sinalIdx) => {
+            const dataTo = "_sns_" + patientSns + "_device_" + device.numeroSerie + "_sinal_" + sinalIdx;
+                wsArray.push(new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/'));
+        })
+    })
+
+    wsArray.forEach(ws => {
+        ws.onopen = () => {
+            console.log('Connected to the websocket server')
+        }
+        ws.onmessage = (event) => {
+            console.log('Received data from the websocket server')
+            // fetchPatientData();
+            // fetchNotifications();
+        }
+    })
+        */
+    
+
 
     return data;
 });
@@ -322,8 +345,23 @@ const patient = computed(() => {
 
 
 onMounted(() => {
+    if (usePatientsStore().patients.length == 0)
+        usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+
+    const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
+    ws.onopen = () => {
+        console.log('Connected to the websocket server')
+    }
+    ws.onmessage = (event) => {
+        console.log('Received data from the websocket server', event.data)
+        // fetchPatientData();
+        // fetchNotifications();
+    }
+
+
     useNotificationsStore().fetchNotifications(patientSns);
     const wsArray = [];
+
     try {
         /*
         patient.value.dispositivos.forEach(device => {
@@ -338,17 +376,16 @@ onMounted(() => {
                 }
             });
         });
-        */
-        /*const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
-        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/sns-' + patientSns + '/device- -sinal-/');
+       
+        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
         ws.onopen = () => {
             console.log('Connected to the websocket server')
         }
         ws.onmessage = (event) => {
+            console.log('Received data from the websocket server', event.data)
             // fetchPatientData();
             // fetchNotifications();
-        }
-            */
+        } */
     }
     catch (error) {
         console.error('Error:', error);

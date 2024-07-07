@@ -56,3 +56,4 @@
     "created_at":{"$date":{"$numberLong":"1719691893445"}}, //data de criacao
     "updated_at":{"$date":{"$numberLong":"1719739587634"}} //data de atualizacao
 }
+
