@@ -3,14 +3,15 @@
         <!-- DESKTOP -->
         <v-col v-if="!smAndDown">
             <v-row>
-                <v-col class="d-flex justify-start">
+                <v-col class="d-flex justify-start" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
                         $t('dashboard') }}</v-btn>
                 </v-col>
-                <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('PatientsListing')
-                    }}
+                <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
+                    $t('PatientsListing')
+                }}
                 </v-col>
-                <v-col class="d-flex justify-end">
+                <v-col class="d-flex justify-end" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" elevated to="/create-patient">
                         <v-icon color="white" class="mr-2">mdi-plus</v-icon>{{ $t('AddPatient') }}
                     </v-btn>
@@ -43,7 +44,8 @@
                                         <path
                                             d="M796 936 536 676q-28 24-62 36.5T400 725q-95 0-161.5-66.5T172 496q0-95 66.5-161.5T400 268q95 0 161.5 66.5T628 496q0 36-12.5 70T580 628l260 260-44 48Zm-396-292q66 0 112-46t46-112q0-66-46-112t-112-46q-66 0-112 46t-46 112q0 66 46 112t112 46Z" />
                                     </svg>
-                                    <input type="search" class="search-input" :placeholder="$t('Search for Patients')" v-model="search">
+                                    <input type="search" class="search-input" :placeholder="$t('Search for Patients')"
+                                        v-model="search">
                                 </div>
                             </v-col>
                         </v-toolbar>
@@ -119,11 +121,19 @@
         <!-- MOBILE -->
         <v-col v-else>
             <v-row no-gutters justify="center" class="mb-2">
-                <div class="text-h4 text-center text-center">{{ $t('PatientsListing') }}</div>
-                <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
-                <v-btn class="my-3" color="#FFFF00" elevated to="/create-patient">
-                    {{ $t('CreatePatient') }}
-                </v-btn>
+                <v-col cols="12" class="d-flex justify-center align-center">
+                    <div class="text-h4 text-center text-center">{{ $t('PatientsListing') }}</div>
+                </v-col>
+                <v-col cols="12"  class="d-flex justify-center align-center mt-5">
+                    <v-btn color="indigo-darken-3" elevated to="/create-patient">
+                        <v-icon color="white" class="mr-2">mdi-plus</v-icon>{{ $t('AddPatient') }}
+                    </v-btn>
+                </v-col>
+                <v-col cols="12" class="d-flex justify-center align-center">
+                    <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
+                </v-col>
+
+
             </v-row>
             <v-card v-for="(patient, index) in patientsList" :key="index" class="d-flex my-2">
                 <v-col cols="12" class="align-center">

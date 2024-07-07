@@ -116,6 +116,7 @@ const en = {
     'Patient must have at least one device': 'Patient must have at least one device',
     'dashboard': 'Dashboard',
     'AddPatient': 'Add Patient',
+    'Data creation started': 'Data creation started',
     
 }
 

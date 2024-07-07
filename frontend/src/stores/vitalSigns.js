@@ -3,12 +3,14 @@ import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import { usePatientsStore } from './patients'
+import { useI18n } from 'vue-i18n';
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
   const disabled = ref(false)
   const start = ref([])
   const loading = ref([])
+  const { t } = useI18n()
 
   const desativarSinal = async (patient, indexSinal, index) => {
     const response = await fetch(
@@ -82,7 +84,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
 
   const startGenerateData = (patient, indexSinal, index) => {
     const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
-    toast.success('Data creation started')
+    toast.success(t('Data creation started'))
     if (getintervalId(patient.sns, indexSinal, index).valor === 0) {
       getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
