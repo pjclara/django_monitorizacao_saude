@@ -117,6 +117,7 @@ const en = {
     'dashboard': 'Dashboard',
     'AddPatient': 'Add Patient',
     'Data creation started': 'Data creation started',
+    'Search for users': 'Search for users',
     
 }
 

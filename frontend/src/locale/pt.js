@@ -119,6 +119,7 @@ const pt = {
   'dashboard': 'Painel de principal',
   'AddPatient': 'Adicionar Paciente',
   'Data creation started': 'Criação de dados iniciada',
+  'Search for users': 'Procurar por utilizadores',
 }
 
 export default pt

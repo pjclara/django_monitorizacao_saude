@@ -50,8 +50,10 @@ import { useRouter } from 'vue-router';
 const loaderStore = useLoaderStore();
 
 onMounted(() => {
+  loaderStore.setLoading(true);
   getUsers();
   getRoles();
+  loaderStore.setLoading(false);
 });
 const router = useRouter();
 const roles = ref([]);
