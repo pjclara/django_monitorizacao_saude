@@ -54,6 +54,7 @@
                     <v-tabs v-model="tab">
                         <v-tab value="devices" class="tab-border mr-1">
                             <span class="text-blue">
+                                <v-icon>mdi-devices</v-icon>
                                 {{ $t('Devices of the patient') }}
                             </span>
                         </v-tab>
@@ -299,7 +300,7 @@ const chartOptions = {
 };
 
 const getStartValue = () => {
-    return useVitalSignsStore().start.find(value => value.patient === patient.value.sns) ?? false;
+    return useVitalSignsStore().start?.find(value => value.patient === patient.value.sns) ?? false;
 };
 
 const router = useRouter();
@@ -354,6 +355,7 @@ onMounted(() => {
     }
     ws.onmessage = (event) => {
         console.log('Received data from the websocket server', event.data)
+        usePatientsStore().fetchPatients(useUsersStore().user.user_id);
         // fetchPatientData();
         // fetchNotifications();
     }

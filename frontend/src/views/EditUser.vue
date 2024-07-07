@@ -60,9 +60,6 @@ const isAdmin = computed(() => {
 
 const loaderStore = useLoaderStore();
 
-const showSuccess = ref(false)
-const showErrors = ref(false)
-
 const userId = useRoute().params.id
 
 const roles = ref([])
@@ -73,7 +70,6 @@ const user = ref({
   full_name: '',
   email: '',
   health_number: 0,
-  password: '',
   mobile_phone: '',
   taxpayer_number: 0,
   type_user: '',
@@ -82,7 +78,6 @@ const user = ref({
   is_staff: false
 })
 
-const form = ref(null)
 
 onMounted(async () => {
   loaderStore.setLoading(true);
@@ -115,7 +110,6 @@ onMounted(async () => {
   user.value.role = data.groups[0]
   user.value.is_active = data.is_active
   user.value.is_staff = data.is_staff
-
   loaderStore.setLoading(false);
 
 })
@@ -128,8 +122,6 @@ const cancel = () => {
   // go to the previous page
   router.go(-1)
 }
-
-const password = ref('')
 
 const updateUser = async () => {
 

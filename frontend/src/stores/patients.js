@@ -4,8 +4,6 @@ import { useVitalSignsStore } from './vitalSigns'
 import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import router from '@/router'
-import { useI18n } from 'vue-i18n';
-
 
 
 export const usePatientsStore = defineStore('patients', () => {
@@ -16,8 +14,6 @@ export const usePatientsStore = defineStore('patients', () => {
   const vitalSigns = ref([])
   const vitalSignActive = ref([])
   const token = useUsersStore().token
-
-  const { t } = useI18n()
 
 
   const fetchPatients = async (user_id) => {
@@ -85,7 +81,7 @@ export const usePatientsStore = defineStore('patients', () => {
     // update patient in patients
     const index = patients.value.findIndex((p) => p.sns === data.data.sns)
     patients.value[index] = data.data
-    toast.success(t('Patient updated successfully'))
+    toast.success('Patient updated successfully')
   }
 
   const criarPaciente = async (patient) => {

@@ -1,5 +1,5 @@
 from .models import CustomUser
-from .serializers import CustomUserSerializer, DocumentoSerializer, NotificationSerializer
+from .serializers import DocumentoSerializer, NotificationSerializer, CustomPostUserSerializer, CustomPutUserSerializer
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .mongodb import db
@@ -26,7 +26,7 @@ def get_all_users(request):
     if request.method == 'GET':
         users =  db.healthData_customuser.find()
         
-        serializer = CustomUserSerializer(users, many=True)
+        serializer = CustomPutUserSerializer(users, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
@@ -87,7 +87,7 @@ def get_all_users(request):
         message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is < {random_password} > .'
         send_email(user_data['email'], message)
 
-        serializer = CustomUserSerializer(data=user_data)
+        serializer = CustomPostUserSerializer(data=user_data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201, safe=False)
@@ -140,9 +140,6 @@ def user_detail(request, pk):
         if not 'email' in request.data:
             return JsonResponse({'error': 'Email is required'}, status=400, safe=False)
         
-        if not 'password' in request.data:
-            return JsonResponse({'error': 'Password is required'}, status=400, safe=False)
-        
         if not 'type_user' in request.data:
             return JsonResponse({'error': 'Type user is required'}, status=400, safe=False)
         
@@ -191,12 +188,12 @@ def user_detail(request, pk):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
         
            
-        if request.data.get('password') == "":
-            # get the user password
-            password = db.healthData_customuser.find_one({'id': pk})['password']
-            request.data['password'] = password
+        #if request.data.get('password') == "":
+        #    # get the user password
+        #    password = db.healthData_customuser.find_one({'id': pk})['password']
+        #    request.data['password'] = password
             
-        serializer = CustomUserSerializer(user, data=request.data)
+        serializer = CustomPutUserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, safe=False)
@@ -349,7 +346,7 @@ def criar_documento(request):
             "type_user": "paciente",
             "role": "paciente"
         }
-        user_serializer = CustomUserSerializer(data=user_data)
+        user_serializer = CustomPostUserSerializer(data=user_data)
         if user_serializer.is_valid():
             user_serializer.save()
         else:
@@ -421,7 +418,7 @@ def atualizar_dados_paciente_por_sns(request, sns):
                     "type_user": "paciente",
                     "role": "paciente"
                 }
-                user_serializer = CustomUserSerializer(data=user_data)
+                user_serializer = CustomPutUserSerializer(data=user_data)
                 if user_serializer.is_valid():
                     user_serializer.save()
                 else:
@@ -621,7 +618,7 @@ def recover_password(request, email):
         user_data['type_user'] = user['type_user']
         user_data['password'] = random_password
 
-        serializer = CustomUserSerializer(user, data=user_data)
+        serializer = CustomPostUserSerializer(data=user_data)
         if serializer.is_valid():
             serializer.save()
             message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'

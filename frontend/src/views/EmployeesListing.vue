@@ -1,6 +1,7 @@
 <template>
     <v-container>
         <v-col class="d-flex flex-column">
+            
             <v-text-field v-model="search" :label="$t('Search')" class="mb-4" outlined></v-text-field>
             <v-data-table :headers="headers" :items="users" :items-per-page="5" :search="search" class="elevation-1"
                 v-if="!smAndDown">
