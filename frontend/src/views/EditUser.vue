@@ -177,6 +177,7 @@ const deleteUser = async () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify({ email: user.value.email }),
     });
