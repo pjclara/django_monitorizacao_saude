@@ -45,7 +45,15 @@ const roles = ref([])
 const getRoles = async () => {
     loaderStore.setLoading(true);
     try {
-        const response = await fetch(window.URL + '/api/get_groups/');
+        const response = await fetch(window.URL + '/api/get_groups/',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                     Authorization: `Bearer ` + localStorage.getItem('token')
+                }
+            }
+        );
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }

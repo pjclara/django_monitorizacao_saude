@@ -160,7 +160,8 @@ const createPermission = async () => {
         const response = await fetch(window.URL + '/api/create_permission/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ` + localStorage.getItem('token')
             },
             body: JSON.stringify(permission.value)
         });
@@ -179,7 +180,8 @@ const updatePermission = async () => {
         const response = await fetch(window.URL + '/api/get_permission/' + permission.value.id + '/', {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ` + localStorage.getItem('token')
             },
             body: JSON.stringify(permission.value)
         });
@@ -195,7 +197,15 @@ const updatePermission = async () => {
 
 const getPermissions = async () => {
     try {
-        const response = await fetch(window.URL + '/api/get_permissions/');
+        const response = await fetch(window.URL + '/api/get_permissions/',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ` + localStorage.getItem('token')
+                }
+            }
+        );
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -208,7 +218,15 @@ const getPermissions = async () => {
 
 const getRole = async () => {
     try {
-        const response = await fetch(window.URL + '/api/get_group/' + route.params.id + '/');
+        const response = await fetch(window.URL + '/api/get_group/' + route.params.id + '/',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ` + localStorage.getItem('token')
+                }
+            }
+        );
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -224,7 +242,8 @@ const updateRole = async () => {
         const response = await fetch(window.URL + '/api/get_group/' + route.params.id + '/', {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ` + localStorage.getItem('token')
             },
             body: JSON.stringify(role.value)
         });

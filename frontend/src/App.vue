@@ -35,12 +35,19 @@ const router = useRouter();
 
 const user = JSON.parse(localStorage.getItem('user'))
 
+
+const location = window.location.protocol
+
+console.log(location)
+
 onMounted(() => {
   if (user) {
     try {
       const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/notify/room' + user.user_id + '/')
       ws.onopen = () => {
+
         console.log('Connected to the websocket server')
+
       }
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
