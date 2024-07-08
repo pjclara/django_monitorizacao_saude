@@ -136,7 +136,7 @@ const connectToWebSocket = (patient) => {
       console.log('Connected to the websocket server')
     }
     ws.onmessage = (event) => {
-      fetchDatabySns(patient.sns);
+      //fetchDatabySns(patient.sns);
     }
   } catch (error) {
     console.error(error);

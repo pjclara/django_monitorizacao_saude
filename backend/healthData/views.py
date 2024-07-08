@@ -720,6 +720,7 @@ def send_notification(sns,message, room_name):
 
 def send_update(sns, message, room_name):
     channel_layer = get_channel_layer()
+    print(f"send_update {sns} {message} {room_name}")
     async_to_sync(channel_layer.group_send)(
         room_name,
         {

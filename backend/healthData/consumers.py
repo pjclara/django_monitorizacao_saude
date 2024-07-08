@@ -71,7 +71,6 @@ class UpdateConsumer(AsyncWebsocketConsumer):
         
     async def send_update(self, event):
         await self.send(text_data=json.dumps({ 
-                    'message': event['message'],
-                    'doc':event['doc']
+                    'message': event['message']
                     }))
 

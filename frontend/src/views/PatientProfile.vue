@@ -351,7 +351,7 @@ onMounted(() => {
 
     const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
     ws.onopen = () => {
-        console.log('Connected to the websocket server')
+        console.log('Connected to the websocket server ---')
     }
     ws.onmessage = (event) => {
         console.log('Received data from the websocket server', event.data)
