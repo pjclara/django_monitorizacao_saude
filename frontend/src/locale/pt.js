@@ -122,6 +122,8 @@ const pt = {
   'Search for users': 'Procurar por utilizadores',
   'years': 'anos',
   'EditPatient': 'Editar Paciente',
+  'Error deleting user:': 'Erro ao eliminar utilizador:',
+  'User deleted successfully': 'Utilizador eliminado com sucesso',
 }
 
 export default pt
