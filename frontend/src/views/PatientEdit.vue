@@ -40,6 +40,7 @@ onMounted(() => {
     usePatientsStore().fetchPatients(user.user_id);
   }
   const patientData = usePatientsStore().getPaciente(patientSns);
+  console.log(patientData);
   if (patientData) {
     patient.value = {
       ...patientData,

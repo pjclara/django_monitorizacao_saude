@@ -593,7 +593,9 @@ const historyNotifications = computed(() => {
 });
 
 const read = (_id) => {
+    loaderStore.setLoading(true);
     useNotificationsStore().markAsRead(_id);
+    loaderStore.setLoading(false);
 };
 
 const deleteSinal = async (sinal_idx, dispositivo_idx) => {
