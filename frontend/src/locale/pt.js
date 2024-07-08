@@ -120,6 +120,8 @@ const pt = {
   'AddPatient': 'Adicionar Paciente',
   'Data creation started': 'Criação de dados iniciada',
   'Search for users': 'Procurar por utilizadores',
+  'years': 'anos',
+  'EditPatient': 'Editar Paciente',
 }
 
 export default pt

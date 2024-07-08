@@ -118,6 +118,8 @@ const en = {
     'AddPatient': 'Add Patient',
     'Data creation started': 'Data creation started',
     'Search for users': 'Search for users',
+    'years': 'years',
+    'EditPatient': 'Edit Patient',
     
 }
 

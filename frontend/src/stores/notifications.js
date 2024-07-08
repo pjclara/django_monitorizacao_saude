@@ -50,7 +50,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     notifications.value.forEach((notification) => {
       if (!notification.read) {
         notificationsNotRead.value.push(notification)
-        
+        //console.log(notification)
       }
     })
   }

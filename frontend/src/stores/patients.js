@@ -74,7 +74,7 @@ export const usePatientsStore = defineStore('patients', () => {
     )
     if (!response.ok) {
       const data = await response.json()
-      console.log('Error updating patient', data)
+      toast.error(data.error)
       return
     }
     const data = await response.json()
@@ -95,6 +95,8 @@ export const usePatientsStore = defineStore('patients', () => {
     })
     if (!response.ok) {
       console.log('Error creating patient')
+      const data = await response.json()
+      toast.error(data.error)
       return
     }
     // get the new patient created

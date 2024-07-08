@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <!-- DESKTOP -->
-        <v-col v-if="!smAndDown">
+        <div v-if="!smAndDown">
             <v-row>
                 <v-col class="d-flex justify-start" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
@@ -117,77 +117,105 @@
                     </template>
                 </v-data-table>
             </v-row>
-        </v-col>
+        </div>
         <!-- MOBILE -->
-        <v-col v-else>
+        <div v-else>
             <v-row no-gutters justify="center" class="mb-2">
                 <v-col cols="12" class="d-flex justify-center align-center">
-                    <div class="text-h4 text-center text-center">{{ $t('PatientsListing') }}</div>
+                    <div class="text-h5 text-center text-center">{{ $t('PatientsListing') }}</div>
                 </v-col>
-                <v-col cols="12"  class="d-flex justify-center align-center mt-5">
-                    <v-btn color="indigo-darken-3" elevated to="/create-patient">
+                <v-col cols="12" class="d-flex justify-center align-center mt-5">
+                    <v-btn size="x-small" color="indigo-darken-3" elevated to="/create-patient">
                         <v-icon color="white" class="mr-2">mdi-plus</v-icon>{{ $t('AddPatient') }}
                     </v-btn>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center align-center">
-                    <v-checkbox v-model="showMonitoredPatients" label="Show Patients being monitored"></v-checkbox>
+                    <v-checkbox v-model="showMonitoredPatients">
+                        <template v-slot:label>
+                            <span style="font-size: 10px">{{ $t('Show Patients being monitored') }}</span>
+                        </template>
+                    </v-checkbox>
                 </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12" v-for="(patient, index) in patientsList" :key="index">
+                    <v-card class="d-flex flex-column my-2 pa-10 mobile-card">
+                        <v-row class="d-flex justify-space-between align-center border mb-1">
+                            <span class="font-weight-bold">
+                                {{ $t('Name') }} :
+                            </span>
+                            <span>
+                                {{ patient.nome }}
+                            </span>
+                        </v-row>
+                        <v-row class="d-flex justify-space-between border mb-1 ">
+                            <span class="font-weight-bold">
+                                {{ $t('Health number') }}:
+                            </span>
+                            <span>
+                                {{ patient.sns }}
+                            </span>
+                        </v-row>
+                        <v-row class="d-flex justify-space-between align-center border mb-1">
+                            <span class="font-weight-bold">
+                                {{ $t('Age') }}:
+                            </span>
+                            <span>
+                                {{ formatDate(patient.dataNascimento) }} {{ $t('years') }}
+                            </span>
+                        </v-row>
 
+                        <v-row v-for="(dispositivo, indexSinal) in patient?.dispositivos" :key="indexSinal">
+
+                            <v-col class="d-flex justify-center" cols="12">
+                                <span class="font-weight-bold">Modelo: </span>
+                                <span> {{ dispositivo.modelo }} </span>
+                            </v-col>
+
+                            <v-col v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
+                                class="my-3 mx-1 d-flex justify-center">
+                                <v-chip :disabled="disabled" @click="activate(item, indexSinal, index)"
+                                    :color="sinalVital.ativo ? 'success' : 'primary'">
+                                    <v-tooltip :text="sinalVital.tipo" activator="parent" />
+                                    <span v-if="sinalVital.tipo == 'Temperatura'">
+                                        <img class="" src="/temperatura.png" alt="" width="20px" height="20px">
+                                    </span>
+                                    <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
+                                        <img class="" src="/oxigenio.png" alt="" width="20px" height="20px">
+                                    </span>
+                                    <span v-else>
+                                        <img src="/heart_beat.png" alt="" width="20px" height="20px">
+                                    </span>
+                                    <span v-if="sinalVital.ativo">On</span><span v-else>Off</span>
+                                </v-chip>
+                            </v-col>
+                            <v-col v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
+                                class="my-3 mx-1 d-flex justify-center">
+                                <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
+                                    <span>
+                                        <span v-if="hasAlertSignal(sinalVital)"
+                                            @click="redirectNotifications(patient, hasAlertSignal(sinalVital), dispositivo)">Alert</span>
+                                        <span v-else>No Alert</span>
+                                    </span>
+                                </v-chip>
+                            </v-col>
+                        </v-row>
+                        <v-row class="d-flex justify-space-between align-center  border mb-2">
+                            <span>
+                                <v-icon :disabled="disabled" @click="editItem(patient)">mdi-pencil</v-icon>
+                            </span>
+                            <span>
+                                <v-icon :disabled="disabled" @click="viewItem(patient)">mdi-eye</v-icon>
+                            </span>
+                        </v-row>
+
+                    </v-card>
+
+                </v-col>
 
             </v-row>
-            <v-card v-for="(patient, index) in patientsList" :key="index" class="d-flex my-2">
-                <v-col cols="12" class="align-center">
-                    <div v-for="(header, i) in headers" :key="i" class="d-flex mb-2">
-                        <v-row no-gutters class="w-50 align-center">
-                            <span class="font-weight-bold">{{ header.title }}</span>
-                        </v-row>
-                        <v-row no-gutters class="w-50 justify-center">
-                            <div v-if="header.key === 'dispositivos'">
-                                <div v-for="(dispositivo, indexSinal) in patient.dispositivos" :key="indexSinal"
-                                    class="d-flex flex-column my-1 pa-2 mobile-item-border align-center">
-                                    <span class="font-weight-bold"> {{ dispositivo.modelo }} </span>
-                                    <v-row v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
-                                        class="my-3 mx-1">
-                                        <v-chip :disabled="disabled" @click="activate(item, indexSinal, index)"
-                                            :color="sinalVital.ativo ? 'success' : 'primary'">
-                                            <v-tooltip :text="sinalVital.tipo" activator="parent" />
-                                            <span v-if="sinalVital.tipo == 'Temperatura'">
-                                                <img class="" src="/temperatura.png" alt="" width="20px" height="20px">
-                                            </span>
-                                            <span v-else-if="sinalVital.tipo == 'Saturação Oxigênio'">
-                                                <img class="" src="/oxigenio.png" alt="" width="20px" height="20px">
-                                            </span>
-                                            <span v-else>
-                                                <img src="/heart_beat.png" alt="" width="20px" height="20px">
-                                            </span>
-                                            <span v-if="sinalVital.ativo">On</span><span v-else>Off</span>
-                                        </v-chip>
-                                        <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
-                                            <span>
-                                                <span v-if="hasAlertSignal(sinalVital)"
-                                                    @click="redirectNotifications(patient, hasAlertSignal(sinalVital), dispositivo)">Alert</span>
-                                                <span v-else>No Alert</span>
-                                            </span>
-                                        </v-chip>
-                                    </v-row>
-                                </div>
-                            </div>
-                            <div v-else-if="header.key === 'dataNascimento'">
-                                {{ formatDate(patient.dataNascimento) }}
-                            </div>
-                            <div v-else-if="header.key === 'actions'"
-                                class="d-flex w-100 justify-space-evenly pa-3 mobile-item-border">
-                                <v-icon :disabled="disabled" @click="viewItem(patient)" class="mr-10">mdi-eye</v-icon>
-                                <v-icon :disabled="disabled" @click="editItem(patient)">mdi-pencil</v-icon>
-                            </div>
-                            <div v-else>
-                                {{ patient[header.key] }}
-                            </div>
-                        </v-row>
-                    </div>
-                </v-col>
-            </v-card>
-        </v-col>
+
+        </div>
     </v-container>
 
 </template>
@@ -211,7 +239,7 @@ const expanded = ref([]);
 
 const disabled = ref(useVitalSignsStore().disabled);
 
-const showMonitoredPatients = ref(true);
+const showMonitoredPatients = ref(false);
 
 const search = ref(null)
 
@@ -268,7 +296,7 @@ const voltarPainel = () => {
 const formatDate = (date) => {
     const dob = new Date(date);
     const diff = differenceInYears(new Date(), dob);
-    return diff + ' years';
+    return diff;
 };
 
 

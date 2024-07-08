@@ -1,10 +1,15 @@
 <template>
   <v-container>
+    <v-row class="d-flex my-2 justify-center" no-gutters>
+      <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('EditPatient') }}</div>
+    </v-row>
     <PatientForm :patient="patient" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
-      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t("Return") }}</v-btn>
+      <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t("Return")
+        }}</v-btn>
 
-      <v-btn @click="atualizarPaciente" :disabled="!isValid" color="green-darken-3"><v-icon class="mr-2">mdi-content-save</v-icon>{{ $t("Save") }}</v-btn>
+      <v-btn @click="atualizarPaciente" :disabled="!isValid" color="green-darken-3"><v-icon
+          class="mr-2">mdi-content-save</v-icon>{{ $t("Save") }}</v-btn>
     </v-row>
   </v-container>
 
@@ -12,7 +17,7 @@
 
 <script setup>
 import PatientForm from '@/components/forms/PatientForm.vue'
-import { ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 import { useLoaderStore } from '@/stores/loader'
 import { usePatientsStore } from '@/stores/patients';
@@ -30,13 +35,13 @@ const patient = ref([
 const isValid = ref(false);
 
 const areAllFieldsNonEmpty = (data) => {
-  isValid.value = data; 
+  isValid.value = data;
 }
 
 const patientSns = useRoute().params.patientSns;
 
 onMounted(() => {
-  if(usePatientsStore().patients.length == 0){
+  if (usePatientsStore().patients.length == 0) {
     usePatientsStore().fetchPatients(user.user_id);
   }
   const patientData = usePatientsStore().getPaciente(patientSns);
@@ -52,7 +57,7 @@ onMounted(() => {
   } else {
     router.push({ name: 'PatientsListing' });
     toast.error('Patient not found');
-  } 
+  }
 });
 
 const atualizarPaciente = () => {

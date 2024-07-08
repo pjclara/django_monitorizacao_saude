@@ -211,14 +211,14 @@
                                             <v-toolbar-title>{{ $t('notifications not read') }}</v-toolbar-title>
                                         </v-toolbar>
                                     </template>
-                                    <template v-slot:item="{ item }">
+                                    <template v-slot:item="{ item, index }">
                                         <tr>
                                             <td>{{ item.dispositivo }}</td>
                                             <td>{{ item.sinal }}</td>
                                             <td>{{ item.data }}</td>
                                             <td>{{ item.valor }}</td>
                                             <td v-if="!isPatient">
-                                                <v-btn color="blue" @click="read(item.idBotao)">Visto</v-btn>
+                                                <v-btn color="blue" :loading="loading[index]" @click="read(item.idBotao, index)" >Visto</v-btn>
                                             </td>
                                         </tr>
                                     </template>
@@ -556,15 +556,17 @@ const atualizarGrafico = (index) => {
 const edit = (sns) => {
     router.push({ name: 'PatientEdit', params: { patientSns: sns } });
 };
+const loading = ref([]);
 
 const processedNotifications = computed(() => {
+    console.log('processedNotifications')
     return useNotificationsStore().notificationsNotRead
-        .sort((a, b) => compareDesc(new Date(a.created_at), new Date(b.created_at)))
         .map(notification => {
             let parts = notification.message.split(',');
             let dispositivoIdx = parseInt(parts[0].split(':')[1].trim());
             let sinalIdx = parseInt(parts[1].split(':')[1].trim());
             let valorIdx = parseInt(parts[2].split(':')[1].trim());
+            loading.value.push(false);
             return {
                 dispositivo: patient.value.dispositivos[dispositivoIdx]?.modelo,
                 sinal: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx].tipo,
@@ -592,10 +594,8 @@ const historyNotifications = computed(() => {
         });
 });
 
-const read = (_id) => {
-    loaderStore.setLoading(true);
+const read = (_id, index) => {
     useNotificationsStore().markAsRead(_id);
-    loaderStore.setLoading(false);
 };
 
 const deleteSinal = async (sinal_idx, dispositivo_idx) => {
