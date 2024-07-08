@@ -120,6 +120,8 @@ const en = {
     'Search for users': 'Search for users',
     'years': 'years',
     'EditPatient': 'Edit Patient',
+    'Error deleting user:': 'Error deleting user: ',
+    'User deleted successfully': 'User deleted successfully',
     
 }
 

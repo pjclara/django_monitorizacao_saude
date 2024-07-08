@@ -115,7 +115,6 @@ onMounted(async () => {
       roles.value.push(group.name)
     });
   }
-  useUsersStore().fetchUserData(3)
   const data = await useUsersStore().fetchUserData(userId)
 
   user.value.email = data.email
@@ -143,7 +142,7 @@ const cancel = () => {
 
 const password = ref('')
 
-const updateUser = async () => {
+const updateUser = () => {
 
   // all fields are required
   if (!user.value.full_name || !user.value.email || !user.value.mobile_phone || !user.value.type_user || !user.value.role) {
@@ -154,28 +153,15 @@ const updateUser = async () => {
     user.value.password = password.value
   }
   loaderStore.setLoading(true);
-  try {
-    const response = await fetch(window.URL + '/api/users/' + userId + '/', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify(user.value)
+  useUsersStore().updateUser(userId, user.value)
+    .then(() => {
+      toast.success('User updated successfully')
+      loaderStore.setLoading(false);
     })
-    if (response.status !== 200) {
-
-      const error = await response.json()
-      toast.error(error.error)
-      return
-    }
-    toast.success('User updated successfully')
-
-  } catch (error) {
-    console.error(error)
-    toast.error('Error updating user')
-  }
-  loaderStore.setLoading(false);
+    .catch((error) => {
+      toast.error('Error updating user')
+      loaderStore.setLoading(false);
+    })
 }
 
 const fetchUserData = () => {
@@ -186,28 +172,15 @@ const fetchUserData = () => {
 
 
 
-const deleteUser = async () => {
-  try {
-    const response = await fetch(window.URL + '/api/users/', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify({ email: user.value.email }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      alert(data.message || 'User deleted successfully');
-      cancel();
-    } else {
-      const errorData = await response.json();
-      alert(errorData.error || 'Error deleting user');
-    }
-  } catch (error) {
-    alert('Network error');
-  }
+const deleteUser = () => {
+  useUsersStore().deleteUser(userId)
+    .then(() => {
+      toast.success('User deleted successfully')
+      usersList()
+    })
+    .catch((error) => {
+      toast.error('Error deleting user')
+    })
 };
 
 const usersList = () => {
