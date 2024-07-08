@@ -84,11 +84,11 @@ def get_all_users(request):
         user_data['password'] = random_password
 
         fullName = user_data['full_name']
-        message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is < {random_password} > .'
-        send_email(user_data['email'], message)
 
         serializer = CustomPostUserSerializer(data=user_data)
         if serializer.is_valid():
+            message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is < {random_password} > .'
+            send_email(user_data['email'], message)
             serializer.save()
             return JsonResponse(serializer.data, status=201, safe=False)
         return JsonResponse(serializer.errors, status=400, safe=False)
@@ -97,6 +97,17 @@ def get_all_users(request):
         if 'email' not in request.data:
             return JsonResponse({'error': 'Email is required to delete a user'}, status=400, safe=False)
         
+        user_patient = db.healthData_customuser.find_one({"email": request.data['email']})
+
+        print('user_patient: ', user_patient)
+
+        result_patient = db.minha_colecao.delete_one({'sns': user_patient['health_number']})
+
+        print('result_patient: ', result_patient)
+
+        if result_patient.deleted_count == 0:
+            return JsonResponse({'error': 'User not found'}, status=404, safe=False)
+
         result = db.healthData_customuser.delete_one({'email': request.data['email']})
         if result.deleted_count == 1:
             return JsonResponse({'message': 'User deleted successfully'}, status=200, safe=False)
@@ -186,13 +197,9 @@ def user_detail(request, pk):
             pass
         elif db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
-        
            
-        #if request.data.get('password') == "":
-        #    # get the user password
-        #    password = db.healthData_customuser.find_one({'id': pk})['password']
-        #    request.data['password'] = password
-            
+        # TODO - password mudar ao editar perfil
+
         serializer = CustomPutUserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -329,13 +336,14 @@ def criar_documento(request):
     if serializer.is_valid():
         data = serializer.validated_data
         resultado = db.minha_colecao.insert_one(data)
-        
+
+        fullName = data['nome']
         random_password = generate_random_password()
         
         # criar um user com o email e password
         user_data = {
             "email": data['email'],
-            "password": data['nome'] + "123",
+            "password": random_password,
             "full_name": data['nome'],
             "is_active": True,
             "is_staff": False,
@@ -346,8 +354,14 @@ def criar_documento(request):
             "type_user": "paciente",
             "role": "paciente"
         }
+        
         user_serializer = CustomPostUserSerializer(data=user_data)
+        print('user_serializer post: ', user_serializer)
+
         if user_serializer.is_valid():
+            print('user_serializer.is_valid(): ', user_serializer.is_valid())
+            message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'
+            send_email(data['email'], message)
             user_serializer.save()
         else:
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -616,10 +630,17 @@ def recover_password(request, email):
         user_data['role'] = user['type_user']
         user_data['taxpayer_number'] = user['taxpayer_number']
         user_data['type_user'] = user['type_user']
+        # user_data = user.copy()
         user_data['password'] = random_password
 
+
         serializer = CustomPostUserSerializer(data=user_data)
+
+        # TODO - Verificar o porque do serializer não ser valido
+        print('serializer: ', serializer)
+
         if serializer.is_valid():
+            print('serializer.is_valid(): ', serializer.is_valid())
             serializer.save()
             message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'
             send_email(email, message)

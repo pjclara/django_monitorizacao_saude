@@ -14,6 +14,11 @@
           <v-text-field v-model="user.email" label="Email" required></v-text-field>
         </v-col>
       </v-row>
+      <v-row v-if="isEditProfile">
+        <v-col cols="12" sm="6" >
+          <v-text-field v-model="password" label="Password" required></v-text-field>
+        </v-col>
+      </v-row>
       <v-row>
         <v-col cols="12" sm="3" v-if="user.type_user != 'profissional'">
           <v-text-field v-model="user.health_number" label="Health number" required></v-text-field>
@@ -31,6 +36,9 @@
           <v-select v-model="user.role" :items="roles" label="Role" required></v-select>
         </v-col>
       </v-row>
+      {{ user }}
+      
+      USER{{ isEditProfile }}
     </v-form>
     <v-row class="d-flex my-2 justify-space-between">
       <v-btn :disabled="!isFormValid" @click="cancel" color="blue-darken-3"><v-icon
@@ -56,6 +64,10 @@ import { toast } from 'vue3-toastify';
 
 const isAdmin = computed(() => {
   return useUsersStore().user?.groups.includes('admin') ? true : false
+});
+
+const isEditProfile = computed(() => {
+  return useUsersStore().user.email[0] === user.value.email
 });
 
 const loaderStore = useLoaderStore();
@@ -137,6 +149,9 @@ const updateUser = async () => {
   if (!user.value.full_name || !user.value.email || !user.value.mobile_phone || !user.value.type_user || !user.value.role) {
     toast.error('All fields are required')
     return
+  }
+  if(isEditProfile.value){
+    user.value.password = password.value
   }
   loaderStore.setLoading(true);
   try {
