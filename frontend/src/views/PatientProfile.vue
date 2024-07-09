@@ -218,7 +218,8 @@
                                             <td>{{ item.data }}</td>
                                             <td>{{ item.valor }}</td>
                                             <td v-if="!isPatient">
-                                                <v-btn color="blue" :loading="loading[index]" @click="read(item.idBotao, index)" >Visto</v-btn>
+                                                <v-btn color="blue" :loading="loading[index]"
+                                                    @click="read(item.idBotao, index)">Visto</v-btn>
                                             </td>
                                         </tr>
                                     </template>
@@ -312,42 +313,26 @@ const notificationsHeaders = ref([]);
 const patientSns = useRoute().params.patientSns;
 
 const patient = computed(() => {
-    if (usePatientsStore().patients.length === 0)
-        usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+    const data = ref(null);
+    if (!isPatient.value) {
+        if (usePatientsStore().patients.length === 0)
+            usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+        data.value =  usePatientsStore().patients.find(patient => patient.sns == patientSns)
+    }else{
+       data.value = usePatientsStore().patient
+       console.log(data.value)
+    }
 
-      
-    const data = usePatientsStore().patients.find(patient => patient.sns == patientSns)
-      /*
-    const wsArray = [];
-    data?.dispositivos.forEach((device, deviceIdx) => {
-        device.sinaisVitais.forEach((sinal, sinalIdx) => {
-            const dataTo = "_sns_" + patientSns + "_device_" + device.numeroSerie + "_sinal_" + sinalIdx;
-                wsArray.push(new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/'));
-        })
-    })
-
-    wsArray.forEach(ws => {
-        ws.onopen = () => {
-            console.log('Connected to the websocket server')
-        }
-        ws.onmessage = (event) => {
-            console.log('Received data from the websocket server')
-            // fetchPatientData();
-            // fetchNotifications();
-        }
-    })
-        */
-    
-
-
-    return data;
+    return data.value;
 });
 
 
 
 onMounted(() => {
-    if (usePatientsStore().patients.length == 0)
+    if (usePatientsStore().patients.length == 0 && !isPatient.value)
         usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+    else if (isPatient.value)
+        usePatientsStore().buscarPaciente(patientSns);
 
     const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
     ws.onopen = () => {

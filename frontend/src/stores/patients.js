@@ -121,6 +121,7 @@ export const usePatientsStore = defineStore('patients', () => {
         }
       })
       const data = await response.json()
+      patient.value = data
       return data
     } catch (error) {
       console.log('Error loading patient')
