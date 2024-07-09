@@ -1,5 +1,5 @@
 from .models import CustomUser
-from .serializers import DocumentoSerializer, NotificationSerializer, CustomPostUserSerializer, CustomPutUserSerializer
+from .serializers import DocumentoSerializer, NotificationSerializer, CustomPostUserSerializer, CustomPutUserSerializer, CustomPutUserPasswordSerializer
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from .mongodb import db
@@ -634,7 +634,7 @@ def recover_password(request, email):
         user_data['password'] = random_password
 
 
-        serializer = CustomPostUserSerializer(data=user_data)
+        serializer = CustomPutUserPasswordSerializer(user, data=user_data)
 
         # TODO - Verificar o porque do serializer não ser valido
         print('serializer: ', serializer)

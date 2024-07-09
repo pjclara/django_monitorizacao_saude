@@ -72,9 +72,6 @@ const isEditProfile = computed(() => {
 
 const loaderStore = useLoaderStore();
 
-const showSuccess = ref(false)
-const showErrors = ref(false)
-
 const userId = useRoute().params.id
 
 const roles = ref([])

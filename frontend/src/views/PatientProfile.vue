@@ -15,7 +15,7 @@
                                 <div class="d-flex justify-space-between align-center pa-1">
                                     <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome
                                         }}</span>
-                                    <v-btn color="red" size="small" width="100px" @click="callPatient"><v-icon
+                                    <v-btn v-if="!isPatient" color="red" size="small" width="100px" @click="callPatient"><v-icon
                                             class="mr-2">mdi-phone-plus</v-icon>{{
                                                 $t("Call") }}</v-btn>
                                 </div>

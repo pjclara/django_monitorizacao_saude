@@ -144,6 +144,7 @@ class CustomPostUserSerializer(serializers.Serializer):
             mobile_phone=validated_data['mobile_phone'],
             health_number=health_number,
             taxpayer_number=taxpayer_number,
+            type_user=validated_data['type_user'],
             password=validated_data['password'],
         )
         if customUser:
@@ -152,8 +153,6 @@ class CustomPostUserSerializer(serializers.Serializer):
         else:
             return None
         
-
-
 class CustomPutUserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField()
@@ -167,7 +166,7 @@ class CustomPutUserSerializer(serializers.Serializer):
     type_user = serializers.CharField(max_length=100)  
     role = serializers.CharField(max_length=100, write_only=True)
     
-    #updae
+    #update user
     def update(self, instance, validated_data):
         if not validated_data['health_number']:
             health_number=None
@@ -190,4 +189,42 @@ class CustomPutUserSerializer(serializers.Serializer):
         customer.save()
         return customer
 
+
+# update user password
+class CustomPutUserPasswordSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    email = serializers.EmailField()
+    password = serializers.CharField(max_length=128, write_only=True)
+    full_name = serializers.CharField(max_length=255, default='', allow_blank=True,)
+    is_active = serializers.BooleanField(default=True)
+    is_staff = serializers.BooleanField(default=False)
+    is_superuser = serializers.BooleanField(default=False)
+    mobile_phone = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
+    health_number = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
+    taxpayer_number = serializers.CharField(max_length=9, allow_blank=True, allow_null=True, required=False)
+    type_user = serializers.CharField(max_length=100)  
+    role = serializers.CharField(max_length=100, write_only=True)
+    
+    def update(self, instance, validated_data):
+        if not validated_data['health_number']:
+            health_number=None
+        else:
+            health_number=validated_data['health_number']
+            
+        if not validated_data['taxpayer_number']:
+            taxpayer_number=None
+        else:
+            taxpayer_number=validated_data['taxpayer_number']       
+        
+        customer = CustomUser.objects.get(email=validated_data['email'])
+        customer.full_name = validated_data['full_name']
+        customer.is_active = validated_data['is_active']
+        customer.is_staff = validated_data['is_staff']
+        customer.is_superuser = validated_data['is_superuser']
+        customer.mobile_phone = validated_data['mobile_phone']
+        customer.health_number = validated_data['health_number']
+        customer.type_user = validated_data['type_user']
+        customer.set_password(validated_data['password'])
+        customer.save()
+        return customer
         
