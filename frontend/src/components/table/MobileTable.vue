@@ -18,7 +18,7 @@
                     <v-icon v-else class="red">mdi-close-circle</v-icon>
                 </v-col>
                 <v-col class="d-flex justify-center" v-else-if="key==='actions'"> 
-                    <v-btn v-if="isUser" color="blue" size="small" @click="editUser(item)">Visto</v-btn>
+                    <v-btn v-if="isUser" color="blue" size="small" @click="editUser(item)">{{ $t('EditUser') }}</v-btn>
                 </v-col>
                 <v-col class="d-flex justify-center" style="line-break: anywhere;" v-else> 
                     <p>{{ item[key] }}</p>

@@ -2,7 +2,7 @@
     <v-container>
         <v-col class="d-flex flex-column">
             <v-row>
-                <v-col class="d-flex justify-start" cols="12" sm="4">
+                <v-col :class="['d-flex justify-start', {'justify-center': smAndDown}]" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
                         $t('dashboard') }}</v-btn>
                 </v-col>
@@ -10,14 +10,13 @@
                     $t('UsersListing')
                 }}
                 </v-col>
-                <v-col class="d-flex justify-end" cols="12" sm="4">
+                <v-col :class="['d-flex justify-end', {'justify-center': smAndDown}]" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" elevated to="/create-user">
                         <v-icon color="white" class="mr-2">mdi-plus</v-icon> {{ $t('CreateUser') }}
                     </v-btn>
-
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters justify="center" class="mt-2">
                 <v-data-table :headers="headers" :items="users" :items-per-page="5" :search="search" class="elevation-1"
                     v-if="!smAndDown">
                     <template v-slot:headers>
@@ -58,7 +57,7 @@
                     </template>
                 </v-data-table>
 
-                <MobileTable v-else :data="users" :keys="['id', 'username', 'email', 'is_active', 'actions']"
+                <MobileTable v-else class="justify-center" :data="users" :keys="['id', 'username', 'email', 'is_active', 'actions']"
                     :isUser="true">
                 </MobileTable>
             </v-row>

@@ -17,7 +17,7 @@
         </template>
       </v-tabs>
       <v-card-text>
-        <v-row class="justify-end mb-2"
+        <v-row :class="['mb-2 justify-end', {'justify-center my-2': smAndDown}]"
           v-if="patient.sns && patient.nome && patient.dataNascimento && patient.peso && patient.altura && patient.genero && patient.telefone">
           <v-btn @click="addDevice(patient.dispositivos)" color="indigo-darken-3" :disabled="!isSnsFilled">
             <v-icon class="mr-2" color="white">mdi-plus</v-icon>
@@ -88,15 +88,17 @@
                   <v-text-field label="End Date" placeholder="yyyy-mm-dd" color="primary" :rules="dataFimRules"
                     v-model="patient.dispositivos[indexDispositivo].data_fim" />
                 </v-col>
-                <v-col>
+                <v-col cols="12" sm="6" :class="['d-flex mb-2 justify-start', {'justify-center my-2': smAndDown}]">
                   <v-btn color="red"
                     @click="deleteDevice(indexDispositivo)"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
                 </v-col>
-                <v-btn @click="addSinalVital(patient.dispositivos[indexDispositivo].sinaisVitais)"
-                  v-if="patient.dispositivos[indexDispositivo].numeroSerie" color="indigo-darken-3">
-                  <v-icon class="mr-2" color="white">mdi-plus</v-icon>
-                  {{$t('Add vital sign')}}
-                </v-btn>
+                <v-col col="12" sm="6" :class="['d-flex mb-2 justify-end', {'justify-center my-2': smAndDown}]">
+                  <v-btn @click="addSinalVital(patient.dispositivos[indexDispositivo].sinaisVitais)"
+                    v-if="patient.dispositivos[indexDispositivo].numeroSerie" color="indigo-darken-3">
+                    <v-icon class="mr-2" color="white">mdi-plus</v-icon>
+                    {{$t('Add vital sign')}}
+                  </v-btn>
+                </v-col>
               </v-row>
               <v-row v-for="(vital, index) in patient.dispositivos[indexDispositivo].sinaisVitais" :key="index"
                 style="background-color: lightcyan; padding: 10px;">
@@ -120,7 +122,7 @@
                 <v-col :cols="smAndDown ? '12' : '3'">
                   <v-text-field :label="$t('readingFrequency')" type="number" color="primary" v-model="vital.readingFrequency" />
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '1'">
+                <v-col :cols="smAndDown ? '12' : '1'" :class="['d-flex justify-start', {'justify-center my-2': smAndDown}]">
                   <v-btn color="red"
                     @click="deleteSinal(indexDispositivo, index)"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
                 </v-col>

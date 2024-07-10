@@ -16,7 +16,7 @@
       </v-row>
       <v-row v-if="isEditProfile">
         <v-col cols="12" sm="6" >
-          <v-text-field v-model="password" label="Password" required></v-text-field>
+          <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
         </v-col>
       </v-row>
       <v-row>
@@ -36,18 +36,22 @@
           <v-select v-model="user.role" :items="roles" label="Role" required></v-select>
         </v-col>
       </v-row>
-      {{ user }}
-      
-      USER{{ isEditProfile }}
     </v-form>
     <v-row class="d-flex my-2 justify-space-between">
-      <v-btn :disabled="!isFormValid" @click="cancel" color="blue-darken-3"><v-icon
-          class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return') }}</v-btn>
-      <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="red"><v-icon
-          class="mr-2">mdi-trash-can</v-icon>{{ $t('Delete')
-        }}</v-btn>
-      <v-btn :disabled="!isFormValid" @click="updateUser" color="indigo-darken-3"><v-icon
-          class="mr-2">mdi-content-save</v-icon>{{ $t('Save') }}</v-btn>
+      <v-col>
+        <v-btn :disabled="!isFormValid" @click="cancel" color="blue-darken-3" class="ma-2"><v-icon
+            class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t('Return') }}</v-btn>
+      </v-col>
+      <v-col justify="end" align="end">
+        <v-btn :disabled="!isFormValid" @click="updateUser" color="indigo-darken-3" class="ma-2">
+          <v-icon class="ma-2">mdi-content-save</v-icon>
+          {{ $t('Save') }}
+        </v-btn>
+        <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="red" class="ma-2">
+          <v-icon class="mr-2">mdi-trash-can</v-icon>
+            {{ $t('Delete')}}
+        </v-btn>
+      </v-col>
     </v-row>
   </v-container>
 
@@ -149,6 +153,7 @@ const updateUser = () => {
   if(isEditProfile.value){
     user.value.password = password.value
   }
+  console.log("user:", user.value)
   loaderStore.setLoading(true);
   useUsersStore().updateUser(userId, user.value)
     .then(() => {

@@ -120,24 +120,31 @@
         </div>
         <!-- MOBILE -->
         <div v-else>
-            <v-row no-gutters justify="center" class="mb-2">
-                <v-col cols="12" class="d-flex justify-center align-center">
-                    <div class="text-h5 text-center text-center">{{ $t('PatientsListing') }}</div>
+            <v-row>
+                <v-col class="d-flex justify-center" cols="12" sm="4">
+                    <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
+                        $t('dashboard') }}</v-btn>
                 </v-col>
-                <v-col cols="12" class="d-flex justify-center align-center mt-5">
-                    <v-btn size="x-small" color="indigo-darken-3" elevated to="/create-patient">
+                <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
+                    $t('PatientsListing')
+                }}
+                </v-col>
+                <v-col class="d-flex justify-center" cols="12" sm="4">
+                    <v-btn color="indigo-darken-3" elevated to="/create-patient">
                         <v-icon color="white" class="mr-2">mdi-plus</v-icon>{{ $t('AddPatient') }}
                     </v-btn>
                 </v-col>
+            </v-row>
+            <v-row no-gutters justify="center" class="mb-2">
                 <v-col cols="12" class="d-flex justify-center align-center">
-                    <v-checkbox v-model="showMonitoredPatients">
+                    <v-checkbox v-model="showMonitoredPatients" >
                         <template v-slot:label>
-                            <span style="font-size: 10px">{{ $t('Show Patients being monitored') }}</span>
+                            <span style="font-size: 12px">{{ $t('Show Patients being monitored') }}</span>
                         </template>
                     </v-checkbox>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row no-gutters>
                 <v-col cols="12" v-for="(patient, index) in patientsList" :key="index">
                     <v-card class="d-flex flex-column my-2 pa-10 mobile-card">
                         <v-row class="d-flex justify-space-between align-center border mb-1">

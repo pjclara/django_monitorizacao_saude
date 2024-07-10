@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="6" offset="3" class="d-flex flex-column align-center">
+    <v-row justify="center">
+      <v-col cols="12" sm="6" class="d-flex flex-column align-center">
         <div class="d-flex mt-10">
           <div class="text-h4 text-center font-weight-bold" style="color: #006400;">{{ $t('Welcome') }}</div>
         </div>

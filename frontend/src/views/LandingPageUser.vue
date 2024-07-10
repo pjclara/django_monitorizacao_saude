@@ -61,7 +61,7 @@
           <Line id="id_w" :data="data" :options="chartOptions" />
         </v-card>
       </v-col>
-      <v-col cols="6" v-else>
+      <v-col cols="12" sm="6" v-else>
         <v-card color="#425C5A" theme="dark" class="rounded-xl" height="150">
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
