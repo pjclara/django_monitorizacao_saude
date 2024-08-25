@@ -21,7 +21,6 @@ from datetime import datetime
 
 # users crud
 @api_view(['GET', 'POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def get_all_users(request):
     if request.method == 'GET':
         users =  db.healthData_customuser.find()
@@ -361,7 +360,7 @@ def criar_documento(request):
         if user_serializer.is_valid():
             print('user_serializer.is_valid(): ', user_serializer.is_valid())
             message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'
-            send_email(data['email'], message)
+            #send_email(data['email'], message)
             user_serializer.save()
         else:
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -13,12 +13,12 @@ export const useLoaderStore = defineStore('loader', () => {
   const toggleCreateData = () => {
     createData.value = !createData.value
   }
-
   /*
+
   const url = 'backend-projecto.fly.dev'
   window.URL = 'https://' + url
-*/
 
+*/
   const url = '127.0.0.1:8000'
   window.URL = 'http://' + url
 
