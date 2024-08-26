@@ -21,6 +21,7 @@ from datetime import datetime
 
 # users crud
 @api_view(['GET', 'POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def get_all_users(request):
     if request.method == 'GET':
         users =  db.healthData_customuser.find()
