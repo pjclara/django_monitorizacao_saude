@@ -92,7 +92,7 @@ DATABASES = {
             'name': "health-monitor-final-data",
             'authMechanism': "SCRAM-SHA-1"
             }
-    }
+    },
 }
 
 
