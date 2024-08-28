@@ -527,7 +527,7 @@ const formattedChartData = computed(() => {
         })
     }
     chartData.value.datasets.push(data);
-    chartData.value.labels = device.sinaisVitais[0].valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString());
+    chartData.value.labels = device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString());
 
     return chartData.value;
 
