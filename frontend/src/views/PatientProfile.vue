@@ -177,22 +177,7 @@
                                             </v-btn>
                                         </v-row>
                                     </div>
-                                    <div v-if="deviceId != null">
-                                        <v-row>
-                                            <v-col cols="12" sm="3">
-                                                data inicio
-                                            </v-col>
-                                            <v-col cols="12" sm="3">
-                                                hora inicio
-                                            </v-col>
-                                            <v-col cols="12" sm="3">
-                                                data fim
-                                            </v-col>
-                                            <v-col cols="12" sm="3">
-                                                hora fim
-                                            </v-col>
-                                        </v-row>
-                                    </div>
+                                    
                                     <div v-if="deviceId != null">
                                         <v-card height="400" style="padding: 16px;">
                                             <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />

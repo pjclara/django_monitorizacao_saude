@@ -122,6 +122,7 @@ const en = {
     'EditPatient': 'Edit Patient',
     'Error deleting user:': 'Error deleting user: ',
     'User deleted successfully': 'User deleted successfully',
+    'Unit': 'Unit',
     
 }
 

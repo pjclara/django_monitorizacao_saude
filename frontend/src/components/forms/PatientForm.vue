@@ -104,21 +104,21 @@
                 style="background-color: lightcyan; padding: 10px;">
 
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-select v-model="vital.tipo" label="Vital Sign"
-                    :items="['Frequência Cardíaca', 'Saturação Oxigênio', 'Temperatura']">
+                  <v-select v-model="vital.tipo" :label="$t('sinalVital')"
+                    :items="listSinaisVitais">
                   </v-select>
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '2'">
-                  <v-text-field label="Unit" color="primary" v-model="vital.unidade"
+                  <v-text-field :label="$t('Unit')" color="primary" v-model="vital.unidade"
                     :value="vital.unidade = unidade(vital.tipo)" />
-                </v-col>
-
-                <v-col :cols="smAndDown ? '12' : '1'">
-                  <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '1'">
                   <v-text-field label="Min" type="number" color="primary" v-model="vital.minimo" />
                 </v-col>
+                <v-col :cols="smAndDown ? '12' : '1'">
+                  <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" />
+                </v-col>
+
                 <v-col :cols="smAndDown ? '12' : '3'">
                   <v-text-field :label="$t('readingFrequency')" type="number" color="primary" v-model="vital.readingFrequency" />
                 </v-col>
@@ -160,10 +160,16 @@ const tab = ref('patient')
 
 const indexDispositivo = ref('')
 
+const listSinaisVitais = ref([
+  'Frequência Cardíaca',
+  'Saturação Oxigênio',
+  'Temperatura'
+])
+
 watch(tab, (changedTab) => {
   indexDispositivo.value = changedTab
+  console.log(indexDispositivo.value)
 });
-
 
 const validationStatus = () => {
   emit('validationChanged', isFormValid.value)
@@ -242,7 +248,6 @@ const unidade = (tipo) => {
 }
 
 //Validations
-
 const nameRules = [
   v => !!v || 'Name is required',
   v => (v && v.length >= 3) || 'Name must be at least 3 characters'

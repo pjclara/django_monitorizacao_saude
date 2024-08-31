@@ -124,6 +124,7 @@ const pt = {
   'EditPatient': 'Editar Paciente',
   'Error deleting user:': 'Erro ao eliminar utilizador:',
   'User deleted successfully': 'Utilizador eliminado com sucesso',
+  'Unit': 'Unidade',
 }
 
 export default pt
