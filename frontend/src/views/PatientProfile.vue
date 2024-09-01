@@ -15,9 +15,9 @@
                                 <div class="d-flex justify-space-between align-center pa-1">
                                     <span class="text-h6 font-weight-bold">{{ $t('name') }}: {{ identifier?.nome
                                         }}</span>
-                                    <v-btn v-if="!isPatient" color="red" size="small" width="100px" @click="callPatient"><v-icon
-                                            class="mr-2">mdi-phone-plus</v-icon>{{
-                                                $t("Call") }}</v-btn>
+                                    <v-btn v-if="!isPatient" color="red" size="small" width="100px"
+                                        @click="callPatient"><v-icon class="mr-2">mdi-phone-plus</v-icon>{{
+                                            $t("Call") }}</v-btn>
                                 </div>
                                 <div class="mt-2">
                                     <span class="text-h6 font-weight-bold">{{ $t('age') }}: </span>
@@ -43,6 +43,9 @@
                                     <v-btn color="green" size="small" width="100px" class="mt-2"
                                         @click="edit(patient?.sns)"><v-icon class="mr-2">mdi-pencil</v-icon>{{
                                             $t("Edit") }}</v-btn>
+                                    <v-btn color="red" size="small" width="100px" class="mt-2"
+                                        @click="deletePatient(patient?.sns)"><v-icon class="mr-2">mdi-trash-can</v-icon>{{
+                                            $t("Delete") }}</v-btn>
                                 </v-row>
                             </v-col>
                         </v-row>
@@ -90,8 +93,7 @@
                                 <v-row no-gutters>
                                     <v-col v-for="(device, index) in decicesList" :key="index" cols="12" sm="3">
                                         <v-sheet class="ma-2">
-                                            <v-card
-                                                :class="device.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
+                                            <v-card :class="device.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
                                                     <h4>{{ device.modelo }} - {{ device.ativo ? 'On' : 'Off' }}
                                                     </h4>
@@ -102,7 +104,7 @@
                                                 </v-card-text>
                                                 <v-spacer></v-spacer>
                                                 <v-card-actions class="justify-end" v-if="!device.ativo">
-                                                    <v-btn @click="deleteDevice(index)" v-if="!isPatient" >
+                                                    <v-btn @click="deleteDevice(index)" v-if="!isPatient">
                                                         <v-icon color="red">mdi-trash-can</v-icon>
                                                     </v-btn>
                                                 </v-card-actions>
@@ -116,8 +118,7 @@
                                 <v-row no-gutters>
                                     <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="3">
                                         <v-sheet class="ma-2">
-                                            <v-card
-                                                :class="sinal.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
+                                            <v-card :class="sinal.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
                                                     <span>{{ sinal.nome }} ({{ sinal.modelo }})</span>
                                                 </v-card-title>
@@ -149,8 +150,7 @@
                                                             </v-btn>
                                                         </v-col>
                                                         <v-col class="d-flex justify-end">
-                                                            <v-btn color="white" size="small"
-                                                                v-if="!sinal.ativo"
+                                                            <v-btn color="white" size="small" v-if="!sinal.ativo"
                                                                 @click="startGenerateData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
                                                                 <v-icon>mdi-led-on</v-icon> {{ $t('Turn On') }}
                                                             </v-btn>
@@ -182,7 +182,7 @@
                                             </v-btn>
                                         </v-row>
                                     </div>
-                                    
+
                                     <div v-if="deviceId != null">
                                         <v-card height="400" style="padding: 16px;">
                                             <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />
@@ -307,9 +307,9 @@ const patient = computed(() => {
     if (!isPatient.value) {
         if (usePatientsStore().patients.length === 0)
             usePatientsStore().fetchPatients(useUsersStore().user.user_id);
-        data.value =  usePatientsStore().patients.find(patient => patient.sns == patientSns)
-    }else{
-       data.value = usePatientsStore().patient
+        data.value = usePatientsStore().patients.find(patient => patient.sns == patientSns)
+    } else {
+        data.value = usePatientsStore().patient
     }
 
     return data.value;
@@ -472,7 +472,7 @@ const decicesList = computed(() => {
             descricao: device.descricao,
             numeroSerie: device.numeroSerie,
             fabricante: device.fabricante,
-            ativo : device.ativo
+            ativo: device.ativo
         }
     });
 });
@@ -631,6 +631,13 @@ const deleteDevice = async (index) => {
     } catch (error) {
         console.error(error);
     }
+};
+
+const deletePatient = async (sns) => {
+    if (!confirm('Are you sure you want to delete this patient?')) {
+        return;
+    }
+   
 };
 </script>
 
