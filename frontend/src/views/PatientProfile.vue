@@ -86,9 +86,9 @@
                                     <v-col v-for="(device, index) in decicesList" :key="index" cols="12" sm="3">
                                         <v-sheet class="ma-2">
                                             <v-card
-                                                :class="getStartValue().start ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
+                                                :class="device.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
-                                                    <h4>{{ device.modelo }} - {{ getStartValue().start ? 'On' : 'Off' }}
+                                                    <h4>{{ device.modelo }} - {{ device.ativo ? 'On' : 'Off' }}
                                                     </h4>
                                                 </v-card-title>
                                                 <v-card-text>
@@ -96,8 +96,8 @@
 
                                                 </v-card-text>
                                                 <v-spacer></v-spacer>
-                                                <v-card-actions class="justify-end">
-                                                    <v-btn @click="deleteDevice(index)" v-if="!isPatient">
+                                                <v-card-actions class="justify-end" v-if="!device.ativo">
+                                                    <v-btn @click="deleteDevice(index)" v-if="!isPatient" >
                                                         <v-icon color="red">mdi-trash-can</v-icon>
                                                     </v-btn>
                                                 </v-card-actions>
@@ -112,7 +112,7 @@
                                     <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="3">
                                         <v-sheet class="ma-2">
                                             <v-card
-                                                :class="getStartValue().start ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
+                                                :class="sinal.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
                                                     <span>{{ sinal.nome }} ({{ sinal.modelo }})</span>
                                                 </v-card-title>
@@ -138,14 +138,14 @@
                                                 <v-card-actions class="justify-end">
                                                     <v-row v-if="!isPatient">
                                                         <v-col>
-                                                            <v-btn color="red" size="small"
+                                                            <v-btn color="red" size="small" v-if="!sinal.ativo"
                                                                 @click="deleteSinal(sinal.sinal_idx, sinal.dispositivo_idx)">
                                                                 <v-icon>mdi-trash-can</v-icon>
                                                             </v-btn>
                                                         </v-col>
                                                         <v-col class="d-flex justify-end">
                                                             <v-btn color="white" size="small"
-                                                                v-if="!getStartValue().start"
+                                                                v-if="!sinal.ativo"
                                                                 @click="startGenerateData(patient, sinal.dispositivo_idx, sinal.sinal_idx)">
                                                                 <v-icon>mdi-led-on</v-icon> {{ $t('Turn On') }}
                                                             </v-btn>
@@ -285,8 +285,8 @@ const chartOptions = {
     responsive: true
 };
 
-const getStartValue = () => {
-    return useVitalSignsStore().start?.find(value => value.patient === patient.value.sns) ?? false;
+const getStartValue = (index) => {
+    return decicesList.value[index] ? decicesList.value[index].ativo : false;
 };
 
 const router = useRouter();
@@ -305,7 +305,6 @@ const patient = computed(() => {
         data.value =  usePatientsStore().patients.find(patient => patient.sns == patientSns)
     }else{
        data.value = usePatientsStore().patient
-       console.log(data.value)
     }
 
     return data.value;
@@ -325,9 +324,9 @@ onMounted(() => {
     }
     ws.onmessage = (event) => {
         console.log('Received data from the websocket server', event.data)
-        usePatientsStore().fetchPatients(useUsersStore().user.user_id);
-        // fetchPatientData();
-        // fetchNotifications();
+        usePatientsStore().buscarPaciente(patientSns);
+        //fetchPatientData();
+        //fetchNotifications();
     }
 
 
@@ -436,6 +435,7 @@ const lastVitalValues = computed(() => {
         return {
             dispositivo_idx: dispositivo_idx,
             sinal_idx: sinal_idx,
+            ativo: dispositivo.ativo,
             modelo: dispositivo.modelo, nome: sinal.tipo, max: sinal.maximo, min: sinal.minimo, unidade: sinal.unidade, valor: sinal.valores[sinal.valores.length - 1]
         }
     }))
@@ -466,7 +466,8 @@ const decicesList = computed(() => {
             modelo: device.modelo,
             descricao: device.descricao,
             numeroSerie: device.numeroSerie,
-            fabricante: device.fabricante
+            fabricante: device.fabricante,
+            ativo : device.ativo
         }
     });
 });
@@ -529,7 +530,6 @@ const edit = (sns) => {
 const loading = ref([]);
 
 const processedNotifications = computed(() => {
-    console.log('processedNotifications')
     return useNotificationsStore().notificationsNotRead
         .map(notification => {
             let parts = notification.message.split(',');
