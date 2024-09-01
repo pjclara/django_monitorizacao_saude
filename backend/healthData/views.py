@@ -196,8 +196,13 @@ def user_detail(request, pk):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
            
         # TODO - password mudar ao editar perfil
-
-        serializer = CustomPutUserSerializer(user, data=request.data)
+        
+        # check if the password is not empty
+        if 'password' in request.data:
+            if not request.data['password'] or request.data['password'] == '':
+                serializer = CustomPutUserSerializer(user, data=request.data)
+            else:
+                serializer = CustomPutUserPasswordSerializer(user, data=request.data)
         print('serializer: ', serializer)
         
         if serializer.is_valid():
