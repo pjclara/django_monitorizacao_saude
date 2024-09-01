@@ -44,6 +44,8 @@ onMounted(() => {
   if (usePatientsStore().patients.length == 0) {
     usePatientsStore().fetchPatients(user.user_id);
   }
+
+
   const patientData = usePatientsStore().getPaciente(patientSns);
   console.log(patientData);
   if (patientData) {
@@ -61,10 +63,28 @@ onMounted(() => {
 });
 
 const atualizarPaciente = () => {
+  let erroEncontrado = false;
   loaderStore.setLoading(true);
+
+  // Confirmar se todos os valores máximos são maiores que os mínimos para cada sinal vital
+  for (let dispositivo of patient.value.dispositivos) {
+    dispositivo.sinaisVitais.forEach(element => {
+      if (element.maximo < element.minimo) {
+        erroEncontrado = true;
+        toast.error('O valor máximo deve ser maior que o valor mínimo');
+      }
+    });
+  }
+
+  if (erroEncontrado) {
+    loaderStore.setLoading(false);
+    return; // Se houver um erro, interrompe a atualização
+  }
+
   usePatientsStore().atualizarPaciente(patient.value);
   loaderStore.setLoading(false);
 }
+
 
 const voltar = () => {
   window.history.back();

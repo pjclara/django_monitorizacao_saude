@@ -113,10 +113,10 @@
                     :value="vital.unidade = unidade(vital.tipo)" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '1'">
-                  <v-text-field label="Min" type="number" color="primary" v-model="vital.minimo" />
+                  <v-text-field label="Min" type="number" color="primary" v-model="vital.minimo" :rules="minMaxRules" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '1'">
-                  <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" />
+                  <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" :rules="minMaxRules" />
                 </v-col>
 
                 <v-col :cols="smAndDown ? '12' : '3'">
@@ -328,6 +328,13 @@ const dataFimRules = [
     return isAfter(date, dataInicio) || 'Date must be after beginning date'
   }
 ]
+
+const minMaxRules = [
+  v => !!v || 'Value is required',
+  v => /^\d+(\.\d+)?$/.test(v) || 'Value must be a number'
+]
+
+
 
 const test = computed(() => {
   for (const key in props.patient) {

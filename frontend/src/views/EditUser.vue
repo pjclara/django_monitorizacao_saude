@@ -15,7 +15,7 @@
         </v-col>
       </v-row>
       <v-row v-if="isEditProfile">
-        <v-col cols="12" sm="6" >
+        <v-col cols="12" sm="6">
           <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
         </v-col>
       </v-row>
@@ -49,7 +49,7 @@
         </v-btn>
         <v-btn v-if="isAdmin" :disabled="!isFormValid" @click="deleteUser" color="red" class="ma-2">
           <v-icon class="mr-2">mdi-trash-can</v-icon>
-            {{ $t('Delete')}}
+          {{ $t('Delete') }}
         </v-btn>
       </v-col>
     </v-row>
@@ -150,10 +150,11 @@ const updateUser = () => {
     toast.error('All fields are required')
     return
   }
-  if(isEditProfile.value){
+  if (isEditProfile.value) {
     user.value.password = password.value
   }
-  console.log("user:", user.value)
+
+
   loaderStore.setLoading(true);
   useUsersStore().updateUser(userId, user.value)
     .then(() => {
