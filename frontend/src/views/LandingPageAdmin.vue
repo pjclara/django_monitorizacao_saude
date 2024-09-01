@@ -2,7 +2,7 @@
   <v-container style="margin-top: 50px;" fluid>
     <v-row>
       <v-col cols="12" sm="12" class="mt-n4 text-center">
-        <div>{{ $t('dashboard') }}</div>
+        <div class="text-h4">{{ $t('dashboard') }}</div>
       </v-col>
     </v-row>
     <v-row>
