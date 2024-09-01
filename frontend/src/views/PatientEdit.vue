@@ -68,11 +68,30 @@ const atualizarPaciente = () => {
 
   // Confirmar se todos os valores máximos são maiores que os mínimos para cada sinal vital
   for (let dispositivo of patient.value.dispositivos) {
+
+    if (new Date(dispositivo.data_inicio) > new Date(dispositivo.data_fim)) {
+      erroEncontrado = true;
+      toast.error($t('The end date must be greater than the start date.'));
+    }
+
+    // data de início do dispositivo deve ser igual ou superior à data de hoje
+    const dataAtual = new Date();
+    const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
+
+    const dataInicio = new Date(dispositivo.data_inicio);
+    const dataInicioFormatada = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
+
+    if (dataInicioFormatada < dataAtualFormatada) {
+      erroEncontrado = true;
+      toast.error($t('The start date must be equal to or greater than today.'));
+    }
+
     dispositivo.sinaisVitais.forEach(element => {
       if (element.maximo < element.minimo) {
         erroEncontrado = true;
-        toast.error('O valor máximo deve ser maior que o valor mínimo');
+        toast.error($t('The maximum value must be greater than the minimum value.'));
       }
+
     });
   }
 

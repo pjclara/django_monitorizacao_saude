@@ -125,6 +125,10 @@ const pt = {
   'Error deleting user:': 'Erro ao eliminar utilizador:',
   'User deleted successfully': 'Utilizador eliminado com sucesso',
   'Unit': 'Unidade',
+  'Start date greater than end date': 'O valor máximo deve ser maior que o valor mínimo.',
+  'The start date of the device must be equal to or greater than today': 'A data de início do dispositivo deve ser igual ou superior à data de hoje',
+  'The end date must be greater than the start date.': 'A data de fim deve ser maior que a data de início.',
+  'The start date must be equal to or greater than today.': 'A data de início deve ser igual ou superior à data de hoje.',
 }
 
 export default pt

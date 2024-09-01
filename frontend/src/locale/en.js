@@ -123,6 +123,10 @@ const en = {
     'Error deleting user:': 'Error deleting user: ',
     'User deleted successfully': 'User deleted successfully',
     'Unit': 'Unit',
+    'The maximum value must be greater than the minimum value.':'O valor máximo deve ser maior que o valor mínimo.' ,
+    'Start date greater than end date': 'Start date greater than end date',
+    'Data de início do dispositivo deve ser igual ou superior à data de hoje': 'The start date of the device must be equal to or greater than today',
+    'The end date must be greater than the start date.': 'The end date must be greater than the start date.',
     
 }
 
