@@ -11,7 +11,7 @@
           <v-text-field :label="$t('Password')" :placeholder="$t('enterPassword')" class="mt-10 w-100"
             :type="passwordType" color="primary" v-model="password"
             :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append-inner="toggleShowPassword" />
-          <span class="text-black cursor-pointer" @click="recoverPassword">{{ $t('forgotPassword') }}</span>
+          <span class="text-black cursor-pointer" @click="recoverPassword"><b>{{ $t('forgotPassword') }}</b></span>
           <v-btn class="mt-10" style="color: #006400;" rounded="lg" size="x-large" @click="logIn"><v-icon
               class="mr-2">mdi-login</v-icon>{{
                 $t('logIn') }}</v-btn>

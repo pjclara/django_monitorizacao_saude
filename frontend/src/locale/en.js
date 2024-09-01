@@ -88,7 +88,7 @@ const en = {
     'Altura (cm)': 'Height (cm)',
     'Número de Série': 'Serial Number',
     'Fabricante': 'manufacturer',
-    'Frequência de Leitura': 'readingFrequency',
+    'Frequência de Leitura (segundos)': 'Reading Frequency (seconds)',
     'segundos': 'secounds',
     'Introduza o seu email para receber uma nova password no email.': 'passwordRecovery',
     'Recuperar': 'recover',
@@ -126,6 +126,7 @@ const en = {
     'A data de início do dispositivo deve ser igual ou superior à data de hoje': 'The start date of the device must be equal to or greater than today',
     'A data de fim deve ser maior que a data de início.': 'The end date must be greater than the start date.',
     'A data de início deve ser igual ou superior à data de hoje.': 'The start date must be equal to or greater than today.',
+    'Email enviado com sucesso.': 'Email sent successfully.', 
   };
 
 export default en;

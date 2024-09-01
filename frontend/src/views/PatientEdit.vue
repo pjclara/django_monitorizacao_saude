@@ -71,7 +71,7 @@ const atualizarPaciente = () => {
 
     if (new Date(dispositivo.data_inicio) > new Date(dispositivo.data_fim)) {
       erroEncontrado = true;
-      toast.error($t('The end date must be greater than the start date.'));
+      toast.error('End date must be greater than start date');
     }
 
     // data de início do dispositivo deve ser igual ou superior à data de hoje
@@ -83,7 +83,7 @@ const atualizarPaciente = () => {
 
     if (dataInicioFormatada < dataAtualFormatada) {
       erroEncontrado = true;
-      toast.error($t('The start date must be equal to or greater than today.'));
+      toast.error('Data de início do dispositivo deve ser igual ou superior à data de hoje');
     }
 
     dispositivo.sinaisVitais.forEach(element => {

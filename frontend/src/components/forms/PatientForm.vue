@@ -4,20 +4,20 @@
       <v-tabs v-model="tab">
         <v-tab value="patient" class="tab-border mr-1">
           <span class="text-blue">
-            <v-icon class="mr-2">mdi-account</v-icon>{{$t('Patient Data')}}
+            <v-icon class="mr-2">mdi-account</v-icon>{{ $t('Patient Data') }}
           </span>
         </v-tab>
         <template v-for="(dispositivo, i) in patient.dispositivos" :key="i">
           <v-tab :value="i" class="tab-border mr-1">
             <span class="text-blue">
-              <v-icon class="mr-2">mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? $t('Device') +" " +
+              <v-icon class="mr-2">mdi-devices</v-icon> {{ patient.dispositivos[i].numeroSerie ? $t('Device') + " " +
                 patient.dispositivos[i].numeroSerie : $t('New Device') }}
             </span>
           </v-tab>
         </template>
       </v-tabs>
       <v-card-text>
-        <v-row :class="['mb-2 justify-end', {'justify-center my-2': smAndDown}]"
+        <v-row :class="['mb-2 justify-end', { 'justify-center my-2': smAndDown }]"
           v-if="patient.sns && patient.nome && patient.dataNascimento && patient.peso && patient.altura && patient.genero && patient.telefone">
           <v-btn @click="addDevice(patient.dispositivos)" color="indigo-darken-3" :disabled="!isSnsFilled">
             <v-icon class="mr-2" color="white">mdi-plus</v-icon>
@@ -28,16 +28,16 @@
           <v-window-item value="patient">
             <v-row>
               <v-col :cols="smAndDown ? '12' : '4'">
-                <v-text-field :label="$t('Health care number')" placeholder="999999999" color="primary" v-model="patient.sns"
-                  :disabled="routeName == 'PatientEdit'" :rules="snsRules" maxlength="9" />
+                <v-text-field :label="$t('Health care number')" placeholder="999999999" color="primary"
+                  v-model="patient.sns" :disabled="routeName == 'PatientEdit'" :rules="snsRules" maxlength="9" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '4'">
-                <v-text-field :label="$t('Name')" placeholder="John" color="primary" v-model="patient.nome" :rules="nameRules"
-                  maxlength="50" :disabled="!isSnsFilled" />
+                <v-text-field :label="$t('Name')" placeholder="John" color="primary" v-model="patient.nome"
+                  :rules="nameRules" maxlength="50" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '4'">
-                <v-text-field :label="$t('Email')" placeholder="@email" color="primary" v-model="patient.email" type="email" :rules="emailRules"
-                  maxlength="50" :disabled="!isSnsFilled" />
+                <v-text-field :label="$t('Email')" placeholder="@email" color="primary" v-model="patient.email"
+                  type="email" :rules="emailRules" maxlength="50" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
                 <v-select :label="$t('Gender')" :items="['Masculino', 'Feminino']" v-model="patient.genero"
@@ -56,8 +56,8 @@
                   maxlength="3" :disabled="!isSnsFilled" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '3'">
-                <v-text-field :label="$t('phoneNumber')" placeholder="910123456" color="primary" v-model="patient.telefone"
-                  :rules="phoneRules" maxlength="9" :disabled="!isSnsFilled" />
+                <v-text-field :label="$t('phoneNumber')" placeholder="910123456" color="primary"
+                  v-model="patient.telefone" :rules="phoneRules" maxlength="9" :disabled="!isSnsFilled" />
               </v-col>
             </v-row>
 
@@ -66,7 +66,7 @@
             <div v-if="tab !== 'patient'">
               <v-row style="background-color: antiquewhite; padding: 10px;">
                 <v-col xs="12" :cols="smAndDown ? '12' : '4'">
-                  <v-text-field :label="$t('Serial Number')" color="primary"
+                  <v-text-field :label="$t('Serial Number')" color="primary" :rules="dispositivoNumberRules"
                     v-model="patient.dispositivos[indexDispositivo].numeroSerie" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
@@ -88,15 +88,15 @@
                   <v-text-field label="End Date" placeholder="yyyy-mm-dd" color="primary" :rules="dataFimRules"
                     v-model="patient.dispositivos[indexDispositivo].data_fim" />
                 </v-col>
-                <v-col cols="12" sm="6" :class="['d-flex mb-2 justify-start', {'justify-center my-2': smAndDown}]">
+                <v-col cols="12" sm="6" :class="['d-flex mb-2 justify-start', { 'justify-center my-2': smAndDown }]">
                   <v-btn color="red"
                     @click="deleteDevice(indexDispositivo)"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
                 </v-col>
-                <v-col col="12" sm="6" :class="['d-flex mb-2 justify-end', {'justify-center my-2': smAndDown}]">
+                <v-col col="12" sm="6" :class="['d-flex mb-2 justify-end', { 'justify-center my-2': smAndDown }]">
                   <v-btn @click="addSinalVital(patient.dispositivos[indexDispositivo].sinaisVitais)"
                     v-if="patient.dispositivos[indexDispositivo].numeroSerie" color="indigo-darken-3">
                     <v-icon class="mr-2" color="white">mdi-plus</v-icon>
-                    {{$t('Add vital sign')}}
+                    {{ $t('Add vital sign') }}
                   </v-btn>
                 </v-col>
               </v-row>
@@ -104,12 +104,11 @@
                 style="background-color: lightcyan; padding: 10px;">
 
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-select v-model="vital.tipo" :label="$t('sinalVital')"
-                    :items="listSinaisVitais">
+                  <v-select v-model="vital.tipo" :label="$t('sinalVital')" :items="listSinaisVitais">
                   </v-select>
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '2'">
-                  <v-text-field :label="$t('Unit')" color="primary" v-model="vital.unidade"
+                  <v-text-field :label="$t('Unit')" color="primary" v-model="vital.unidade" disabled
                     :value="vital.unidade = unidade(vital.tipo)" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '1'">
@@ -120,9 +119,11 @@
                 </v-col>
 
                 <v-col :cols="smAndDown ? '12' : '3'">
-                  <v-text-field :label="$t('readingFrequency')" type="number" color="primary" v-model="vital.readingFrequency" />
+                  <v-text-field :label="$t('Reading Frequency (seconds)')" type="number" color="primary"
+                    v-model="vital.readingFrequency" />
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '1'" :class="['d-flex justify-start', {'justify-center my-2': smAndDown}]">
+                <v-col :cols="smAndDown ? '12' : '1'"
+                  :class="['d-flex justify-start', { 'justify-center my-2': smAndDown }]">
                   <v-btn color="red"
                     @click="deleteSinal(indexDispositivo, index)"><v-icon>mdi-trash-can-outline</v-icon></v-btn>
                 </v-col>
@@ -223,12 +224,22 @@ const today = () => {
 }
 
 const deleteDevice = (index) => {
-  props.patient.dispositivos.splice(index, 1)
-  tab.value = 'patient'
+  if (confirm('Are you sure you want to delete this device?')) {
+    props.patient.dispositivos.splice(index, 1)
+    tab.value = 'patient'
+    alert('Device deleted')
+  }
+  else
+    alert('Device not deleted')
 }
 
 const deleteSinal = (indexDispositivo, index) => {
-  props.patient.dispositivos[indexDispositivo].sinaisVitais.splice(index, 1)
+  if (confirm('Are you sure you want to delete this vital sign?')) {
+    props.patient.dispositivos[indexDispositivo].sinaisVitais.splice(index, 1)
+    alert('Vital sign deleted')
+  }
+  else
+    alert('Vital sign not deleted')
 }
 
 const unidade = (tipo) => {
@@ -334,13 +345,30 @@ const minMaxRules = [
   v => /^\d+(\.\d+)?$/.test(v) || 'Value must be a number'
 ]
 
-
+const dispositivoNumberRules = [
+  v => !!v || 'Serial number is required',
+  v => /^\d+$/.test(v) || 'Serial number must contain only numbers'
+]
 
 const test = computed(() => {
   for (const key in props.patient) {
     if (props.patient[key] === null || props.patient[key] === '') {
       emit('areAllFieldsNonEmpty', false)
       return false
+    }
+    // height and weight must be numbers and phone number must contain only numbers
+    if (key === 'altura' || key === 'peso' || key === 'telefone') {
+      if (isNaN(props.patient[key])) {
+        emit('areAllFieldsNonEmpty', false)
+        return false
+      }
+    }
+    // dataNascimento must be before or equal to today
+    if (key === 'dataNascimento') {
+      if (!isBefore(new Date(props.patient[key]), new Date())) {
+        emit('areAllFieldsNonEmpty', false)
+        return false
+      }
     }
     if (key === 'dispositivos') {
       for (const dispositivo of props.patient[key]) {
@@ -349,9 +377,48 @@ const test = computed(() => {
             emit('areAllFieldsNonEmpty', false)
             return false
           }
+
+          // data de início do dispositivo deve ser igual ou superior à data de hoje
+          const dataAtual = new Date();
+          const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
+
+          const dataInicio = new Date(dispositivo.data_inicio);
+          const dataInicioFormatada = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
+
+          if (dataInicioFormatada < dataAtualFormatada) {
+            emit('areAllFieldsNonEmpty', false)
+            return false
+          }
+
+          // data de fim do dispositivo deve ser igual ou superior à data de início
+
+          const dataFim = new Date(dispositivo.data_fim);
+          const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
+
+          if (dataFimFormatada <= dataInicioFormatada) {
+            emit('areAllFieldsNonEmpty', false)
+            return false
+          }
+
+          // numero de serie do dispositivo deve ser um número
+          if (key === 'numeroSerie') {
+            if (isNaN(dispositivo[key])) {
+              emit('areAllFieldsNonEmpty', false)
+              return false
+            }
+          }
           if (key === 'sinaisVitais') {
             for (const vital of dispositivo[key]) {
               for (const key in vital) {
+                // valores máximos deve ser maior que os mínimos para cada sinal vital
+                if (key === 'maximo' || key === 'minimo') {
+                  if (vital[key] !== null && vital[key] !== '') {
+                    if (vital.maximo < vital.minimo) {
+                      emit('areAllFieldsNonEmpty', false)
+                      return false
+                    }
+                  }
+                }
                 if (vital[key] === null || vital[key] === '') {
                   emit('areAllFieldsNonEmpty', false)
                   return false

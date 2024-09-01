@@ -88,7 +88,7 @@ const pt = {
   'Height (cm)': 'Altura (cm)',
   'Serial Number': 'Número de Série',
   'manufacturer': 'Fabricante',
-  'readingFrequency': 'Frequência de Leitura',
+  'Reading Frequency (seconds)': 'Frequência de Leitura (segundos)',
   'secounds': 'segundos',
   'passwordRecovery': 'Introduza o seu email para receber uma nova password no email.',
   'recover': 'Recuperar',
@@ -130,6 +130,7 @@ const pt = {
   'The end date must be greater than the start date.': 'A data de fim deve ser maior que a data de início.',
   'The start date must be equal to or greater than today.': 'A data de início deve ser igual ou superior à data de hoje.',
   'The start date must be equal to or greater than today.': 'A data de início deve ser igual ou superior à data de hoje.',
+  'Email sent successfully.': 'Email enviado com sucesso.',
 }
 
 export default pt
