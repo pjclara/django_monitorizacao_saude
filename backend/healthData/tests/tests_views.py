@@ -21,3 +21,4 @@ class TestViews(TestSetup):
         }
         response = self.client.post(self.get_all_users, data, format='json')
         self.assertEquals(response.status_code, 201)
+        

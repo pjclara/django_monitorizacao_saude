@@ -126,7 +126,10 @@ const en = {
     'A data de início do dispositivo deve ser igual ou superior à data de hoje': 'The start date of the device must be equal to or greater than today',
     'A data de fim deve ser maior que a data de início.': 'The end date must be greater than the start date.',
     'A data de início deve ser igual ou superior à data de hoje.': 'The start date must be equal to or greater than today.',
-    'Email enviado com sucesso.': 'Email sent successfully.', 
+    'Email enviado com sucesso.': 'Email sent successfully.',
+    'Histórico de Notificações': 'Notifications History',
+    'Gráficos Ativos': 'Active Charts',
+    'Histórico de Valores': 'Values History',
   };
 
 export default en;

@@ -65,7 +65,7 @@
                         </v-tab>
                         <v-tab value="estatistics" class="tab-border mr-1">
                             <span class="text-blue">
-                                {{ $t('Statistics') }}
+                                {{ $t('Active Charts') }}
                             </span>
                         </v-tab>
                         <v-tab value="notifications" class="tab-border">
@@ -75,7 +75,12 @@
                         </v-tab>
                         <v-tab value="history" class="tab-border">
                             <span class="text-blue">
-                                {{ $t('History') }}
+                                {{ $t('Notifications History') }}
+                            </span>
+                        </v-tab>
+                        <v-tab value="historyValues" class="tab-border">
+                            <span class="text-blue">
+                                {{ $t('Values History') }}
                             </span>
                         </v-tab>
                     </v-tabs>
