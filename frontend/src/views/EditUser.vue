@@ -156,6 +156,7 @@ const updateUser = () => {
 
 
   loaderStore.setLoading(true);
+  console.log(user.value)
   useUsersStore().updateUser(userId, user.value)
     .then(() => {
       toast.success('User updated successfully')

@@ -201,6 +201,8 @@ def user_detail(request, pk):
         # TODO - password mudar ao editar perfil
 
         serializer = CustomPutUserSerializer(user, data=request.data)
+        print('serializer: ', serializer)
+        
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, safe=False)

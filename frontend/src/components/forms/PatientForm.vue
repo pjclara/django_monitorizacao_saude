@@ -37,7 +37,7 @@
               </v-col>
               <v-col :cols="smAndDown ? '12' : '4'">
                 <v-text-field :label="$t('Email')" placeholder="@email" color="primary" v-model="patient.email"
-                  type="email" :rules="emailRules" maxlength="50" :disabled="!isSnsFilled" />
+                  type="email" :rules="emailRules" maxlength="50" :disabled="!isSnsFilled || routeName == 'PatientEdit'" />
               </v-col>
               <v-col :cols="smAndDown ? '12' : '2'">
                 <v-select :label="$t('Gender')" :items="['Masculino', 'Feminino']" v-model="patient.genero"

@@ -253,9 +253,11 @@ const search = ref(null)
 const headers = ref([
     { title: 'Name', key: 'nome', width: '20%', align: 'center' },
     { title: 'Health number', key: 'sns', width: '10%', align: 'center' },
-    { title: 'Age', key: 'dataNascimento', width: '10%', align: 'center' },
+    { title: 'Age', key: 'dataNascimento', width: '5%', align: 'center' },
+    //email
+    { title: 'email', key: 'email', width: '10%', align: 'center' },
     { title: 'devices', key: 'dispositivos', width: '45%', align: 'center' },
-    { title: 'Actions', key: 'actions', sortable: false, width: '15%', align: 'center' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '10%', align: 'center' },
 ]);
 
 onMounted(() => {
