@@ -134,6 +134,7 @@ const pt = {
   'Notifications History': 'Histórico de Notificações',
   'Active Charts': 'Gráficos Ativos',
   'Values History': 'Histórico de Valores',
+  'email': 'Email',
 }
 
 export default pt

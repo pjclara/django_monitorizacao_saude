@@ -44,8 +44,9 @@
                                         @click="edit(patient?.sns)"><v-icon class="mr-2">mdi-pencil</v-icon>{{
                                             $t("Edit") }}</v-btn>
                                     <v-btn color="red" size="small" width="100px" class="mt-2"
-                                        @click="deletePatient(patient?.sns)"><v-icon class="mr-2">mdi-trash-can</v-icon>{{
-                                            $t("Delete") }}</v-btn>
+                                        @click="deletePatient(patient?.sns)"><v-icon
+                                            class="mr-2">mdi-trash-can</v-icon>{{
+                                                $t("Delete") }}</v-btn>
                                 </v-row>
                             </v-col>
                         </v-row>
@@ -66,7 +67,7 @@
                                 {{ $t('Vital Signs') }}
                             </span>
                         </v-tab>
-                        <v-tab value="estatistics" class="tab-border mr-1">
+                        <v-tab value="Active Charts" class="tab-border mr-1">
                             <span class="text-blue">
                                 {{ $t('Active Charts') }}
                             </span>
@@ -166,7 +167,7 @@
                                     </v-col>
                                 </v-row>
                             </v-window-item>
-                            <v-window-item value="estatistics">
+                            <v-window-item value="Active Charts">
                                 <div v-if="!smAndDown">
                                     <div>
                                         <v-select v-model="deviceId" :items="decicesList" item-title="nome"
@@ -239,6 +240,26 @@
                                 <MobileTable v-else :data="historyNotifications"
                                     :keys="['dispositivo', 'sinal', 'data', 'valor']"></MobileTable>
                             </v-window-item>
+
+                            <v-window-item value="historyValues">
+                                <v-row>
+                                    <v-col>
+                                        <div class="d-flex justify-center">
+                                            start <input type="date" v-model="startDate" placeholder="yyyy-mm-dd">
+                                            end <input type="date" placeholder="yyyy-mm-dd">
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                                <v-card>
+                                    <v-card-title>
+                                        Devices: {{ totalDevices }}
+                                    </v-card-title>
+                                    <v-card-title>
+                                        Sinais vitais: {{ totalVitalSigns }}
+                                    </v-card-title>
+                                </v-card>
+
+                            </v-window-item>
                         </v-window>
                     </v-card-text>
                 </v-card>
@@ -251,7 +272,7 @@ import MobileTable from '@/components/table/MobileTable.vue';
 import { ref, onMounted, computed } from 'vue';
 import { Line } from 'vue-chartjs'
 import { useRoute, useRouter } from 'vue-router';
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, min } from 'date-fns';
 import { toast } from 'vue3-toastify';
 import { format, compareDesc } from 'date-fns'
 import { useUsersStore } from '@/stores/users'
@@ -633,11 +654,34 @@ const deleteDevice = async (index) => {
     }
 };
 
+const totalVitalSigns = ref(0);
+const startDate = ref(null);
+const totalDevices = computed(() => {
+    // get devices from the patient where data_fim is before today
+    const dataAtual = new Date();
+    const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
+
+    const data = patient.value.dispositivos.map(device => {
+        const dataFim = new Date(device.data_fim);
+        const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
+        return dataFimFormatada < dataAtualFormatada ? device : null;
+    });
+
+    console.log(startDate.value);
+
+    totalVitalSigns.value = data.reduce((acc, device) => {
+        return acc + device.sinaisVitais.length;
+    }, 0);
+
+    return data.length;
+})
+
+
 const deletePatient = async (sns) => {
     if (!confirm('Are you sure you want to delete this patient?')) {
         return;
     }
-   
+
 };
 </script>
 
