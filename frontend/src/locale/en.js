@@ -130,6 +130,7 @@ const en = {
     'Histórico de Notificações': 'Notifications History',
     'Gráficos Ativos': 'Active Charts',
     'Histórico de Valores': 'Values History',
+    "forgotPassword": 'Forgot your password? Click here.',
   };
 
 export default en;
