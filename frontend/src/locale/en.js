@@ -131,6 +131,7 @@ const en = {
     'Gráficos Ativos': 'Active Charts',
     'Histórico de Valores': 'Values History',
     'email': 'Email',
+    "forgotPassword": 'Forgot your password? Click here.',
   };
 
 export default en;

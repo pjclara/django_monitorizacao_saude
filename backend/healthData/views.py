@@ -87,8 +87,10 @@ def get_all_users(request):
 
         serializer = CustomPostUserSerializer(data=user_data)
         if serializer.is_valid():
-            message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is < {random_password} > .'
-            send_email(user_data['email'], message)
+            message = f'Hi { fullName }, welcome to the Health Monitor app. The password for your account is: {random_password} .'
+            html_message = f'Hi { fullName }. You were registered as a pacient in the Health Monitor App, your password is: <strong> {random_password} </strong>.'
+
+            send_email(user_data['email'], message, html_message)
             serializer.save()
             return JsonResponse(serializer.data, status=201, safe=False)
         return JsonResponse(serializer.errors, status=400, safe=False)
@@ -362,8 +364,10 @@ def criar_documento(request):
         user_serializer = CustomPostUserSerializer(data=user_data)
 
         if user_serializer.is_valid():
-            message = f'Hi { fullName }. You were registered as a pacient in the Health Monitor App, your password is < {random_password} >.'
-            send_email(data['email'], message)
+            message = f'Hi { fullName }. You were registered as a pacient in the Health Monitor App, your password is: {random_password}.'
+            html_message = f'Hi { fullName }. You were registered as a pacient in the Health Monitor App, your password is: <strong> {random_password} </strong>.'
+
+            send_email(data['email'], message, html_message)
             user_serializer.save()
         else:
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -640,8 +644,10 @@ def recover_password(request, email):
 
         if serializer.is_valid():
             serializer.save()
-            message = f'Hi { fullName }. Your password was resetted as requested, the new password is < {random_password} >.'
-            send_email(email, message)
+            message = f'Hi { fullName }. Your password was resetted as requested, the new password is: {random_password}.'
+            html_message = f'Hi { fullName }. Your password was resetted as requested, the new password is: <strong> {random_password} </strong>.'
+
+            send_email(email, message, html_message)
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     else: 
@@ -753,8 +759,8 @@ def generate_random_password(length=12):
     random_password = ''.join(secrets.choice(characters) for i in range(length))
     return random_password
 
-def send_email(email, message):
+def send_email(email, message, html_message):
     subject = 'Access to the Health Monitor App'
-    email_from = settings.EMAIL_HOST_USER
+    from_email = settings.EMAIL_HOST_USER
     recipient_list = [email]
-    send_mail(subject, message, email_from, recipient_list )
+    send_mail(subject, message, from_email, recipient_list, html_message=html_message)
