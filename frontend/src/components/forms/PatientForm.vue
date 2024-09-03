@@ -103,18 +103,18 @@
               <v-row v-for="(vital, index) in patient.dispositivos[indexDispositivo].sinaisVitais" :key="index"
                 style="background-color: lightcyan; padding: 10px;">
 
-                <v-col :cols="smAndDown ? '12' : '4'">
+                <v-col :cols="smAndDown ? '12' : '3'">
                   <v-select v-model="vital.tipo" :label="$t('sinalVital')" :items="listSinaisVitais">
                   </v-select>
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '2'">
+                <v-col :cols="smAndDown ? '12' : '1'">
                   <v-text-field :label="$t('Unit')" color="primary" v-model="vital.unidade" disabled
                     :value="vital.unidade = unidade(vital.tipo)" />
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '1'">
+                <v-col :cols="smAndDown ? '12' : '2'">
                   <v-text-field label="Min" type="number" color="primary" v-model="vital.minimo" :rules="minMaxRules" />
                 </v-col>
-                <v-col :cols="smAndDown ? '12' : '1'">
+                <v-col :cols="smAndDown ? '12' : '2'">
                   <v-text-field label="Max" type="number" color="primary" v-model="vital.maximo" :rules="minMaxRules" />
                 </v-col>
 
@@ -413,7 +413,8 @@ const test = computed(() => {
                 // valores máximos deve ser maior que os mínimos para cada sinal vital
                 if (key === 'maximo' || key === 'minimo') {
                   if (vital[key] !== null && vital[key] !== '') {
-                    if (vital.maximo < vital.minimo) {
+                    
+                    if (parseInt(vital.maximo)< parseInt(vital.minimo)) {
                       emit('areAllFieldsNonEmpty', false)
                       return false
                     }
