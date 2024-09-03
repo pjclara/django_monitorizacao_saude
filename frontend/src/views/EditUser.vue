@@ -7,18 +7,16 @@
     </v-row>
     <v-form v-model="isFormValid" @input="validationStatus" class="border-dashed pa-4">
       <v-row>
-        <v-col cols="12" sm="5">
+        <v-col cols="12" sm="4">
           <v-text-field v-model="user.full_name" label="Name" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="5">
+        <v-col cols="12" sm="4">
           <v-text-field v-model="user.email" label="Email" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="2">
+        <v-col cols="12" sm="2" v-if="isEditProfile && user.type_user == 'admin'">
           <v-select v-model="user.is_active" :items="activeOptions" label="Active" required></v-select>
         </v-col>
-      </v-row>
-      <v-row v-if="isEditProfile">
-        <v-col cols="12" sm="6">
+        <v-col cols="12" sm="2" v-if="isEditProfile">
           <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
         </v-col>
       </v-row>

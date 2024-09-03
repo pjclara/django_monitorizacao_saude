@@ -468,6 +468,7 @@ def ativar_sinal_vital(request, sns):
         documento = db.minha_colecao.find_one({"sns": sns})
         if not documento:
             return Response({"error": "Documento não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        send_update(sns, "sinal_vital_ativado", f"room{sns}")
         dispositivo_idx = request.data.get('dispositivo_idx')
         sinal_idx = request.data.get('sinal_idx')
         documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['ativo'] = True
@@ -486,7 +487,7 @@ def ativar_sinal_vital(request, sns):
         }
         documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['valores'].append(dataToApend)
         db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
-        send_update(sns, "sinal_vital_ativado", f"room{sns}")
+        
        
        #notificação
         if request.data.get('valor') > documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['maximo'] or request.data.get('valor') < documento['dispositivos'][dispositivo_idx]['sinaisVitais'][sinal_idx]['minimo']:
@@ -542,6 +543,7 @@ def desativar_sinal_vital(request, sns):
         if all([not sinal['ativo'] for sinal in documento['dispositivos'][dispositivo_idx]['sinaisVitais']]):
             documento['dispositivos'][dispositivo_idx]['ativo'] = False
         db.minha_colecao.update_one({"sns": sns}, {"$set": documento})
+        send_update(sns, "sinal_vital_desativado", f"room{sns}")
         return Response({"message": "Sinal vital desativado com sucesso."}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

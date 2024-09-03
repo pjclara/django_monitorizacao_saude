@@ -86,6 +86,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     patient.dispositivos[indexSinal].ativo = true
     toast.success('Data creation started')
     if (getintervalId(patient.sns, indexSinal, index) && getintervalId(patient.sns, indexSinal, index).valor === 0) {
+      ativarSinal(patient, indexSinal, index);
       getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {
         await ativarSinal(patient, indexSinal, index)
       }, readingFrequency * 1000)

@@ -381,16 +381,16 @@ onMounted(() => {
                 }
             });
         });
-       
+       */
         const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
         ws.onopen = () => {
-            console.log('Connected to the websocket server')
+            console.log('Connected to the websocket server' + patientSns)
         }
         ws.onmessage = (event) => {
             console.log('Received data from the websocket server', event.data)
-            // fetchPatientData();
+               // fetchPatientData();
             // fetchNotifications();
-        } */
+        } 
     }
     catch (error) {
         console.error('Error:', error);
