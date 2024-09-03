@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import { useLoaderStore } from '@/stores/loader'
+import { usePatientsStore } from './patients'
 
 export const useNotificationsStore = defineStore('notifications', () => {
   const notifications = ref([])
@@ -12,8 +13,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const token = useUsersStore().token
   const loaderStore = useLoaderStore()
 
-
-  
+  const pacientsStore = usePatientsStore()
 
   const fetchNotifications = async (user_id) => {
     const response = await fetch(window.URL + '/api/listar_notificacoes/' + user_id + '/', {
@@ -40,7 +40,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
     notifications.value.forEach((notification) => {
       if (notification.read) {
         notificationsRead.value.push(notification)
-        
       }
     })
   }
@@ -73,11 +72,21 @@ export const useNotificationsStore = defineStore('notifications', () => {
       } else {
         toast.success('Notification read')
         // delete from notificationsNotRead
-        const index = notificationsNotRead.value.findIndex((notification) => notification._id === id)
+        const index = notificationsNotRead.value.findIndex(
+          (notification) => notification._id === id
+        )
         notificationsNotRead.value.splice(index, 1)
         // add to notificationsRead
         notificationsRead.value.push(data)
+        // set sinal as read in patient
+        const patient = pacientsStore.patients.find((patient) => patient.sns == data.utente)
+        // message string like "device_id, vital_sign_id, value_id"
+        const message = data.message.split(',')
+        patient.dispositivos[parseInt(message[0].split(':')[1])].sinaisVitais[
+          parseInt(message[1].split(':')[1])
+        ].valores[parseInt(message[2].split(':')[1])] = true
       }
+
       loaderStore.setLoading(false)
     } catch (error) {
       console.error(error)

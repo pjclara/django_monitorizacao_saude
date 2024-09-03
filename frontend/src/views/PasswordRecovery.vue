@@ -4,9 +4,9 @@
             <v-col cols="12" align="center">
                 <p class="text-h5 my-4"> {{ $t("passwordRecovery") }}</p>
                 <v-col :cols="smAndDown ? '12' : '6'">
-                    <v-text-field label="Email" color="primary" v-model="email" />
+                    <v-text-field label="Email" color="primary" v-model="email" :rules="emailRules" />
                 </v-col>
-                <v-btn :disabled="!email" @click="passwordRecovery">{{ $t("recover") }}</v-btn>
+                <v-btn :disabled="!email" @click="passwordRecovery" disabled="emailRules">{{ $t("recover") }}</v-btn>
             </v-col>
         </v-row>
     </v-container>
@@ -32,18 +32,28 @@ const passwordRecovery = async () => {
     try {
         const response = await fetch(window.URL + '/api/password_recovery/' + email.value + '/');
         if (!response.ok) {
-            toast.error('Failed to fetch data');
-            throw new Error('Failed to fetch data');
+            // 404
+            if (response.status === 404) {
+                toast.error('Email not found');
+            } else {
+                toast.error('Failed to fetch data');
+                throw new Error('Failed to fetch data');
+            }
         } else {
             console.log("response ok : ", response)
             toast.success('Email Sent');
+            await new Promise(r => setTimeout(r, 2000));
+            router.push({ name: 'login' });
         }
     } catch (error) {
         console.error(error);
     }
     loaderStore.setLoading(false);
-    // pause for 2 seconds
-    await new Promise(r => setTimeout(r, 2000));
-    router.push({ name: 'login' });
+
 };
+
+const emailRules = [
+    (v) => !!v || 'E-mail is required',
+    (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+]
 </script>

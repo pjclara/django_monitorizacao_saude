@@ -56,9 +56,17 @@
     </v-row>
 
     <v-row>
-      <v-col v-for="data in patientsWithDevicesActives" v-if="patientsWithDevicesActives.length > 0" cols="12" sm="4">
-        <v-card class="rounded-xl" height="300" style="padding: 16px;">
-          <Line id="id_w" :data="data" :options="chartOptions" />
+      <v-col v-for="data in patientsWithDevicesActives" v-if="patientsWithDevicesActives.length > 0" cols="12" sm="6">
+        <v-card elevation="16">
+          <v-card-title class="text-subtitle-1">
+            {{ data.name }} SNS: {{ data.sns }}
+          </v-card-title>
+          <v-card-subtitle>
+            {{ data.tipo }}
+          </v-card-subtitle>
+          <v-card-text>
+            <Line id="id_w" :data="data" :options="chartOptions" />
+          </v-card-text>
         </v-card>
       </v-col>
       <v-col cols="12" sm="6" v-else>
@@ -106,11 +114,12 @@ const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   responsive: true,
-  scales: {
-    y: {
-      beginAtZero: true
-    }
+  plugins: {
+    legend: {
+      display: false
+    },
   }
+
 };
 const user = useUsersStore().user
 
@@ -145,26 +154,31 @@ const connectToWebSocket = (patient) => {
 
 const patientsWithDevicesActives = computed(() => {
   const dataForGraph = [];
-  usePatientsStore().devicesActive.forEach((dispositivo) => {
-    if (dispositivo.ativo) {
-      dispositivo.sinaisVitais.forEach((sinalVital) => {
-        if (sinalVital.ativo === false) {
-          return;
-        }
-        dataForGraph.push({
-          labels: sinalVital.valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString()),
-          datasets: [
-            {
-              label: sinalVital.tipo,
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-              data: sinalVital.valores.slice(-30).map(entry => entry.valor)
-            }
-          ]
-        });
+
+  usePatientsStore().devicesActive.forEach((data) => {
+    data.device.sinaisVitais.forEach((sinalVital) => {
+      if (sinalVital.ativo === false) {
+        return;
+      }
+
+      dataForGraph.push({
+        name: data.name,
+        sns: data.sns,
+        tipo: sinalVital.tipo,
+        labels: sinalVital.valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString()),
+        datasets: [
+          {
+            backgroundColor: 'blue',
+            borderColor: 'gray',
+            borderWidth: 1,
+            tension: 0.5,
+            fill: false,
+            data: sinalVital.valores.slice(-30).map(entry => entry.valor),
+            pointBackgroundColor: sinalVital.valores.slice(-30).map(entry => entry.valor > sinalVital.maximo || entry.valor < sinalVital.minimo ? 'red' : 'black')
+          }
+        ]
       });
-    }
+    });
   });
   return dataForGraph
 });

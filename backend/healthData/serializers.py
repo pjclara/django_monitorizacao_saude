@@ -80,8 +80,6 @@ class NotificationSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(default=serializers.CreateOnlyDefault(timezone.now))
     updated_at = serializers.DateTimeField(required=False)
     
-       
-
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -186,7 +184,17 @@ class CustomPutUserSerializer(serializers.Serializer):
         customer.mobile_phone = validated_data['mobile_phone']
         customer.health_number = validated_data['health_number']
         customer.type_user = validated_data['type_user']
+        
         customer.save()
+        
+        group =  Group.objects.filter(name=validated_data['role'])           
+        if not group:
+            group = Group.objects.create(name=validated_data['role'])
+        else:
+            group = group[0]
+        if group not in customer.groups.all():
+            customer.groups.clear()
+            customer.groups.add(group)        
         return customer
 
 

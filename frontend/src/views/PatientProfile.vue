@@ -67,9 +67,9 @@
                                 {{ $t('Vital Signs') }}
                             </span>
                         </v-tab>
-                        <v-tab value="Active Charts" class="tab-border mr-1">
+                        <v-tab value="activeCharts" class="tab-border mr-1">
                             <span class="text-blue">
-                                {{ $t('Active Charts') }}
+                                {{ $t('activeCharts') }}
                             </span>
                         </v-tab>
                         <v-tab value="notifications" class="tab-border">
@@ -167,7 +167,7 @@
                                     </v-col>
                                 </v-row>
                             </v-window-item>
-                            <v-window-item value="Active Charts">
+                            <v-window-item value="activeCharts">
                                 <div v-if="!smAndDown">
                                     <div>
                                         <v-select v-model="deviceId" :items="decicesList" item-title="nome"
@@ -311,7 +311,12 @@ const chartOptions = {
     backgroundColor: 'rgba(75, 192, 192, 0.2)',
     borderColor: 'rgba(75, 192, 192, 1)',
     borderWidth: 1,
-    responsive: true
+    responsive: true,
+    plugins: {
+        legend: {
+            display: false
+        },
+    }
 };
 
 const getStartValue = (index) => {
@@ -393,8 +398,8 @@ onMounted(() => {
     if (router.currentRoute.value.query.notifications) {
         tab.value = 'notifications';
     }
-    if (router.currentRoute.value.query.estatistics && router.currentRoute.value.query.modelo) {
-        tab.value = 'estatistics';
+    if (router.currentRoute.value.query.activeCharts && router.currentRoute.value.query.modelo) {
+        tab.value = 'activeCharts';
         deviceId.value = decicesList.value.find(device => device.modelo === router.currentRoute.value.query.modelo);
 
     }
@@ -532,13 +537,14 @@ const formattedChartData = computed(() => {
         label: device.sinaisVitais[sinal.value].tipo + "(" + device.sinaisVitais[0].unidade + ")",
         data: device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => entry.valor),
         fill: false,
-        borderColor: colors[1],
+        backgroundColor: 'blue',
+        borderColor: 'gray',
         tension: 0.5,
         pointBackgroundColor: device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => {
             if (entry.valor < device.sinaisVitais[sinal.value].minimo || entry.valor > device.sinaisVitais[sinal.value].maximo) {
                 return 'red';
             }
-            return 'blue';
+            return 'black';
         })
     }
     chartData.value.datasets.push(data);

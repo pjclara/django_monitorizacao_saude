@@ -117,7 +117,7 @@ const criarPaciente = async () => {
   loaderStore.setLoading(true);
   // check if patient already exists
   const patientExists = await usePatientsStore().buscarPaciente(patient.value.sns);
-  console.log(patientExists)
+  
   if (patientExists.length > 0) {
     usePatientsStore().atualizarPaciente(patient.value);
   } else {

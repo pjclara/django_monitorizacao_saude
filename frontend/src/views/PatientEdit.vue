@@ -101,6 +101,7 @@ const atualizarPaciente = () => {
   }
 
   usePatientsStore().atualizarPaciente(patient.value);
+  
   loaderStore.setLoading(false);
 }
 

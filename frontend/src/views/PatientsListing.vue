@@ -9,7 +9,7 @@
                 </v-col>
                 <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
                     $t('PatientsListing')
-                }}
+                    }}
                 </v-col>
                 <v-col class="d-flex justify-end" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" elevated to="/create-patient">
@@ -127,7 +127,7 @@
                 </v-col>
                 <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
                     $t('PatientsListing')
-                }}
+                    }}
                 </v-col>
                 <v-col class="d-flex justify-center" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" elevated to="/create-patient">
@@ -137,7 +137,7 @@
             </v-row>
             <v-row no-gutters justify="center" class="mb-2">
                 <v-col cols="12" class="d-flex justify-center align-center">
-                    <v-checkbox v-model="showMonitoredPatients" >
+                    <v-checkbox v-model="showMonitoredPatients">
                         <template v-slot:label>
                             <span style="font-size: 12px">{{ $t('Show Patients being monitored') }}</span>
                         </template>
@@ -264,6 +264,8 @@ onMounted(() => {
     if (usePatientsStore().patients.length === 0)
         usePatientsStore().fetchPatients(user.user_id);
 
+    console.log(usePatientsStore().patients);
+
 });
 
 const patientsList = computed(() => {
@@ -326,7 +328,7 @@ const editItem = (item) => {
 }
 
 const redirectNotifications = (item, hasAlert, dispositivo) => {
-    router.push({ name: 'PatientProfile', params: { patientSns: item.sns }, query: { estatistics: hasAlert, modelo: dispositivo.modelo } });
+    router.push({ name: 'PatientProfile', params: { patientSns: item.sns }, query: { activeCharts: hasAlert, modelo: dispositivo.modelo } });
 }
 </script>
 

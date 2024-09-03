@@ -132,7 +132,7 @@ const pt = {
   'The start date must be equal to or greater than today.': 'A data de início deve ser igual ou superior à data de hoje.',
   'Email sent successfully.': 'Email enviado com sucesso.',
   'Notifications History': 'Histórico de Notificações',
-  'Active Charts': 'Gráficos Ativos',
+  'activeCharts': 'Gráficos Ativos',
   'Values History': 'Histórico de Valores',
   'email': 'Email',
   'RolesListing': 'Listagem de Funções',

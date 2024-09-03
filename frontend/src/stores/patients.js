@@ -5,7 +5,6 @@ import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import router from '@/router'
 
-
 export const usePatientsStore = defineStore('patients', () => {
   const patients = ref([])
   const patient = ref({})
@@ -14,7 +13,6 @@ export const usePatientsStore = defineStore('patients', () => {
   const vitalSigns = ref([])
   const vitalSignActive = ref([])
   const token = useUsersStore().token
-
 
   const fetchPatients = async (user_id) => {
     const response = await fetch(
@@ -50,7 +48,12 @@ export const usePatientsStore = defineStore('patients', () => {
       patient.dispositivos.forEach(async (device) => {
         devices.value.push(device)
         if (device.ativo) {
-          devicesActive.value.push(device)
+          const data = {
+            sns: patient.sns,
+            name: patient.nome,
+            device: device
+          }
+          devicesActive.value.push(data)
         }
         device.sinaisVitais.forEach(async (vitalSign) => {
           vitalSigns.value.push(vitalSign)
@@ -105,7 +108,7 @@ export const usePatientsStore = defineStore('patients', () => {
     const data = await buscarPaciente(patient.sns)
     patients.value.push(data)
     toast.success('Patient created successfully')
-    router.push({ name: 'PatientsListing' });
+    router.push({ name: 'PatientsListing' })
   }
 
   const getPaciente = (sns) => {
