@@ -42,30 +42,38 @@ export const useUsersStore = defineStore('users', () => {
       },
       body: JSON.stringify({ email, password })
     })
-    if (response.status !== 200) {
+    if (response.status === 401) {
       toast.error(t('Username or password is invalid!'))
       return
     }
-        const data = await response.json()
-        // get user data from token
-        const userData = JSON.parse(atob(data.access.split('.')[1]))
-        // store token and user data in local storage
-        token.value = data.access
-        // store token and user data in local storage
-        localStorage.setItem('token', data.access)
-        // store refresh token in local storage
-        refreshToken.value = data.refresh
-        // store refresh token in local storage
-        localStorage.setItem('refreshToken', data.refresh)
-        // store user data in local storage
-        user.value = userData
-        isLogged.value = true
-        // check if user is admin
-        isAdmin.value = userData.groups.includes('admin') ? true : false
-        // check if user is patient
-        isPatient.value = userData.groups.includes('paciente') ? true : false
-        // store user data in local storage
-        localStorage.setItem('user', JSON.stringify(userData))
+    if (response.status === 400) {
+      toast.error('User is not active, please contact the administrator')
+      return
+    }
+    if (response.status !== 200) {
+      toast.error(t('An error occurred while trying to log in'))
+      return
+    }
+    const data = await response.json()
+    // get user data from token
+    const userData = JSON.parse(atob(data.access.split('.')[1]))
+    // store token and user data in local storage
+    token.value = data.access
+    // store token and user data in local storage
+    localStorage.setItem('token', data.access)
+    // store refresh token in local storage
+    refreshToken.value = data.refresh
+    // store refresh token in local storage
+    localStorage.setItem('refreshToken', data.refresh)
+    // store user data in local storage
+    user.value = userData
+    isLogged.value = true
+    // check if user is admin
+    isAdmin.value = userData.groups.includes('admin') ? true : false
+    // check if user is patient
+    isPatient.value = userData.groups.includes('paciente') ? true : false
+    // store user data in local storage
+    localStorage.setItem('user', JSON.stringify(userData))
   }
 
   if (localStorage.getItem('user')) {

@@ -7,11 +7,14 @@
     </v-row>
     <v-form v-model="isFormValid" @input="validationStatus" class="border-dashed pa-4">
       <v-row>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" sm="5">
           <v-text-field v-model="user.full_name" label="Name" required></v-text-field>
         </v-col>
-        <v-col cols="12" sm="6">
+        <v-col cols="12" sm="5">
           <v-text-field v-model="user.email" label="Email" required></v-text-field>
+        </v-col>
+        <v-col cols="12" sm="2">
+          <v-select v-model="user.is_active" :items="activeOptions" label="Active" required></v-select>
         </v-col>
       </v-row>
       <v-row v-if="isEditProfile">
@@ -65,6 +68,7 @@ import { useLoaderStore } from '@/stores/loader'
 import { useUsersStore } from '@/stores/users';
 import { toast } from 'vue3-toastify';
 
+const activeOptions = ['true', 'false']
 
 const isAdmin = computed(() => {
   return useUsersStore().user?.groups.includes('admin') ? true : false
