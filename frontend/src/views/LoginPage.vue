@@ -75,3 +75,12 @@ const recoverPassword = () => {
   width: 75%;
 }
 </style>
+
+<style>
+.v-btn {
+  text-transform: none !important;
+}
+.v-tab {
+    text-transform: none !important;
+}
+</style>
