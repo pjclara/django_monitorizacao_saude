@@ -64,10 +64,10 @@
                 <v-spacer class="spacer mx-2 my-4" />
                 <v-list-item class="d-flex justify-center">
                     <v-btn variant="outlined" class="mr-2" @click="changeLocale('PT')">
-                        <img height="32" src="/portugal-48.png" />
+                        <img height="32" alt="ptFlag" src="/portugal-48.png" />
                     </v-btn>
                     <v-btn variant="outlined" @click="changeLocale('EN')">
-                        <img height="32" src="/united-kingdom-48.png" />
+                        <img height="32" alt="ukFlag" src="/united-kingdom-48.png" />
                     </v-btn>
                 </v-list-item>
                 <v-spacer class="spacer mx-2 my-6" />
