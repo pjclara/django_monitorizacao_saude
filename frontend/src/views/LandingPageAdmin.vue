@@ -21,7 +21,7 @@
         </v-card>
       </v-col>
       <v-col cols="12" sm="4">
-        <v-card color="#C78987" theme="dark" class="rounded-xl" height="150">
+        <v-card color="#C78987" theme="dark" class="rounded-xl" height="150" @click="goToRoles">
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
@@ -65,7 +65,6 @@ const goToUsers = () => {
 };
 
 const getUsers = async () => {  
-  loaderStore.setLoading(true);
   useUsersStore().fetchUsers()
     .then((response) => {
       users.value = response;
@@ -73,11 +72,9 @@ const getUsers = async () => {
     .catch((error) => {
       console.error(error);
     });
-  loaderStore.setLoading(false);
 }
 
 const getRoles = async () => {
-  loaderStore.setLoading(true);
   useUsersStore().fetchRoles()
     .then((response) => {
       roles.value = response;
@@ -85,8 +82,11 @@ const getRoles = async () => {
     .catch((error) => {
       console.error(error);
     });
-  loaderStore.setLoading(false);
 }
+
+const goToRoles = () => {
+  router.push({ name: 'RolesAndPermissions' });
+};
 
 
 

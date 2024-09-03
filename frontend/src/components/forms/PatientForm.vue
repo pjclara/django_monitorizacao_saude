@@ -386,8 +386,8 @@ const test = computed(() => {
           const dataInicioFormatada = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
 
           if (dataInicioFormatada < dataAtualFormatada) {
-            emit('areAllFieldsNonEmpty', false)
-            return false
+            //emit('areAllFieldsNonEmpty', false)
+            //return false
           }
 
           // data de fim do dispositivo deve ser igual ou superior à data de início

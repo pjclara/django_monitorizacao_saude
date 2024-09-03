@@ -132,6 +132,8 @@ const en = {
     'Histórico de Valores': 'Values History',
     'email': 'Email',
     "forgotPassword": 'Forgot your password? Click here.',
+    "RolesListing": 'Roles Listing',
+    "Search for roles": 'Search for roles',
   };
 
 export default en;

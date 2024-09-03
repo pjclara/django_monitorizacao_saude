@@ -135,6 +135,8 @@ const pt = {
   'Active Charts': 'Gráficos Ativos',
   'Values History': 'Histórico de Valores',
   'email': 'Email',
+  'RolesListing': 'Listagem de Funções',
+  "Search for roles": 'Procurar por funções',
 }
 
 export default pt

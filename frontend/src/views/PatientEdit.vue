@@ -70,8 +70,8 @@ const atualizarPaciente = () => {
   for (let dispositivo of patient.value.dispositivos) {
 
     if (new Date(dispositivo.data_inicio) > new Date(dispositivo.data_fim)) {
-      erroEncontrado = true;
-      toast.error('End date must be greater than start date');
+      //erroEncontrado = true;
+      //toast.error('End date must be greater than start date');
     }
 
     // data de início do dispositivo deve ser igual ou superior à data de hoje
@@ -82,8 +82,8 @@ const atualizarPaciente = () => {
     const dataInicioFormatada = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
 
     if (dataInicioFormatada < dataAtualFormatada) {
-      erroEncontrado = true;
-      toast.error('Data de início do dispositivo deve ser igual ou superior à data de hoje');
+      //erroEncontrado = true;
+      //toast.error('Data de início do dispositivo deve ser igual ou superior à data de hoje');
     }
 
     dispositivo.sinaisVitais.forEach(element => {

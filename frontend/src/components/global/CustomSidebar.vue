@@ -27,7 +27,7 @@
                 <template v-slot:prepend>
                     <v-icon icon="mdi mdi-account-multiple" color="#B49239"></v-icon>
                 </template>
-                <v-list-item-title>{{ $t('RolesAndPermissions') }}</v-list-item-title>
+                <v-list-item-title>{{ $t('Roles') }}</v-list-item-title>
             </v-list-item>
             <v-list-item to="/patients" v-if="!isAdmin && !isPatient && isLogged">
                 <template v-slot:prepend>

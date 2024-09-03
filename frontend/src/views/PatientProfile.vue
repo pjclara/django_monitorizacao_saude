@@ -242,21 +242,24 @@
                             </v-window-item>
 
                             <v-window-item value="historyValues">
-                                <v-row>
+                                <v-row style="padding-top: 5px;">
                                     <v-col>
-                                        <div class="d-flex justify-center">
-                                            start <input type="date" v-model="startDate" placeholder="yyyy-mm-dd">
-                                            end <input type="date" placeholder="yyyy-mm-dd">
+                                        <div class="text-field-container">
+                                            <input type="date" class="text-field" v-model="startDate">
+                                            <label for="nome" class="text-field-label">Start</label>
+                                            <div class="helper-text">Introduzir data de inicio</div>
+                                        </div>
+                                    </v-col>
+                                    <v-col>
+                                        <div class="text-field-container">
+                                            <input type="date" class="text-field" v-model="endDate">
+                                            <label for="nome" class="text-field-label">End</label>
+                                            <div class="helper-text">Introduzir data de fim</div>
                                         </div>
                                     </v-col>
                                 </v-row>
-                                <v-card>
-                                    <v-card-title>
-                                        Devices: {{ totalDevices }}
-                                    </v-card-title>
-                                    <v-card-title>
-                                        Sinais vitais: {{ totalVitalSigns }}
-                                    </v-card-title>
+                                <v-card elevation="11" shaped v-for="historyListValue in historyListValues">
+                                    {{ historyListValue }}<br>
                                 </v-card>
 
                             </v-window-item>
@@ -269,7 +272,7 @@
 </template>
 <script setup>
 import MobileTable from '@/components/table/MobileTable.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { Line } from 'vue-chartjs'
 import { useRoute, useRouter } from 'vue-router';
 import { differenceInYears, min } from 'date-fns';
@@ -654,27 +657,68 @@ const deleteDevice = async (index) => {
     }
 };
 
-const totalVitalSigns = ref(0);
 const startDate = ref(null);
-const totalDevices = computed(() => {
-    // get devices from the patient where data_fim is before today
-    const dataAtual = new Date();
-    const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
+const endDate = ref(null);
 
-    const data = patient.value.dispositivos.map(device => {
-        const dataFim = new Date(device.data_fim);
-        const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
-        return dataFimFormatada < dataAtualFormatada ? device : null;
-    });
+const dataAtual = new Date();
+const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
 
-    console.log(startDate.value);
+const historyListValues = computed(() => {
+    if (startDate.value && endDate.value) {
+        return patient.value.dispositivos.filter(device => {
+            const dataFim = new Date(device.data_fim);
+            const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
+            const dataIncio = new Date(device.data_inicio);
+            const dataInicioFormatada = new Date(dataIncio.getFullYear(), dataIncio.getMonth(), dataIncio.getDate());
 
-    totalVitalSigns.value = data.reduce((acc, device) => {
-        return acc + device.sinaisVitais.length;
-    }, 0);
+            return dataFimFormatada < dataAtualFormatada;
 
-    return data.length;
-})
+        }).map((dispositivo, dispositivo_idx) => dispositivo.sinaisVitais.map((sinal, sinal_idx) => {
+            return {
+                modelo: dispositivo.modelo,
+                nome: sinal.tipo,
+                start: new Date(dispositivo.data_inicio).toISOString().split('T')[0],
+                end: new Date(dispositivo.data_fim).toISOString().split('T')[0],
+                totalValores: sinal.valores.filter((valor) => {
+                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                }).length,
+                valorMaximo: Math.max(...sinal.valores.filter((valor) => {
+                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                }).map((valor) => valor.valor)),
+                valorMinimo: Math.min(...sinal.valores.filter((valor) => {
+                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                }).map((valor) => valor.valor)),
+            }
+        }))
+    } else {
+        console.log("sem data");
+        // devolver dispositivos com data_fim inferior a hoje
+        return patient.value.dispositivos.filter(device => {
+            const dataFim = new Date(device.data_fim);
+            const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
+
+            return dataFimFormatada < dataAtualFormatada;
+        }).map((dispositivo) => {
+
+            return {
+                start: dispositivo.data_inicio,
+                end: dispositivo.data_fim,
+                valores: dispositivo.sinaisVitais.map((sinal) => {
+                    return {
+                        max: sinal.maximo,
+                        min: sinal.minimo,
+                        totalValores: sinal.valores.length,
+                        valorMaximo: Math.max(...sinal.valores.map((valor) => valor.valor)),
+                        valorMinimo: Math.min(...sinal.valores.map((valor) => valor.valor)),
+
+                    }
+                })
+            }
+        });
+    }
+
+});
+
 
 
 const deletePatient = async (sns) => {
@@ -692,5 +736,54 @@ const deletePatient = async (sns) => {
 
 .patient-card {
     width: 100%;
+}
+
+.text-field-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.text-field {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+}
+
+.text-field:focus {
+    border-color: #6200ea;
+    /* Cor do foco */
+    box-shadow: 0 0 5px rgba(98, 0, 234, 0.5);
+    /* Sombra roxa ao focar */
+}
+
+.text-field-label {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    background-color: white;
+    padding: 0 4px;
+    color: #999;
+    transition: all 0.3s;
+    pointer-events: none;
+    font-size: 16px;
+}
+
+.text-field:focus+.text-field-label,
+.text-field:not(:placeholder-shown)+.text-field-label {
+    top: 0;
+    transform: translateY(-50%) scale(0.8);
+    color: #6200ea;
+    /* Cor do rótulo ao focar */
+}
+
+.helper-text {
+    font-size: 12px;
+    color: #777;
+    margin-top: 4px;
 }
 </style>
