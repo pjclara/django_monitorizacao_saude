@@ -257,7 +257,7 @@
                                     </v-col>
                                 </v-row>
                                 <v-card elevation="11" shaped v-for="historyListValue in historyListValues">
-                                    <v-data-table :items="historyListValue.valores" :items-per-page="5"
+                                    <v-data-table :items="historyListValue.valores" :items-per-page="5" class="elevation-1"
                                         v-if="!smAndDown">
                                         <template v-slot:top>
                                             <v-toolbar flat>
@@ -766,6 +766,10 @@ const deletePatient = async (sns) => {
 </script>
 
 <style scoped>
+tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, .05);
+}
+
 .tab-border {
     border-bottom: 1px solid #ccc;
 }
