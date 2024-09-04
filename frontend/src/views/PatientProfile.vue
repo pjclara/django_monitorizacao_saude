@@ -170,7 +170,7 @@
                             <v-window-item value="activeCharts">
                                 <div v-if="!smAndDown">
                                     <div>
-                                        <v-select v-model="deviceId" :items="decicesList" item-title="nome"
+                                        <v-select v-model="deviceId" :items="getDeviceActives" item-title="nome"
                                             item-value="id" :label="$t('Choose a Device')" return-object>
                                         </v-select>
                                     </div>
@@ -320,9 +320,10 @@ const chartOptions = {
     }
 };
 
-const getStartValue = (index) => {
-    return decicesList.value[index] ? decicesList.value[index].ativo : false;
-};
+const getDeviceActives = computed(() => {
+    deviceId.value = null;
+    return decicesList.value.filter(device => device.ativo);
+});
 
 const router = useRouter();
 
