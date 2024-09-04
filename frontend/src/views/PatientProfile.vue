@@ -178,14 +178,15 @@
                                         <v-row>
                                             <v-btn v-for="(sinalVital, index) in sinaisVitais"
                                                 :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
-                                                @click="atualizarGrafico(index)">{{
+                                                @click="atualizarGrafico(index)" >{{
                                                     sinalVital.nome }}
+                                                
                                             </v-btn>
                                         </v-row>
                                     </div>
 
-                                    <div v-if="deviceId != null">
-                                        <v-card height="400" style="padding: 16px;">
+                                    <div v-if="deviceId != null " >
+                                        <v-card height="400" style="padding: 16px;" >
                                             <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />
                                         </v-card>
                                     </div>
@@ -365,36 +366,7 @@ onMounted(() => {
 
 
     useNotificationsStore().fetchNotifications(patientSns);
-    const wsArray = [];
 
-    try {
-        /*
-        patient.value.dispositivos.forEach(device => {
-            device.sinaisVitais.forEach((sinal, index) => {
-                wsArray.push(new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/sns-' + patientSns + '/device-' + device.numeroSerie + '-sinal-' + index + '/'));
-                wsArray[wsArray.length - 1].onopen = () => {
-                    console.log('Connected to the websocket server')
-                }
-                wsArray[wsArray.length - 1].onmessage = (event) => {
-                    fetchPatientData();
-                    //fetchNotifications();
-                }
-            });
-        });
-       */
-        const ws = new WebSocket('ws://' + useLoaderStore().url + '/ws/pacient/room' + patientSns + '/');
-        ws.onopen = () => {
-            console.log('Connected to the websocket server' + patientSns)
-        }
-        ws.onmessage = (event) => {
-            console.log('Received data from the websocket server', event.data)
-               // fetchPatientData();
-            // fetchNotifications();
-        } 
-    }
-    catch (error) {
-        console.error('Error:', error);
-    }
     if (router.currentRoute.value.query.notifications) {
         tab.value = 'notifications';
     }
@@ -427,20 +399,21 @@ const isPatient = computed(() => {
 
 const startGenerateData = (patient, indexSinal, index) => {
     patient.dispositivos[indexSinal].sinaisVitais[index].ativo = true
+
+    useVitalSignsStore().startGenerateData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
     patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
         (sinal) => sinal.ativo
     )
-    useVitalSignsStore().startGenerateData(patient, indexSinal, index);
-    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, true);
 }
 
 const stopGeneratingData = (patient, indexSinal, index) => {
     patient.dispositivos[indexSinal].sinaisVitais[index].ativo = false
+    useVitalSignsStore().stopGeneratingData(patient, indexSinal, index);
+    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
     patient.dispositivos[indexSinal].ativo = patient.dispositivos[indexSinal].sinaisVitais.some(
         (sinal) => sinal.ativo
     )
-    useVitalSignsStore().stopGeneratingData(patient, indexSinal, index);
-    useVitalSignsStore().updateStart(patient.sns, indexSinal, index, false);
 }
 
 const sinal = ref(0);
@@ -455,12 +428,28 @@ const tab = ref(null);
 
 const deviceId = ref(null);
 
+const hasValues =  computed(() => {
+    if (!deviceId.value) {
+        return false;
+    }
+    return patient.value.dispositivos.find(device => device.numeroSerie === deviceId.value.numeroSerie).sinaisVitais.map(sinal => {
+        if (sinal.valores.length > 0) {
+            return true;
+        }else{
+            return false;
+        }
+    });
+});
+
 const sinaisVitais = computed(() => {
     if (!deviceId.value) {
         return [];
     }
     return patient.value.dispositivos.find(device => device.numeroSerie === deviceId.value.numeroSerie).sinaisVitais.map(sinal => {
-        return { nome: sinal.tipo }
+        return { 
+            nome: sinal.tipo,
+            hasValues: sinal.valores.length > 0
+         }
     });
 });
 
@@ -469,7 +458,7 @@ const lastVitalValues = computed(() => {
         return {
             dispositivo_idx: dispositivo_idx,
             sinal_idx: sinal_idx,
-            ativo: dispositivo.ativo,
+            ativo: sinal.ativo,
             modelo: dispositivo.modelo, nome: sinal.tipo, max: sinal.maximo, min: sinal.minimo, unidade: sinal.unidade, valor: sinal.valores[sinal.valores.length - 1]
         }
     }))
@@ -551,7 +540,6 @@ const formattedChartData = computed(() => {
     chartData.value.labels = device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => new Date(entry.data).toLocaleTimeString());
 
     return chartData.value;
-
 });
 
 const atualizarGrafico = (index) => {
