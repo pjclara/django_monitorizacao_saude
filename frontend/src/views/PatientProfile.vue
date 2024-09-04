@@ -177,8 +177,8 @@
                                     <div>
                                         <v-row>
                                             <v-btn v-for="(sinalVital, index) in sinaisVitais"
-                                                :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index" :disabled="!sinalVital.ativo"
-                                                @click="atualizarGrafico(index)">{{
+                                                :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
+                                                :disabled="!sinalVital.ativo" @click="atualizarGrafico(index)">{{
                                                     sinalVital.nome }}
 
                                             </v-btn>
@@ -260,7 +260,15 @@
                                     </v-col>
                                 </v-row>
                                 <v-card elevation="11" shaped v-for="historyListValue in historyListValues">
-                                    {{ historyListValue }}<br>
+                                    <v-data-table :items="historyListValue.valores" :items-per-page="5"
+                                        v-if="!smAndDown">
+                                        <template v-slot:top>
+                                            <v-toolbar flat>
+                                                <v-toolbar-title>{{ $t('Values History') }} de {{ historyListValue.start }} a {{ historyListValue.end }}; Modelo: {{ historyListValue.modelo }} </v-toolbar-title>
+                                            </v-toolbar>
+                                        </template>
+                                        
+                                    </v-data-table>
                                 </v-card>
 
                             </v-window-item>
@@ -675,15 +683,7 @@ const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(
 
 const historyListValues = computed(() => {
     if (startDate.value && endDate.value) {
-        return patient.value.dispositivos.filter(device => {
-            const dataFim = new Date(device.data_fim);
-            const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
-            const dataIncio = new Date(device.data_inicio);
-            const dataInicioFormatada = new Date(dataIncio.getFullYear(), dataIncio.getMonth(), dataIncio.getDate());
-
-            return dataFimFormatada < dataAtualFormatada;
-
-        }).map((dispositivo, dispositivo_idx) => dispositivo.sinaisVitais.map((sinal, sinal_idx) => {
+        return patient.value.dispositivos.map((dispositivo, dispositivo_idx) => dispositivo.sinaisVitais.map((sinal, sinal_idx) => {
             return {
                 modelo: dispositivo.modelo,
                 nome: sinal.tipo,
@@ -703,23 +703,22 @@ const historyListValues = computed(() => {
     } else {
         console.log("sem data");
         // devolver dispositivos com data_fim inferior a hoje
-        return patient.value.dispositivos.filter(device => {
-            const dataFim = new Date(device.data_fim);
-            const dataFimFormatada = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
-
-            return dataFimFormatada < dataAtualFormatada;
-        }).map((dispositivo) => {
-
+        return patient.value.dispositivos.map((dispositivo) => {
             return {
-                start: dispositivo.data_inicio,
-                end: dispositivo.data_fim,
+                start: new Date(dispositivo.data_inicio).toISOString().split('T')[0],
+                end: new Date(dispositivo.data_fim).toISOString().split('T')[0],
+                modelo: dispositivo.modelo,
                 valores: dispositivo.sinaisVitais.map((sinal) => {
                     return {
-                        max: sinal.maximo,
-                        min: sinal.minimo,
-                        totalValores: sinal.valores.length,
-                        valorMaximo: Math.max(...sinal.valores.map((valor) => valor.valor)),
-                        valorMinimo: Math.min(...sinal.valores.map((valor) => valor.valor)),
+                        "sinal vital": sinal.tipo,
+                        'limite superior': sinal.maximo,
+                        'limite inferior': sinal.minimo,
+                        "total Valores": sinal.valores.length,
+                        "valor Maximo": Math.max(...sinal.valores.map((valor) => valor.valor)),
+                        "valor Minimo": Math.min(...sinal.valores.map((valor) => valor.valor)),
+                        "total de alertas": sinal.valores.filter((valor) => {
+                            return valor.valor < sinal.minimo || valor.valor > sinal.maximo;
+                        }).length
 
                     }
                 })
