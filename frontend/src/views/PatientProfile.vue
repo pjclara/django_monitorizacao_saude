@@ -261,10 +261,24 @@
                                         v-if="!smAndDown">
                                         <template v-slot:top>
                                             <v-toolbar flat>
-                                                <v-toolbar-title>{{ $t('Values History') }} de {{ historyListValue.start }} a {{ historyListValue.end }}; Modelo: {{ historyListValue.modelo }} </v-toolbar-title>
+                                                <v-toolbar-title>{{ $t('Values History') }} de {{ historyListValue.start
+                                                    }} a {{ historyListValue.end }}; Modelo: {{ historyListValue.modelo
+                                                    }} </v-toolbar-title>
                                             </v-toolbar>
                                         </template>
-                                        
+                                        <template v-slot:item="{ item }">
+                                            <tr>
+                                                <td>{{ item['sinal vital'] }}</td>
+                                                <td>{{ item['total Valores'] }}</td>
+                                                <td>{{ item['limite superior'] }}</td>
+                                                <td>{{ item['limite inferior'] }}</td>
+                                                <td>{{ item['valor Maximo'] == '-Infinity' ?  'Sem dados' : item['valor Maximo'] }}</td>
+                                                <td>{{ item['valor Minimo'] == 'Infinity' ? 'Sem dados' :  item['valor Minimo']}}</td>
+                                                
+                                                <td>{{ item['total de alertas'] }}</td>
+                                            </tr>
+                                        </template>
+
                                     </v-data-table>
                                 </v-card>
 
@@ -679,28 +693,14 @@ const dataAtual = new Date();
 const dataAtualFormatada = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), dataAtual.getDate());
 
 const historyListValues = computed(() => {
+
+    const dispositivos = patient.value.dispositivos;
     if (startDate.value && endDate.value) {
-        return patient.value.dispositivos.map((dispositivo, dispositivo_idx) => dispositivo.sinaisVitais.map((sinal, sinal_idx) => {
-            return {
-                modelo: dispositivo.modelo,
-                nome: sinal.tipo,
-                start: new Date(dispositivo.data_inicio).toISOString().split('T')[0],
-                end: new Date(dispositivo.data_fim).toISOString().split('T')[0],
-                totalValores: sinal.valores.filter((valor) => {
-                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
-                }).length,
-                valorMaximo: Math.max(...sinal.valores.filter((valor) => {
-                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
-                }).map((valor) => valor.valor)),
-                valorMinimo: Math.min(...sinal.valores.filter((valor) => {
-                    return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
-                }).map((valor) => valor.valor)),
-            }
-        }))
-    } else {
-        console.log("sem data");
-        // devolver dispositivos com data_fim inferior a hoje
-        return patient.value.dispositivos.map((dispositivo) => {
+
+        if (new Date(startDate.value) > new Date(endDate.value || dataAtualFormatada > new Date(startDate.value) || dataAtualFormatada > new Date(endDate.value))) {
+            return [];
+        }
+        return dispositivos.map((dispositivo) => {
             return {
                 start: new Date(dispositivo.data_inicio).toISOString().split('T')[0],
                 end: new Date(dispositivo.data_fim).toISOString().split('T')[0],
@@ -708,9 +708,39 @@ const historyListValues = computed(() => {
                 valores: dispositivo.sinaisVitais.map((sinal) => {
                     return {
                         "sinal vital": sinal.tipo,
+                        "total Valores": sinal.valores.filter((valor) => {
+                            return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                        }).length,
                         'limite superior': sinal.maximo,
                         'limite inferior': sinal.minimo,
+                        "valor Maximo": Math.max(...sinal.valores.filter((valor) => {
+                            return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                        }).map((valor) => valor.valor)),
+                        "valor Minimo": Math.min(...sinal.valores.filter((valor) => {
+                            return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                        }).map((valor) => valor.valor)),
+                        "total de alertas": sinal.valores.filter((valor) => {
+                            return new Date(valor.data) >= new Date(startDate.value) && new Date(valor.data) <= new Date(endDate.value);
+                        }).filter((valor) => {
+                            return valor.valor < sinal.minimo || valor.valor > sinal.maximo;
+                        }).length
+
+                    }
+                })
+            }
+        });
+    } else {
+        return dispositivos.map((dispositivo) => {
+            return {
+                start: new Date(dispositivo.data_inicio).toISOString().split('T')[0],
+                end: new Date(dispositivo.data_fim).toISOString().split('T')[0],
+                modelo: dispositivo.modelo,
+                valores: dispositivo.sinaisVitais.map((sinal) => {
+                    return {
+                        "sinal vital": sinal.tipo,
                         "total Valores": sinal.valores.length,
+                        'limite superior': sinal.maximo,
+                        'limite inferior': sinal.minimo,
                         "valor Maximo": Math.max(...sinal.valores.map((valor) => valor.valor)),
                         "valor Minimo": Math.min(...sinal.valores.map((valor) => valor.valor)),
                         "total de alertas": sinal.valores.filter((valor) => {
@@ -723,8 +753,8 @@ const historyListValues = computed(() => {
         });
     }
 
-});
 
+});
 
 
 const deletePatient = async (sns) => {
