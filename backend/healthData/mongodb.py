@@ -8,4 +8,4 @@ from pymongo import MongoClient
 
 client = MongoClient("mongodb+srv://pjclara:mongoDB@djangodb.tdvpxfr.mongodb.net/?retryWrites=true&w=majority&appName=djangoDB")
 
-db = client['my_health_data']
+db = client['health-monitor-final-data']
