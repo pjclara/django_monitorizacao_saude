@@ -113,7 +113,7 @@ const en = {
     'Paciente atualizado com sucesso': 'Patient updated successfully',
     'Nome de utilizador ou palavra-passe inválidos!': 'Username or password is invalid!',
     'O paciente deve ter pelo menos um dispositivo': 'Patient must have at least one device',
-    'Painel de principal': 'dashboard',
+    'Painel de principal': 'Dashboard',
     'Adicionar Paciente': 'AddPatient',
     'Criação de dados iniciada': 'Data creation started',
     'Procurar por utilizadores': 'Search for users',
@@ -134,6 +134,7 @@ const en = {
     "forgotPassword": 'Forgot your password? Click here.',
     "RolesListing": 'Roles Listing',
     "Search for roles": 'Search for roles',
+    "PatientsListing": 'List of Patients'
   };
 
 export default en;

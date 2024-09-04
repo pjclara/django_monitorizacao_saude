@@ -10,8 +10,8 @@
                 </div>
 
                 <!-- Direita -->
-                <v-col class="d-flex justify-center" v-if="key === 'idBotao'">
-                    <v-btn color="blue" size="small" @click="read(item.id)">Visto</v-btn>
+                <v-col class="d-flex justify-center" v-if="key === 'botao'">
+                    <v-btn color="blue" size="small" @click="read(item.botao)">Visto</v-btn>
                 </v-col>
                 <v-col class="d-flex justify-center" v-else-if="key==='is_active'"> 
                     <v-icon v-if="item.is_active" class="green">mdi-check-circle</v-icon>
@@ -27,7 +27,7 @@
         </v-list-item>
     </v-list>
     <v-pagination
-      v-model:page="currentPage"
+      v-model="currentPage"
       :length="totalPages"
       circle
     ></v-pagination>
@@ -36,6 +36,7 @@
 <script setup>
 import {ref,computed} from 'vue'
 import router from '@/router';
+import { useNotificationsStore } from '@/stores/notifications'
 
 
 const props = defineProps(['data', 'keys', 'isUser'])
@@ -49,8 +50,12 @@ const totalPages = computed(() => {
 
 const paginatedData = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value;
+    console.log('✌️start --->', start);
     const end = start + itemsPerPage.value;
-    return props.data.slice(start, end);
+    console.log('✌️end --->', end);
+    const aux = props.data.slice(start, end);
+    console.log('✌️aux --->', aux);
+    return aux;
 });
 
 function capitalizeFirstLetter(string) {
@@ -63,6 +68,10 @@ function capitalizeFirstLetter(string) {
 const editUser = (item) => {
     router.push({ name: 'EditUser', params: { id: item.id } })
 }
+
+const read = (id) => {
+    useNotificationsStore().markAsRead(id);
+};
 
 </script>
 

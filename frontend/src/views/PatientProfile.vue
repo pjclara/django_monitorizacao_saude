@@ -168,7 +168,7 @@
                                 </v-row>
                             </v-window-item>
                             <v-window-item value="activeCharts">
-                                <div v-if="!smAndDown">
+                                <div>
                                     <div>
                                         <v-select v-model="deviceId" :items="getDeviceActives" item-title="nome"
                                             item-value="id" :label="$t('Choose a Device')" return-object>
@@ -191,9 +191,6 @@
                                         </v-card>
                                     </div>
                                 </div>
-                                <div v-else>
-                                    <p class="text-center text-h5">{{ $t('OnlyDesktop') }}</p>
-                                </div>
                             </v-window-item>
                             <v-window-item value="notifications">
                                 <v-data-table :headers="notificationsHeaders" :items="processedNotifications"
@@ -211,14 +208,14 @@
                                             <td>{{ item.valor }}</td>
                                             <td v-if="!isPatient">
                                                 <v-btn color="blue" :loading="loading[index]"
-                                                    @click="read(item.idBotao, index)">Visto</v-btn>
+                                                    @click="read(item.botao, index)">Visto</v-btn>
                                             </td>
                                         </tr>
                                     </template>
 
                                 </v-data-table>
                                 <MobileTable v-else :data="processedNotifications"
-                                    :keys="['dispositivo', 'sinal', 'data', 'valor', 'idBotao']">
+                                    :keys="['dispositivo', 'sinal', 'data', 'valor', 'botao']">
                                 </MobileTable>
                             </v-window-item>
 
@@ -392,7 +389,7 @@ const isPatient = computed(() => {
             { title: 'Sinal', key: 'sinal' },
             { title: 'Data', key: 'data' },
             { title: 'Valor', key: 'valor' },
-            { title: 'Actions', key: 'idBotao', sortable: false }
+            { title: 'Actions', key: 'botao', sortable: false }
         ]
     }
     return useUsersStore().user?.groups.includes('paciente') ? true : false
@@ -577,11 +574,11 @@ const processedNotifications = computed(() => {
             let valorIdx = parseInt(parts[2].split(':')[1].trim());
             loading.value.push(false);
             return {
-                dispositivo: patient.value.dispositivos[dispositivoIdx]?.modelo,
-                sinal: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx].tipo,
+                dispositivo: patient.value?.dispositivos[dispositivoIdx]?.modelo,
+                sinal: patient.value?.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx].tipo,
                 data: format(new Date(notification.created_at), 'dd-MM-yyyy - HH:mm:ss'),
-                valor: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.valores[valorIdx]?.valor,
-                idBotao: notification._id
+                valor: patient.value?.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.valores[valorIdx]?.valor,
+                botao: notification._id
             };
         });
 });
