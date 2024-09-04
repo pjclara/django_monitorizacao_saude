@@ -177,16 +177,16 @@
                                     <div>
                                         <v-row>
                                             <v-btn v-for="(sinalVital, index) in sinaisVitais"
-                                                :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index"
-                                                @click="atualizarGrafico(index)" >{{
+                                                :color="sinal == index ? 'green' : 'primary'" class="ma-2" :key="index" :disabled="!sinalVital.ativo"
+                                                @click="atualizarGrafico(index)">{{
                                                     sinalVital.nome }}
-                                                
+
                                             </v-btn>
                                         </v-row>
                                     </div>
 
-                                    <div v-if="deviceId != null " >
-                                        <v-card height="400" style="padding: 16px;" >
+                                    <div v-if="deviceId != null">
+                                        <v-card height="400" style="padding: 16px;">
                                             <Line id="my-chart-id" :options="chartOptions" :data="formattedChartData" />
                                         </v-card>
                                     </div>
@@ -417,7 +417,7 @@ const stopGeneratingData = (patient, indexSinal, index) => {
     )
 }
 
-const sinal = ref(0);
+const sinal = ref(null);
 
 const voltar = () => {
     router.go(-1);
@@ -429,14 +429,14 @@ const tab = ref(null);
 
 const deviceId = ref(null);
 
-const hasValues =  computed(() => {
+const hasValues = computed(() => {
     if (!deviceId.value) {
         return false;
     }
     return patient.value.dispositivos.find(device => device.numeroSerie === deviceId.value.numeroSerie).sinaisVitais.map(sinal => {
         if (sinal.valores.length > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     });
@@ -446,11 +446,27 @@ const sinaisVitais = computed(() => {
     if (!deviceId.value) {
         return [];
     }
-    return patient.value.dispositivos.find(device => device.numeroSerie === deviceId.value.numeroSerie).sinaisVitais.map(sinal => {
-        return { 
+
+    const sinaisVitais = patient.value.dispositivos.find(device => device.numeroSerie === deviceId.value.numeroSerie).sinaisVitais;
+    // get the index of the vital signal in the device active
+    const fistActive = sinaisVitais.findIndex(sinal => sinal.ativo);
+
+    if (fistActive === -1) {
+        return sinaisVitais.map(sinal => {
+            return {
+                nome: sinal.tipo,
+                ativo: sinal.ativo
+            }
+        });
+    }
+    else {
+        sinal.value = fistActive;
+    }
+    return sinaisVitais.map(sinal => {
+        return {
             nome: sinal.tipo,
-            hasValues: sinal.valores.length > 0
-         }
+            ativo: sinal.ativo
+        }
     });
 });
 
@@ -522,7 +538,6 @@ const formattedChartData = computed(() => {
     if (!device) {
         return chartData.value;
     }
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'gray', 'black'];
     const data = {
         label: device.sinaisVitais[sinal.value].tipo + "(" + device.sinaisVitais[0].unidade + ")",
         data: device.sinaisVitais[sinal.value].valores.slice(-30).map(entry => entry.valor),
