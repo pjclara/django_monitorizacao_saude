@@ -57,6 +57,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const markAsRead = async (id) => {
     loaderStore.setLoading(true)
     const data = notificationsNotRead.value.find((notification) => notification._id === id)
+
     data.read = true
     try {
       const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {

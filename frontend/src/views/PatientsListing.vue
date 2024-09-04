@@ -147,7 +147,7 @@
             <v-row no-gutters>
                 <v-col cols="12" v-for="(patient, index) in patientsList" :key="index">
                     <v-card class="d-flex flex-column my-2 pa-10 mobile-card">
-                        <v-row class="d-flex justify-space-between align-center border mb-1">
+                        <v-row class="d-flex justify-space-between align-center border  border-lg mb-1 rounded-lg pa-1">
                             <span class="font-weight-bold">
                                 {{ $t('Name') }} :
                             </span>
@@ -155,7 +155,7 @@
                                 {{ patient.nome }}
                             </span>
                         </v-row>
-                        <v-row class="d-flex justify-space-between border mb-1 ">
+                        <v-row class="d-flex justify-space-between border mb-1 border-lg rounded-lg pa-1">
                             <span class="font-weight-bold">
                                 {{ $t('Health number') }}:
                             </span>
@@ -163,7 +163,7 @@
                                 {{ patient.sns }}
                             </span>
                         </v-row>
-                        <v-row class="d-flex justify-space-between align-center border mb-1">
+                        <v-row class="d-flex justify-space-between align-center border border-lg mb-1 rounded-lg pa-1">
                             <span class="font-weight-bold">
                                 {{ $t('Age') }}:
                             </span>
@@ -172,7 +172,7 @@
                             </span>
                         </v-row>
 
-                        <v-row v-for="(dispositivo, indexSinal) in patient?.dispositivos" :key="indexSinal">
+                        <v-row v-for="(dispositivo, indexSinal) in patient?.dispositivos" :key="indexSinal" class="border border-lg mb-1">
 
                             <v-col class="d-flex justify-center" cols="12">
                                 <span class="font-weight-bold">Modelo: </span>
@@ -180,8 +180,8 @@
                             </v-col>
 
                             <v-col v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
-                                class="my-3 mx-1 d-flex justify-center">
-                                <v-chip :disabled="disabled" @click="activate(item, indexSinal, index)"
+                                class="my-3 mx-1 d-flex justify-center border border-lg mb-1 rounded-xl">
+                                <v-chip :disabled="disabled" @click="generateData(patient, indexSinal, index)"
                                     :color="sinalVital.ativo ? 'success' : 'primary'">
                                     <v-tooltip :text="sinalVital.tipo" activator="parent" />
                                     <span v-if="sinalVital.tipo == 'Temperatura'">
@@ -195,9 +195,6 @@
                                     </span>
                                     <span v-if="sinalVital.ativo">On</span><span v-else>Off</span>
                                 </v-chip>
-                            </v-col>
-                            <v-col v-for="(sinalVital, index) in dispositivo.sinaisVitais" :key="index"
-                                class="my-3 mx-1 d-flex justify-center">
                                 <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
                                     <span>
                                         <span v-if="hasAlertSignal(sinalVital)"
@@ -207,8 +204,8 @@
                                 </v-chip>
                             </v-col>
                         </v-row>
-                        <v-row class="d-flex justify-space-between align-center  border mb-2">
-                            <span>
+                        <v-row class="d-flex justify-center align-center border mb-2">
+                            <span class="mr-2">
                                 <v-icon :disabled="disabled" @click="editItem(patient)">mdi-pencil</v-icon>
                             </span>
                             <span>
@@ -303,6 +300,15 @@ const voltarPainel = () => {
     router.push({ name: 'HomeUser' });
 }
 
+const generateData = async (patient, indexSinal, index) => {
+    const start = getStartValue(patient.sns, indexSinal, index);
+    if(start){
+        stopGeneratingData(patient, indexSinal, index);
+        return;
+    }
+    startGenerateData(patient, indexSinal, index);
+}
+
 
 const formatDate = (date) => {
     const dob = new Date(date);
@@ -313,7 +319,9 @@ const formatDate = (date) => {
 
 const getStartValue = (sns, indexSinal, index) => {
     const start = useVitalSignsStore().start;
+
     const value = start.find((item) => item.patient === sns && item.indexSinal === indexSinal && item.index === index);
+
     return value ? value.start : false;
 }
 
@@ -328,7 +336,7 @@ const editItem = (item) => {
 }
 
 const redirectNotifications = (item, hasAlert, dispositivo) => {
-    router.push({ name: 'PatientProfile', params: { patientSns: item.sns }, query: { activeCharts: hasAlert, modelo: dispositivo.modelo } });
+    router.push({ name: 'PatientProfile', params: { patientSns: item.sns }, query: { notifications: hasAlert, modelo: dispositivo.modelo } });
 }
 </script>
 
