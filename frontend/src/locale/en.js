@@ -199,6 +199,11 @@ const en = {
     "End Date": "End Date",
     "Model": "Model",
     "Description": "Description",
+    "passwordRecovery" : "Enter your email to receive a new password in your email.",
+    "logIn" : "Log In",
+    "Frequência Cardíaca": "Heart Rate",
+    "Saturação Oxigênio": "Oxygen Saturation",
+    "Temperatura": "Temperature",
     
     
   };
