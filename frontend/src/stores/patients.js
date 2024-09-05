@@ -32,8 +32,6 @@ export const usePatientsStore = defineStore('patients', () => {
     const data = await response.json()
     patients.value = data
 
-    console.log('patients', patients.value)
-
     useVitalSignsStore().createStart(data)
 
     getAllAtiveDevicesAndVitalSigns()

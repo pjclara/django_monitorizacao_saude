@@ -50,11 +50,8 @@ const totalPages = computed(() => {
 
 const paginatedData = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value;
-    console.log('✌️start --->', start);
     const end = start + itemsPerPage.value;
-    console.log('✌️end --->', end);
     const aux = props.data.slice(start, end);
-    console.log('✌️aux --->', aux);
     return aux;
 });
 

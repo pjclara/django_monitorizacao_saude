@@ -140,7 +140,10 @@ const en = {
     "profileSettings" : "Profile Settings",
     "logOut" : "Logout",
     "Dashboard" : "Dashboard",
-    "HealthMonitor" : "Health Monitor"
+    "HealthMonitor" : "Health Monitor",
+    "name" : "Name",
+    "Patients" : "Patients",
+    "Vital Signs" : "Vital Signs",
   };
 
 export default en;

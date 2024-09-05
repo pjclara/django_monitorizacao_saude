@@ -2,7 +2,7 @@
   <v-container style="margin-top: 50px;" fluid>
     <v-row>
       <v-col cols="12" sm="12" class="mt-n4 text-center">
-        <div class="text-h4 text-center">{{ $t('dashboard') }}</div>
+        <div class="text-h4 text-center">{{ $t('Dashboard') }}</div>
       </v-col>
     </v-row>
     <v-row>
@@ -11,7 +11,7 @@
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
-                {{ $t('pacients') }}
+                {{ $t('Patients') }}
               </v-card-title>
 
               <v-card-subtitle>{{ usePatientsStore().patients.length }}</v-card-subtitle>
@@ -25,7 +25,7 @@
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
-                {{ $t('devices') }}
+                {{ $t('Devices') }}
               </v-card-title>
 
               <v-card-subtitle>
@@ -42,7 +42,7 @@
           <div class="d-flex flex-no-wrap justify-space-between">
             <div>
               <v-card-title class="text-h5 mt-10">
-                {{ $t('sinalVital') }}
+                {{ $t('Vital Signs') }}
               </v-card-title>
               <v-card-subtitle>
                 Total: {{ usePatientsStore().vitalSigns?.length }} <br>

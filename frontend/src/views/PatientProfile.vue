@@ -366,7 +366,7 @@ const patient = computed(() => {
     const data = ref(null);
     if (!isPatient.value) {
         if (usePatientsStore().patients.length === 0)
-            usePatientsStore().fetchPatients(useUsersStore().user.user_id);
+            usePatientsStore().fetchPatients(useUsersStore().user?.user_id);
         data.value = usePatientsStore().patients.find(patient => patient.sns == patientSns)
     } else {
         data.value = usePatientsStore().patient

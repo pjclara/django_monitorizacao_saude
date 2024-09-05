@@ -6,7 +6,7 @@ const pt = {
   'createPatient': "Criar um 'Paciente'",
   'CreatePatient': 'Criar Paciente',
   'CreateUser': 'Criar Utilizador',
-  'dashboard': 'Painel de Observações',
+  'Dashboard': 'Painel de Observações',
   'daysAgo': 'dias atrás',
   'devices': 'Dispositivos',
   'EditUser': 'Editar Utilizador',
@@ -133,7 +133,10 @@ const pt = {
   'RolesListing': 'Listagem de Funções',
   "Search for roles": 'Procurar por funções',
   "Model" : 'Modelo',
-  "Dates" : "Datas"
+  "Dates" : "Datas",
+  "name" : "Nome",
+  "Vital Signs" : "Sinais Vitais",
+  "Devices" : "Dispositivos",
 }
 
 export default pt
