@@ -15,7 +15,7 @@
                 <template v-slot:prepend>
                     <v-icon icon="mdi mdi-home-outline" color="#B49239"></v-icon>
                 </template>
-                <v-list-item-title>{{ $t('dashboard') }} </v-list-item-title>
+                <v-list-item-title>{{ $t('Dashboard') }} </v-list-item-title>
             </v-list-item>
             <v-list-item to="/usersList" v-if="isAdmin && isLogged" >
                 <template v-slot:prepend>
