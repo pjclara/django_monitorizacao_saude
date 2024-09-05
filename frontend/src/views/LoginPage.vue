@@ -18,10 +18,6 @@
         </div>
       </v-col>
     </v-row>
-    <p>Login:</p>
-    <p> - admin@gmail.com/admin123</p>
-    <p> - medico@gmail.com/medico123</p>
-    <p> - paciente@gmail.com/paciente123</p>
   </v-container>
 </template>
 
