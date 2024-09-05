@@ -74,18 +74,18 @@
                     v-model="patient.dispositivos[indexDispositivo].fabricante" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="Model" color="primary" v-model="patient.dispositivos[indexDispositivo].modelo" />
+                  <v-text-field :label="$t('Model')" color="primary" v-model="patient.dispositivos[indexDispositivo].modelo" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="Description" color="primary"
+                  <v-text-field :label="$t('Description')" color="primary"
                     v-model="patient.dispositivos[indexDispositivo].descricao" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="Start Date" placeholder="yyyy-mm-dd" color="primary" :rules="dataInicioRules"
+                  <v-text-field :label="$t('Start Date')" placeholder="yyyy-mm-dd" color="primary" :rules="dataInicioRules"
                     v-model="patient.dispositivos[indexDispositivo].data_inicio" />
                 </v-col>
                 <v-col :cols="smAndDown ? '12' : '4'">
-                  <v-text-field label="End Date" placeholder="yyyy-mm-dd" color="primary" :rules="dataFimRules"
+                  <v-text-field :label="$t('End Date')" placeholder="yyyy-mm-dd" color="primary" :rules="dataFimRules"
                     v-model="patient.dispositivos[indexDispositivo].data_fim" />
                 </v-col>
                 <v-col cols="12" sm="6" :class="['d-flex mb-2 justify-start', { 'justify-center my-2': smAndDown }]">
@@ -146,6 +146,7 @@ import { isBefore, isValid, isAfter, isSameDay } from 'date-fns'
 import { useUsersStore } from '@/stores/users';
 import { useDisplay } from 'vuetify'
 const { smAndDown } = useDisplay()
+
 
 const props = defineProps(['patient'])
 const emit = defineEmits(['validationChanged', 'areAllFieldsNonEmpty'])

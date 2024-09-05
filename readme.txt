@@ -6,7 +6,6 @@ Passos para instalar o projecto:
 - frontend : ver ficheiro readme.md na pasta frontend
 - backend : ver ficheiro readme.txt na pasta backend
 
+---- projecto no GitHub (acesso publico) --- 
 
-Material a entregasr:
-- projecto zipado
-- poster A3
+https://github.com/pjclara/django_monitorizacao_saude

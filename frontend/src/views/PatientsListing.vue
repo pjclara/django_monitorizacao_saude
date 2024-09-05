@@ -5,7 +5,7 @@
             <v-row>
                 <v-col class="d-flex justify-start" cols="12" sm="4">
                     <v-btn color="indigo-darken-3" @click="voltarPainel"><v-icon class="mr-2">mdi-home</v-icon>{{
-                        $t('dashboard') }}</v-btn>
+                        $t('Dashboard') }}</v-btn>
                 </v-col>
                 <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
                     $t('PatientsListing')

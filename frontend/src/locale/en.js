@@ -188,6 +188,18 @@ const en = {
     'EditPatient': 'Edit Patient',
     'Device' : 'Device',
     'Add device': 'Add device',
+    "Heart Rate": "Heart Rate",
+    "Serial Number": "Serial Number",
+    "manufacturer": "Manufacturer",
+    "Reading Frequency (seconds)": "Reading Frequency (seconds)",
+    "secounds": "seconds",
+    "Unit": "Unit",
+    "Add vital sign": "Add vital sign",
+    "Start Date": "Start Date",
+    "End Date": "End Date",
+    "Model": "Model",
+    "Description": "Description",
+    
     
   };
 
