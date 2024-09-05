@@ -57,7 +57,7 @@
                     </template>
                 </v-data-table>
 
-                <MobileTable v-else class="justify-center" :data="users" :keys="['id', 'username', 'email', 'is_active', 'actions']"
+                <MobileTable v-else class="justify-center" :data="users" :keys="['id', 'name', 'email', 'active', 'actions']"
                     :isUser="true">
                 </MobileTable>
             </v-row>
@@ -104,6 +104,9 @@ onMounted(async () => {
     } else {
         users.value = useUsersStore().users;
     }
+    users.value = users.value.map(user => {
+        return {...user, name: user.full_name, active: user.is_active}
+    })
     loaderStore.setLoading(false);
 });
 

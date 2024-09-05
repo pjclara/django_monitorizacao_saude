@@ -20,6 +20,9 @@
                 <v-col class="d-flex justify-center" v-else-if="key==='actions'"> 
                     <v-btn v-if="isUser" color="blue" size="small" @click="editUser(item)">{{ $t('EditUser') }}</v-btn>
                 </v-col>
+                <v-col class="d-flex justify-center" v-else-if="key==='Actions'"> 
+                    <v-icon small @click="editRole(item)">mdi-pencil</v-icon>
+                </v-col>
                 <v-col class="d-flex justify-center" style="line-break: anywhere;" v-else> 
                     <p>{{ item[key] }}</p>
                 </v-col>
@@ -40,6 +43,12 @@ import { useNotificationsStore } from '@/stores/notifications'
 
 
 const props = defineProps(['data', 'keys', 'isUser'])
+
+const emit = defineEmits(['roleEdit'])
+
+const editRole = (item) => {
+    emit('roleEdit', item)
+}
 
 const itemsPerPage = ref(5);
 const currentPage = ref(1);

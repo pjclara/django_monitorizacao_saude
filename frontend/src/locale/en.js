@@ -197,10 +197,9 @@ const en = {
     "Add vital sign": "Add vital sign",
     "Start Date": "Start Date",
     "End Date": "End Date",
-    "Model": "Model",
     "Description": "Description",
-    
-    
+    'logIn': 'Log in',
+    'CreateRole': 'Create Role'
   };
 
 export default en;

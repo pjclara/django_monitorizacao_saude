@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container v-if="!smAndDown">
         <v-row>
             <v-col class="d-flex justify-start" cols="12" sm="4">
                 <v-btn color="indigo-darken-3" @click="voltarListaUtilizadores"><v-icon
@@ -20,12 +20,6 @@
             <v-col cols="9">
                 <v-data-table :headers="headersRoles" :items="roles" :search="search" :items-per-page="5"
                     class="elevation-1">
-                    <template v-slot:headers>
-                        <tr>
-                            <th v-for="header in headers" :key="header.title" class="text-center">{{ $t(header.title) }}
-                            </th>
-                        </tr>
-                    </template>
                     <template v-slot:top>
                         <v-toolbar flat style="background-color: #425C5A; color: white;">
                             <v-col cols="9">
@@ -50,6 +44,24 @@
                 </v-data-table>
             </v-col>
         </v-row>
+    </v-container>
+    <v-container v-else>
+        <div>
+            <v-col class="d-flex justify-center" cols="12" sm="4">
+                <v-btn color="indigo-darken-3" @click="voltarListaUtilizadores"><v-icon
+                        class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t("Return")
+                    }}</v-btn>
+            </v-col>
+            <v-col class="text-h4 text-center font-weight-bold text-deep-purple-darken-4" cols="12" sm="4">{{
+                $t('Roles')
+                }}
+            </v-col>
+            <v-col class="d-flex justify-center" cols="12" sm="4">
+                <v-btn color="indigo-darken-3" elevated @click="openDialogCreate"><v-icon color="white"
+                        class="mr-2">mdi-plus</v-icon>{{ $t('CreateRole') }}</v-btn>
+            </v-col>
+        </div>
+        <MobileTable class="justify-center" :data="roles" :keys="['id', 'name', 'Actions']" @roleEdit="editRole(item)"/>
     </v-container>
 
     <v-dialog v-model="dialogCreate" max-width="500px">
@@ -104,6 +116,9 @@ import { useLoaderStore } from '@/stores/loader'
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 const loaderStore = useLoaderStore();
+import { useDisplay } from 'vuetify'
+const { smAndDown } = useDisplay()
+import MobileTable from '@/components/table/MobileTable.vue';
 
 const router = useRouter()
 

@@ -136,10 +136,10 @@ const pt = {
   "name" : "Nome",
   "Devices" : "Dispositivos",
   "Heart Rate": "Frequência Cardíaca",
-  "Model": "Modelo",
   "Start Date": "Data de Início",
   "End Date": "Data de Fim",
   "Description": "Descrição",
+  'FrequenciaCardiaca': 'Frequência Cardiaca'
 }
 
 export default pt
