@@ -6,7 +6,7 @@ const en = {
     "Criar um 'Paciente'": 'createPatient',
     'Criar Paciente': 'CreatePatient',
     'Criar Utilizador': 'CreateUser',
-    'Painel de Observações': 'dashboard',
+    'Painel de Observações': 'Dashboard',
     'dias atrás': 'daysAgo',
     'Dispositivos': 'devices',
     'Editar Utilizador': 'EditUser',
@@ -134,7 +134,13 @@ const en = {
     "forgotPassword": 'Forgot your password? Click here.',
     "RolesListing": 'Roles Listing',
     "Search for roles": 'Search for roles',
-    "PatientsListing": 'List of Patients'
+    "PatientsListing": 'List of Patients',
+    "Model" : 'Model',
+    "Dates" : "Dates",
+    "profileSettings" : "Profile Settings",
+    "logOut" : "Logout",
+    "Dashboard" : "Dashboard",
+    "HealthMonitor" : "Health Monitor"
   };
 
 export default en;

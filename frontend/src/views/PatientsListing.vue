@@ -212,13 +212,9 @@
                                 <v-icon :disabled="disabled" @click="viewItem(patient)">mdi-eye</v-icon>
                             </span>
                         </v-row>
-
                     </v-card>
-
                 </v-col>
-
             </v-row>
-
         </div>
     </v-container>
 

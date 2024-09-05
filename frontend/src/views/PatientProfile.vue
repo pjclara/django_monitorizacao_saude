@@ -256,13 +256,13 @@
                                         </div>
                                     </v-col>
                                 </v-row>
-                                <v-card elevation="11" shaped v-for="historyListValue in historyListValues">
+                                <v-card elevation="11" shaped v-for="(historyListValue, index) in historyListValues" :key="`history${index}`">
                                     <v-data-table :items="historyListValue.valores" :items-per-page="5" class="elevation-1"
                                         v-if="!smAndDown">
                                         <template v-slot:top>
                                             <v-toolbar flat>
                                                 <v-toolbar-title>{{ $t('Values History') }} de {{ historyListValue.start
-                                                    }} a {{ historyListValue.end }}; Modelo: {{ historyListValue.modelo
+                                                    }} a {{ historyListValue.end }}; {{ $t('Model') }}: {{ historyListValue.modelo
                                                     }} </v-toolbar-title>
                                             </v-toolbar>
                                         </template>
@@ -280,6 +280,16 @@
                                         </template>
 
                                     </v-data-table>
+                                    <div v-else>
+                                        <div class="d-flex flex-column justify-center align-center">
+                                            <h2 class="ma-1">{{ $t('Values History') }}</h2>
+                                             <span class="ma-1"><strong>{{ $t('Model') }}:</strong> {{ historyListValue.modelo }}</span>
+                                            <span class="ma-1"><strong>{{ $t('Dates') }}:</strong> {{ historyListValue.start}} a {{ historyListValue.end }} </span>
+                                        </div>
+                                        <MobileTable  :data="historyListValue.valores"
+                                            :keys="['sinal vital', 'total Valores', 'limite superior', 'limite inferior', 'valor Maximo', 'valor Minimo', 'total de alertas']">
+                                        </MobileTable>
+                                    </div>
                                 </v-card>
 
                             </v-window-item>
