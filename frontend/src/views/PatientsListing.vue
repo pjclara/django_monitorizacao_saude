@@ -175,7 +175,7 @@
                         <v-row v-for="(dispositivo, indexSinal) in patient?.dispositivos" :key="indexSinal" class="border border-lg mb-1">
 
                             <v-col class="d-flex justify-center" cols="12">
-                                <span class="font-weight-bold">Modelo: </span>
+                                <span class="font-weight-bold">{{ $t('Model') }}: </span>
                                 <span> {{ dispositivo.modelo }} </span>
                             </v-col>
 

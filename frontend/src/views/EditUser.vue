@@ -118,6 +118,7 @@ onMounted(async () => {
       roles.value.push(group.name)
     });
   }
+  loaderStore.setLoading(true)
   const data = await useUsersStore().fetchUserData(userId)
 
   user.value.email = data.email
@@ -169,14 +170,6 @@ const updateUser = () => {
       loaderStore.setLoading(false);
     })
 }
-
-const fetchUserData = () => {
-  loaderStore.setLoading(true);
-  user.value = useUsersStore().fetchUserData(userId)
-  loaderStore.setLoading(false);
-};
-
-
 
 const deleteUser = () => {
   useUsersStore().deleteUser(userId)

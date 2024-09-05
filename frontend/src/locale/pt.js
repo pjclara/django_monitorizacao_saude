@@ -81,7 +81,6 @@ const pt = {
   'New Device': 'Novo Dispositivo',
   'Device': 'Dispositivo',
   'Health care number': 'Número Segurança Social',
-  'Name': 'Nome',
   'Birthdate': 'Data de Nascimento',
   'Weight (kg)': 'Peso (kg)',
   'Height (cm)': 'Altura (cm)',
@@ -135,7 +134,6 @@ const pt = {
   "Model" : 'Modelo',
   "Dates" : "Datas",
   "name" : "Nome",
-  "Vital Signs" : "Sinais Vitais",
   "Devices" : "Dispositivos",
 }
 

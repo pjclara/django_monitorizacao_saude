@@ -110,6 +110,9 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { useLoaderStore } from '@/stores/loader'
+
+const loaderStore = useLoaderStore();
 
 const headers = [
     { title: 'Name', value: 'name' },
@@ -156,6 +159,7 @@ const editPermission = (item) => {
 }
 
 const createPermission = async () => {
+    loaderStore.setLoading(true);
     try {
         const response = await fetch(window.URL + '/api/create_permission/', {
             method: 'POST',
@@ -172,11 +176,14 @@ const createPermission = async () => {
         getPermissions()
     } catch (error) {
         console.error(error)
+    }finally {
+        loaderStore.setLoading(false);
     }
 }
 
 const updatePermission = async () => {
     try {
+        loaderStore.setLoading(true);
         const response = await fetch(window.URL + '/api/get_permission/' + permission.value.id + '/', {
             method: 'PUT',
             headers: {
@@ -192,11 +199,14 @@ const updatePermission = async () => {
         getPermissions()
     } catch (error) {
         console.error(error)
+    }finally{
+        loaderStore.setLoading(false);
     }
 }
 
 const getPermissions = async () => {
     try {
+        loaderStore.setLoading(true);
         const response = await fetch(window.URL + '/api/get_permissions/',
             {
                 method: 'GET',
@@ -213,11 +223,14 @@ const getPermissions = async () => {
         permissions.value = data
     } catch (error) {
         console.error(error)
+    }finally{
+        loaderStore.setLoading(false);
     }
 }
 
 const getRole = async () => {
     try {
+        loaderStore.setLoading(true);
         const response = await fetch(window.URL + '/api/get_group/' + route.params.id + '/',
             {
                 method: 'GET',
@@ -234,11 +247,14 @@ const getRole = async () => {
         role.value = data
     } catch (error) {
         console.error(error)
+    }finally{
+        loaderStore.setLoading(false);
     }
 }
 
 const updateRole = async () => {
     try {
+        loaderStore.setLoading(true);
         const response = await fetch(window.URL + '/api/get_group/' + route.params.id + '/', {
             method: 'PUT',
             headers: {
@@ -253,6 +269,8 @@ const updateRole = async () => {
         router.push('/roles-and-permissions')
     } catch (error) {
         console.error(error)
+    }finally{
+        loaderStore.setLoading(false);
     }
 }
 

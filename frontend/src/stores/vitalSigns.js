@@ -3,14 +3,19 @@ import { defineStore } from 'pinia'
 import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import { usePatientsStore } from './patients'
+import { useLoaderStore } from '@/stores/loader'
+
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
   const disabled = ref(false)
   const start = ref([])
   const loading = ref([])
+  const loaderStore = useLoaderStore()
+
 
   const desativarSinal = async (patient, indexSinal, index) => {
+    loaderStore.setLoading(true)
     const response = await fetch(
       window.URL + `/api/documentos/desativar_sinal_vital/${patient.sns}/`,
       {
@@ -26,8 +31,10 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       }
     )
     if (!response.ok) {
+      loaderStore.setLoading(false)
       throw new Error('Failed to fetch data')
     }
+    loaderStore.setLoading(false)
     toast.success('Data creation stopped')
   }
 
@@ -39,6 +46,8 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       patient.dispositivos[indexSinal].sinaisVitais[index].minimo -
       patient.dispositivos[indexSinal].sinaisVitais[index].minimo * 0.1
     const randomValue = Math.floor(Math.random() * (max - min + 1) + min)
+    loaderStore.setLoading(true)
+
     const response = await fetch(
       window.URL + `/api/documentos/ativar_sinal_vital/${patient.sns}/`,
       {
@@ -57,7 +66,9 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
+
     const data = await response.json()
+    loaderStore.setLoading(false)
     const patientStore = usePatientsStore().patients.find((item) => item.sns == patient.sns)
     const device = patientStore.dispositivos[indexSinal]
     const vitalSign = device.sinaisVitais[index]
@@ -68,6 +79,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       dataLida: data.data.dataLida,
       lida: data.data.lida
     })
+    
    
   }
 
@@ -88,7 +100,10 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     if (getintervalId(patient.sns, indexSinal, index) && getintervalId(patient.sns, indexSinal, index).valor === 0) {
       ativarSinal(patient, indexSinal, index);
       getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {
-        await ativarSinal(patient, indexSinal, index)
+      loaderStore.setLoading(true)
+      await ativarSinal(patient, indexSinal, index)
+      loaderStore.setLoading(false)
+
       }, readingFrequency * 1000)
     }
   }
@@ -97,7 +112,9 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     patient.dispositivos[indexSinal].ativo = false
     if (getintervalId(patient.sns, indexSinal, index).valor !== 0) {
       clearInterval(getintervalId(patient.sns, indexSinal, index).valor)
+      loaderStore.setLoading(true)
       await desativarSinal(patient, indexSinal, index)
+      loaderStore.setLoading(false)
       getintervalId(patient.sns, indexSinal, index).valor = 0
     }
   }

@@ -113,6 +113,8 @@ const criarUser = async () => {
     if (user.value.role == 'add new role') {
       user.value.role = new_role.value
     }
+    loaderStore.setLoading(true)
+
     const response = await fetch(window.URL + '/api/users/', {
       method: 'POST',
       headers: {
@@ -121,6 +123,8 @@ const criarUser = async () => {
       },
       body: JSON.stringify(user.value)
     })
+    loaderStore.setLoading(false)
+
     if (response.status !== 201) {
       const error = await response.json()
       toast.error(error.error)

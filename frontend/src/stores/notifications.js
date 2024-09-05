@@ -16,6 +16,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const pacientsStore = usePatientsStore()
 
   const fetchNotifications = async (user_id) => {
+    loaderStore.setLoading(true)
     const response = await fetch(window.URL + '/api/listar_notificacoes/' + user_id + '/', {
       method: 'GET',
       headers: {
@@ -27,6 +28,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       console.log('Error loading notifications')
       return
     }
+    loaderStore.setLoading(false)
     const data = await response.json()
     notifications.value = data
     getNotificationsRead()
@@ -55,11 +57,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   const markAsRead = async (id) => {
-    loaderStore.setLoading(true)
     const data = notificationsNotRead.value.find((notification) => notification._id === id)
 
     data.read = true
     try {
+      loaderStore.setLoading(true)
       const response = await fetch(window.URL + '/api/update_notificacao/' + data._id + '/', {
         method: 'PUT',
         headers: {
@@ -92,6 +94,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     } catch (error) {
       console.error(error)
     }
+    loaderStore.setLoading(false)
   }
 
   const reset = () => {
