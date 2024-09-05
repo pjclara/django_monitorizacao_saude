@@ -199,7 +199,13 @@ const en = {
     "End Date": "End Date",
     "Description": "Description",
     'logIn': 'Log in',
-    'CreateRole': 'Create Role'
+    'CreateRole': 'Create Role',
+    "passwordRecovery" : "Enter your email to receive a new password in your email.",
+    "Frequência Cardíaca": "Heart Rate",
+    "Saturação Oxigênio": "Oxygen Saturation",
+    "Temperatura": "Temperature",
+    
+    
   };
 
 export default en;
