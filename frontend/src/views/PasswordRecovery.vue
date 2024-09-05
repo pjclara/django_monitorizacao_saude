@@ -47,8 +47,9 @@ const passwordRecovery = async () => {
         }
     } catch (error) {
         console.error(error);
+    } finally {
+        loaderStore.setLoading(false);
     }
-    loaderStore.setLoading(false);
 
 };
 

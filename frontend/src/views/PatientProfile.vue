@@ -641,6 +641,7 @@ const deleteSinal = async (sinal_idx, dispositivo_idx) => {
     if (!confirm('Are you sure you want to delete this signal?')) {
         return;
     }
+    loaderStore.setLoading(true);
     try {
         const sns = patient.value.sns;
         const response = await fetch(window.URL + '/api/documentos/delete_sinal_vital/' + sns + '/', {
@@ -664,6 +665,8 @@ const deleteSinal = async (sinal_idx, dispositivo_idx) => {
         }
     } catch (error) {
         console.error(error);
+    }finally {
+        loaderStore.setLoading(false);
     }
 };
 
@@ -671,6 +674,7 @@ const deleteDevice = async (index) => {
     if (!confirm('Are you sure you want to delete this device?')) {
         return;
     }
+    loaderStore.setLoading(true);
     try {
         const sns = patient.value.sns;
         const response = await fetch(window.URL + '/api/documentos/delete_device/' + sns + '/', {
@@ -693,6 +697,8 @@ const deleteDevice = async (index) => {
         }
     } catch (error) {
         console.error(error);
+    } finally {
+        loaderStore.setLoading(false);
     }
 };
 

@@ -5,6 +5,8 @@ import { usePatientsStore } from './patients'
 import { useVitalSignsStore } from './vitalSigns'
 import { useNotificationsStore } from './notifications'
 import { toast } from 'vue3-toastify'
+import { useLoaderStore } from '@/stores/loader'
+
 
 export const useUsersStore = defineStore('users', () => {
   const user = ref(null)
@@ -14,6 +16,7 @@ export const useUsersStore = defineStore('users', () => {
   const isLogged = ref(!!user.value)
   const isAdmin = ref(false)
   const isPatient = ref(false)
+  const loaderStore = useLoaderStore()
 
   const { t } = useI18n()
 
@@ -35,6 +38,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   const logIn = async (email, password) => {
+    loaderStore.setLoading(true)
     const response = await fetch(window.URL + '/api/token/', {
       method: 'POST',
       headers: {
@@ -88,6 +92,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   const fetchUsers = async () => {
+    loaderStore.setLoading(true);
     const response = await fetch(window.URL + '/api/users/', {
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -97,11 +102,15 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     users.value = await response.json()
+    loaderStore.setLoading(false);
+
 
     return users.value
   }
 
   const fetchRoles = async () => {
+    loaderStore.setLoading(true);
+
     const response = await fetch(window.URL + '/api/get_groups/', {
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -111,11 +120,14 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     groups.value = await response.json()
+    loaderStore.setLoading(false);
+
 
     return groups.value
   }
 
   const fetchUserData = async (id) => {
+    loaderStore.setLoading(true);
     const response = await fetch(window.URL + `/api/users/${id}/`, {
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -125,11 +137,15 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     const data = await response.json()
+    loaderStore.setLoading(false);
+
     return data
   }
 
   const deleteUser = async (id) => async () => {
+    loaderStore.setLoading(true);
     try {
+
       const response = await fetch(window.URL + '/api/users/', {
         method: 'DELETE',
         headers: {
@@ -151,9 +167,12 @@ export const useUsersStore = defineStore('users', () => {
     } catch (error) {
       toast.error('Error deleting user: ' + error)
     }
+    loaderStore.setLoading(false);
   }
 
   const updateUser = async (id, data) => {
+    loaderStore.setLoading(true);
+
     const response = await fetch(window.URL + `/api/users/${id}/`, {
       method: 'PUT',
       headers: {
@@ -172,11 +191,17 @@ export const useUsersStore = defineStore('users', () => {
         }
         return user
       })
+      loaderStore.setLoading(false);
+
       return data
     } else {
       const errorData = await response.json()
+
+      loaderStore.setLoading(false);
+
       return errorData
     }
+    
   }
 
   return {
