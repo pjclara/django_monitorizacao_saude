@@ -4,7 +4,7 @@ import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import { usePatientsStore } from './patients'
 import { useLoaderStore } from '@/stores/loader'
-
+import { useI18n } from 'vue-i18n'
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
@@ -12,7 +12,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const start = ref([])
   const loading = ref([])
   const loaderStore = useLoaderStore()
-
+  const { t } = useI18n()
 
   const desativarSinal = async (patient, indexSinal, index) => {
     loaderStore.setLoading(true)
@@ -35,7 +35,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       throw new Error('Failed to fetch data')
     }
     loaderStore.setLoading(false)
-    toast.success('Data creation stopped')
+    toast.success(t('Data creation stopped'))
   }
 
   const ativarSinal = async (patient, indexSinal, index) => {
@@ -96,7 +96,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
     // activate device
     patient.dispositivos[indexSinal].ativo = true
-    toast.success('Data creation started')
+    toast.success(t('Data creation started'))
     if (getintervalId(patient.sns, indexSinal, index) && getintervalId(patient.sns, indexSinal, index).valor === 0) {
       ativarSinal(patient, indexSinal, index);
       getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {

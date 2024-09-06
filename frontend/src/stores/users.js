@@ -51,7 +51,7 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     if (response.status === 400) {
-      toast.error('User is not active, please contact the administrator')
+      toast.error(t('User is not active, please contact the administrator'))
       return
     }
     if (response.status !== 200) {

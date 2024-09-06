@@ -204,7 +204,13 @@ const en = {
     "Frequência Cardíaca": "Heart Rate",
     "Saturação Oxigênio": "Oxygen Saturation",
     "Temperatura": "Temperature",
-    
+    "Welcome": "Welcome",
+    "Password": "Password",
+    "enterPassword": "Enter your password",
+    "Data creation stopped": "Data creation stopped",
+    "The maximum value must be greater than the minimum value.": "The maximum value must be greater than the minimum value.",
+    "User is not active, please contact the administrator": "User is not active, please contact the administrator",
+    "Patient not found": "Patient not found",
     
   };
 

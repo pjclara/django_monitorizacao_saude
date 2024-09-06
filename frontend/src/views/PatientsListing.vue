@@ -257,8 +257,6 @@ onMounted(() => {
     if (usePatientsStore().patients.length === 0)
         usePatientsStore().fetchPatients(user.user_id);
 
-    console.log(usePatientsStore().patients);
-
 });
 
 const patientsList = computed(() => {

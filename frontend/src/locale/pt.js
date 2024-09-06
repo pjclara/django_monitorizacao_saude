@@ -145,7 +145,11 @@ const pt = {
   'FrequenciaCardiaca': 'Frequência Cardiaca',
   'Frequência Cardíaca': "Frequência Cardíaca",
   'Saturação Oxigênio': "Saturação Oxigênio",
-  Temperatura: 'Temperatura'
+  Temperatura: 'Temperatura',
+  "Data creation stopped": "Criação de dados cancelada",
+  "The maximum value must be greater than the minimum value.": "O valor máximo deve ser maior que o valor mínimo.",
+  "User is not active, please contact the administrator": "O utilizador não está ativo, por favor contacte o administrador",
+  "Patient not found": "Paciente não encontrado",
 }
 
 export default pt
