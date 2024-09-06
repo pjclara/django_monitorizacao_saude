@@ -4,7 +4,9 @@ import { toast } from 'vue3-toastify'
 import { useUsersStore } from './users'
 import { usePatientsStore } from './patients'
 import { useLoaderStore } from '@/stores/loader'
-import { useI18n } from 'vue-i18n'
+
+// notificações
+import { useNotificationsStore } from './notifications'
 
 export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const activation = ref([])
@@ -12,7 +14,6 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
   const start = ref([])
   const loading = ref([])
   const loaderStore = useLoaderStore()
-  const { t } = useI18n()
 
   const desativarSinal = async (patient, indexSinal, index) => {
     loaderStore.setLoading(true)
@@ -35,7 +36,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       throw new Error('Failed to fetch data')
     }
     loaderStore.setLoading(false)
-    toast.success(t('Data creation stopped'))
+    toast.success('Data creation stopped')
   }
 
   const ativarSinal = async (patient, indexSinal, index) => {
@@ -68,7 +69,7 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     }
 
     const data = await response.json()
-    loaderStore.setLoading(false)
+
     const patientStore = usePatientsStore().patients.find((item) => item.sns == patient.sns)
     const device = patientStore.dispositivos[indexSinal]
     const vitalSign = device.sinaisVitais[index]
@@ -79,8 +80,8 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
       dataLida: data.data.dataLida,
       lida: data.data.lida
     })
-    
-   
+    useNotificationsStore().fetchNotifications(patient.sns)
+    loaderStore.setLoading(false)
   }
 
   const reset = () => {
@@ -96,14 +97,14 @@ export const useVitalSignsStore = defineStore('vitalSigns', () => {
     const readingFrequency = patient.dispositivos[indexSinal].sinaisVitais[index].readingFrequency
     // activate device
     patient.dispositivos[indexSinal].ativo = true
-    toast.success(t('Data creation started'))
-    if (getintervalId(patient.sns, indexSinal, index) && getintervalId(patient.sns, indexSinal, index).valor === 0) {
-      ativarSinal(patient, indexSinal, index);
+    toast.success('Data creation started')
+    if (
+      getintervalId(patient.sns, indexSinal, index) &&
+      getintervalId(patient.sns, indexSinal, index).valor === 0
+    ) {
+      ativarSinal(patient, indexSinal, index)
       getintervalId(patient.sns, indexSinal, index).valor = setInterval(async () => {
-      loaderStore.setLoading(true)
-      await ativarSinal(patient, indexSinal, index)
-      loaderStore.setLoading(false)
-
+        await ativarSinal(patient, indexSinal, index)
       }, readingFrequency * 1000)
     }
   }

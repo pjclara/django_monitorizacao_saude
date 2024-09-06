@@ -6,6 +6,7 @@ from .mongodb import db
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 
+
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -96,22 +97,25 @@ def get_all_users(request):
         return JsonResponse(serializer.errors, status=400, safe=False)
     
     elif request.method == 'DELETE':
+        print('request.data: ', request.data)
         if 'email' not in request.data:
             return JsonResponse({'error': 'Email is required to delete a user'}, status=400, safe=False)
         
         user_patient = db.healthData_customuser.find_one({"email": request.data['email']})
-
-        result_patient = db.minha_colecao.delete_one({'sns': user_patient['health_number']})
-
-
-        if result_patient.deleted_count == 0:
-            return JsonResponse({'error': 'User not found'}, status=404, safe=False)
-
-        result = db.healthData_customuser.delete_one({'email': request.data['email']})
-        if result.deleted_count == 1:
-            return JsonResponse({'message': 'User deleted successfully'}, status=200, safe=False)
+        if not user_patient:
+            return JsonResponse({'error': 'User not found'}, status=404, safe=False)        
         else:
-            return JsonResponse({'error': 'User not found'}, status=404, safe=False)
+            if user_patient['type_user'] == 'paciente':
+                result_patient = db.minha_colecao.delete_one({'sns': user_patient['health_number']})
+                if result_patient.deleted_count == 0:
+                    return JsonResponse({'error': 'User not found'}, status=404, safe=False)
+                else:
+                    db.healthData_customuser.delete_one({'email': request.data['email']})
+                    return JsonResponse({'message': 'User was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT, safe=False)
+            else:
+                db.healthData_customuser.delete_one({'email': request.data['email']})
+                return JsonResponse({'message': 'User was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT, safe=False)
+                
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -141,9 +145,6 @@ def user_detail(request, pk):
         })
 
     elif request.method == 'PUT':
-        # check if the user exists
-        # chek if the required fields are present
-        
         if not 'full_name' in request.data:
             return JsonResponse({'error': 'Full name is required'}, status=400, safe=False)
 
@@ -196,25 +197,52 @@ def user_detail(request, pk):
             pass
         elif db.healthData_customuser.find_one({'mobile_phone': request.data['mobile_phone']}):
             return JsonResponse({'error': 'Mobile phone already exists'}, status=400, safe=False)
-           
-        # TODO - password mudar ao editar perfil
-        
+                 
         # check if the password is not empty
         if 'password' in request.data:
             if not request.data['password'] or request.data['password'] == '':
                 serializer = CustomPutUserSerializer(user, data=request.data)
             else:
                 serializer = CustomPutUserPasswordSerializer(user, data=request.data)
-        print('serializer: ', serializer)
-        
+        else:
+            serializer = CustomPutUserSerializer(user, data=request.data)
+            
+        # update the user in the minha_colecao
         if serializer.is_valid():
+            data = serializer.validated_data
+            # find the user in the minha_colecao by email
+            user_patient = db.minha_colecao.find_one({"email": user['email']})
+            if user_patient:
+                # update the user in the minha_colecao email, full_name, mobile_phone, health_number
+                user_patient['nome'] = data['full_name']
+                user_patient['telefone'] = data['mobile_phone']
+                db.minha_colecao.update_one({"email": user['email']}, {"$set": user_patient})
+            else:
+                return JsonResponse({'error': 'User not found'}, status=404, safe=False)               
+        
+        if serializer.is_valid():            
             serializer.save()
             return JsonResponse(serializer.data, safe=False)
         return JsonResponse(serializer.errors, status=400, safe=False)
 
     elif request.method == 'DELETE':
-        user.delete()
-        return JsonResponse({'message': 'User was deleted successfully!'}, status=204, safe=False)
+        user = db.healthData_customuser.find_one({'id': pk})
+        print('user: ', user)
+        if not user:
+            return JsonResponse({'error': 'User not found'}, status=404, safe=False)
+        db.healthData_customuser.delete_one({'id': pk})
+        db.healthData_customuser_groups.delete_many({'customuser_id': pk})
+        # find the user in the minha_colecao and delete it
+        user_patient = db.healthData_customuser.find_one({"email": user['email']})
+        if user_patient:
+            result_patient = db.minha_colecao.delete_one({'sns': user_patient['health_number']})
+            if result_patient.deleted_count == 0:
+                return JsonResponse({'error': 'User not found'}, status=404, safe=False)
+            else:
+                return JsonResponse({'message': 'User was deleted successfully!'}, status=204, safe=False)
+        else:
+            return JsonResponse({'error': 'User not found'}, status=404, safe=False)           
+        
 
 # crud for groups 
 @api_view(['POST'])

@@ -11,7 +11,7 @@
                 label="Gender"
                 :items="['Male', 'Female']"
             ></v-select>
-            <v-text-field label="Email" placeholder="example@mail.com" color="primary"/>
+            <v-text-field label="Email" placeholder="example@mail.com" color="primary" :disabled="routeName == 'EditUser'"/>
             <v-text-field label="Address" placeholder="Street, Region, Country" color="primary"/>
             <v-text-field label="Phone Number" placeholder="910000000" color="primary"/>
             <v-select

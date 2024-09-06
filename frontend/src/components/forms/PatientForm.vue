@@ -149,7 +149,7 @@ const { smAndDown } = useDisplay()
 
 
 const props = defineProps(['patient'])
-const emit = defineEmits(['validationChanged', 'areAllFieldsNonEmpty'])
+const emit = defineEmits(['validationChanged', 'areAllFieldsNonEmpty', 'atualizarPaciente'])
 
 const route = useRoute()
 const routeName = route.name
@@ -170,7 +170,6 @@ const listSinaisVitais = ref([
 
 watch(tab, (changedTab) => {
   indexDispositivo.value = changedTab
-  console.log(indexDispositivo.value)
 });
 
 const validationStatus = () => {
@@ -228,6 +227,7 @@ const deleteDevice = (index) => {
   if (confirm('Are you sure you want to delete this device?')) {
     props.patient.dispositivos.splice(index, 1)
     tab.value = 'patient'
+    emit('atualizarPaciente')
     alert('Device deleted')
   }
   else
@@ -237,7 +237,9 @@ const deleteDevice = (index) => {
 const deleteSinal = (indexDispositivo, index) => {
   if (confirm('Are you sure you want to delete this vital sign?')) {
     props.patient.dispositivos[indexDispositivo].sinaisVitais.splice(index, 1)
+    emit('atualizarPaciente')
     alert('Vital sign deleted')
+
   }
   else
     alert('Vital sign not deleted')

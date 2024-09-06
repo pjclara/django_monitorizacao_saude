@@ -1,12 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { useI18n } from 'vue-i18n'
 import { usePatientsStore } from './patients'
 import { useVitalSignsStore } from './vitalSigns'
 import { useNotificationsStore } from './notifications'
 import { toast } from 'vue3-toastify'
 import { useLoaderStore } from '@/stores/loader'
-
 
 export const useUsersStore = defineStore('users', () => {
   const user = ref(null)
@@ -17,8 +15,6 @@ export const useUsersStore = defineStore('users', () => {
   const isAdmin = ref(false)
   const isPatient = ref(false)
   const loaderStore = useLoaderStore()
-
-  const { t } = useI18n()
 
   const groups = ref([])
 
@@ -47,15 +43,15 @@ export const useUsersStore = defineStore('users', () => {
       body: JSON.stringify({ email, password })
     })
     if (response.status === 401) {
-      toast.error(t('Username or password is invalid!'))
+      toast.error('Username or password is invalid!')
       return
     }
     if (response.status === 400) {
-      toast.error(t('User is not active, please contact the administrator'))
+      toast.error('User is not active, please contact the administrator')
       return
     }
     if (response.status !== 200) {
-      toast.error(t('An error occurred while trying to log in'))
+      toast.error('An error occurred while trying to log in')
       return
     }
     const data = await response.json()
@@ -92,7 +88,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   const fetchUsers = async () => {
-    loaderStore.setLoading(true);
+    loaderStore.setLoading(true)
     const response = await fetch(window.URL + '/api/users/', {
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -102,14 +98,13 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     users.value = await response.json()
-    loaderStore.setLoading(false);
-
+    loaderStore.setLoading(false)
 
     return users.value
   }
 
   const fetchRoles = async () => {
-    loaderStore.setLoading(true);
+    loaderStore.setLoading(true)
 
     const response = await fetch(window.URL + '/api/get_groups/', {
       headers: {
@@ -120,14 +115,13 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     groups.value = await response.json()
-    loaderStore.setLoading(false);
-
+    loaderStore.setLoading(false)
 
     return groups.value
   }
 
   const fetchUserData = async (id) => {
-    loaderStore.setLoading(true);
+    loaderStore.setLoading(true)
     const response = await fetch(window.URL + `/api/users/${id}/`, {
       headers: {
         Authorization: `Bearer ${token.value}`
@@ -137,41 +131,45 @@ export const useUsersStore = defineStore('users', () => {
       return
     }
     const data = await response.json()
-    loaderStore.setLoading(false);
+    loaderStore.setLoading(false)
 
     return data
   }
 
-  const deleteUser = async (id) => async () => {
-    loaderStore.setLoading(true);
+  const deleteUser = async (email) => {
+    loaderStore.setLoading(true)
+    console.log(email)
     try {
-
       const response = await fetch(window.URL + '/api/users/', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token')
         },
-        body: JSON.stringify({ email: user.value.email })
+        body: JSON.stringify({ email: email })
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        // remove user from users list
-        users.value = users.value.filter((user) => user.id !== id)
-        console.log(users.value)
+      console.log(response)
+      if (response.status === 404) {
+        toast.error('User not found')
+        return
+      }
+      if (response.status === 204) {
+        // remove user from users list by email
+        users.value = users.value.filter((user) => user.email !== email)
         return
       } else {
         const errorData = await response.json()
       }
     } catch (error) {
+      console.log(error)
       toast.error('Error deleting user: ' + error)
     }
-    loaderStore.setLoading(false);
+    loaderStore.setLoading(false)
   }
 
   const updateUser = async (id, data) => {
-    loaderStore.setLoading(true);
+    loaderStore.setLoading(true)
 
     const response = await fetch(window.URL + `/api/users/${id}/`, {
       method: 'PUT',
@@ -191,17 +189,16 @@ export const useUsersStore = defineStore('users', () => {
         }
         return user
       })
-      loaderStore.setLoading(false);
+      loaderStore.setLoading(false)
 
       return data
     } else {
       const errorData = await response.json()
 
-      loaderStore.setLoading(false);
+      loaderStore.setLoading(false)
 
       return errorData
     }
-    
   }
 
   return {

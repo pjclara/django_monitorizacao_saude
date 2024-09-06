@@ -64,26 +64,33 @@
                         </v-tab>
                         <v-tab value="vitals" class="tab-border mr-1">
                             <span class="text-blue">
+                                <v-icon>mdi-clipboard-pulse</v-icon>
                                 {{ $t('Vital Signs') }}
                             </span>
                         </v-tab>
                         <v-tab value="activeCharts" class="tab-border mr-1">
                             <span class="text-blue">
+                                <v-icon>mdi-chart-line</v-icon>
                                 {{ $t('activeCharts') }}
                             </span>
                         </v-tab>
                         <v-tab value="notifications" class="tab-border">
                             <span class="text-blue">
+                                <v-icon>mdi-bell</v-icon>
                                 {{ $t('Notifications') }}
                             </span>
                         </v-tab>
                         <v-tab value="history" class="tab-border">
                             <span class="text-blue">
+                                <v-icon>mdi-history</v-icon>
                                 {{ $t('Notifications History') }}
                             </span>
                         </v-tab>
                         <v-tab value="historyValues" class="tab-border">
                             <span class="text-blue">
+                                
+                                <v-icon>mdi-database-refresh</v-icon>
+
                                 {{ $t('Values History') }}
                             </span>
                         </v-tab>
@@ -96,8 +103,8 @@
                                         <v-sheet class="ma-2">
                                             <v-card :class="device.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
-                                                    <h4>{{ device.modelo }} - {{ device.ativo ? 'On' : 'Off' }}
-                                                    </h4>
+                                                    <span style="font-size: medium; display: flex; ">{{ device.modelo }}</span> 
+                                                    <span style="font-size: small; display: flex; ">{{ device.ativo ? 'On' : 'Off' }}</span>
                                                 </v-card-title>
                                                 <v-card-text>
                                                     <p>{{ device.descricao }} - {{ device.numeroSerie }}</p>
@@ -117,11 +124,11 @@
 
                             <v-window-item value="vitals">
                                 <v-row no-gutters>
-                                    <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="3">
+                                    <v-col v-for="(sinal, index) in lastVitalValues" :key="index" cols="12" sm="4">
                                         <v-sheet class="ma-2">
                                             <v-card :class="sinal.ativo ? 'bg-red-accent-1' : 'bg-blue-accent-1'">
                                                 <v-card-title>
-                                                    <span>{{ sinal.nome }} ({{ sinal.modelo }})</span>
+                                                    <span style="font-size: medium; display: flex; ">{{ sinal.nome }}</span><span style="font-size: small;"> ({{ sinal.modelo }})</span>
                                                 </v-card-title>
                                                 <v-card-text class="d-flex flex-wrap">
                                                     <v-row no-gutters class="w-100 justify-center"
@@ -391,9 +398,8 @@ onMounted(() => {
         console.log('Received data from the websocket server', event.data)
         usePatientsStore().buscarPaciente(patientSns);
         //fetchPatientData();
-        //fetchNotifications();
+        fetchNotifications();
     }
-
 
     useNotificationsStore().fetchNotifications(patientSns);
 
@@ -623,11 +629,13 @@ const historyNotifications = computed(() => {
             let dispositivoIdx = parseInt(parts[0].split(':')[1].trim());
             let sinalIdx = parseInt(parts[1].split(':')[1].trim());
             let valorIdx = parseInt(parts[2].split(':')[1].trim());
+            let valor = parseInt(parts[3].split(':')[1].trim());
+            console.log(parts);
             return {
                 dispositivo: patient.value.dispositivos[dispositivoIdx]?.modelo,
                 sinal: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.tipo,
                 data: format(new Date(notification.created_at), 'dd-MM-yyyy - HH:mm:ss'),
-                valor: patient.value.dispositivos[dispositivoIdx]?.sinaisVitais[sinalIdx]?.valores[valorIdx]?.valor
+                valor: valor
             };
         });
 });

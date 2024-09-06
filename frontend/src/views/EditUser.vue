@@ -11,7 +11,7 @@
           <v-text-field v-model="user.full_name" label="Name" required></v-text-field>
         </v-col>
         <v-col cols="12" sm="4">
-          <v-text-field v-model="user.email" label="Email" required></v-text-field>
+          <v-text-field v-model="user.email" label="Email" required :disabled="isEditProfile"></v-text-field>
         </v-col>
         <v-col cols="12" sm="2" v-if="isEditProfile && user.type_user == 'admin'">
           <v-select v-model="user.is_active" :items="activeOptions" label="Active" required></v-select>
@@ -28,7 +28,7 @@
           <v-text-field v-model="user.taxpayer_number" label="Taxpayer number" required></v-text-field>
         </v-col>
         <v-col cols="12" sm="3">
-          <v-text-field v-model="user.mobile_phone" label="Mobile phone" required></v-text-field>
+          <v-text-field v-model="user.mobile_phone" label="Mobile phone" required :disabled="isEditProfile"></v-text-field>
         </v-col>
         <v-col cols="12" sm="3" v-if="isAdmin">
           <v-select v-model="user.type_user" :items="typeUser" label="Type user" required></v-select>
@@ -172,14 +172,12 @@ const updateUser = () => {
 }
 
 const deleteUser = () => {
-  useUsersStore().deleteUser(userId)
-    .then(() => {
-      toast.success('User deleted successfully')
-      usersList()
-    })
-    .catch((error) => {
-      toast.error('Error deleting user')
-    })
+  useUsersStore().deleteUser(user.value.email).then(() => {
+    toast.success('User deleted successfully')
+    usersList()
+  }).catch((error) => {
+    toast.error('Error deleting user')
+  })
 };
 
 const usersList = () => {

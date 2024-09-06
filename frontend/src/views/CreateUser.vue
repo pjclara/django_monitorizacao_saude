@@ -86,7 +86,7 @@ const isAdmin = computed(() => {
 });
 
 
-const typeUser = ref(['profissional', 'paciente', 'admin'])
+const typeUser = ref(['profissional', 'admin'])
 
 onMounted(() => {
   getRoles()

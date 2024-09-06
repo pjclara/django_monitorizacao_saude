@@ -18,9 +18,7 @@
         </div>
       </v-col>
     </v-row>
-    Administator: admin@gmail.com, password: admin123 <br>
-    Medico: medico@gmail.com password: medico123<br>
-    Paciente: paciente@gmail.com password: paciente123
+
   </v-container>
 </template>
 
@@ -37,8 +35,8 @@ const showPassword = ref(false);
 const passwordType = ref('password');
 const loaderStore = useLoaderStore()
 
-const email = ref('admin@gmail.com');
-const password = ref('admin123');
+const email = ref('medico@gmail.com');
+const password = ref('medico123');
 
 const toggleShowPassword = () => {
   showPassword.value = !showPassword.value

@@ -33,6 +33,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     notifications.value = data
     getNotificationsRead()
     getNotificationsNotRead()
+    console.log("updated notifications")
   }
 
   const processedNotifications = ref([])
@@ -78,9 +79,12 @@ export const useNotificationsStore = defineStore('notifications', () => {
         const index = notificationsNotRead.value.findIndex(
           (notification) => notification._id === id
         )
-        notificationsNotRead.value.splice(index, 1)
         // add to notificationsRead
-        notificationsRead.value.push(data)
+        console.log(notificationsNotRead.value[index])
+        notificationsRead.value.push(notificationsNotRead.value[index])
+
+        notificationsNotRead.value.splice(index, 1)
+        
         // set sinal as read in patient
         const patient = pacientsStore.patients.find((patient) => patient.sns == data.utente)
         // message string like "device_id, vital_sign_id, value_id"

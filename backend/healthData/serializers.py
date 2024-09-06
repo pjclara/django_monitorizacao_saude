@@ -182,8 +182,9 @@ class CustomPutUserSerializer(serializers.Serializer):
         customer.is_staff = validated_data['is_staff']
         customer.is_superuser = validated_data['is_superuser']
         customer.mobile_phone = validated_data['mobile_phone']
-        customer.health_number = validated_data['health_number']
+        customer.health_number =  health_number
         customer.type_user = validated_data['type_user']
+        customer.taxpayer_number = taxpayer_number
         
         customer.save()
         

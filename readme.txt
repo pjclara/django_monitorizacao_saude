@@ -9,3 +9,9 @@ Passos para instalar o projecto:
 ---- projecto no GitHub (acesso publico) --- 
 
 https://github.com/pjclara/django_monitorizacao_saude
+
+
+Senhas para Login:
+Administator: admin@gmail.com, password: admin123
+Medico: medico@gmail.com password: medico123
+Paciente: paciente@gmail.com password: paciente123

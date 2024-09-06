@@ -53,7 +53,7 @@
                     <template v-slot:item.dispositivos="{ item }">
                         <v-row v-for="(dispositivo, indexSinal) in item.dispositivos" :key="indexSinal" class="my-1">
                             <v-col cols="4">
-                                <v-chip color="success" v-if="dispositivo.ativo">{{ dispositivo.modelo }}:
+                                <v-chip color="success" v-if="dispositivo.ativo">{{ dispositivo.modelo }}
                                     On</v-chip><v-chip color="primary" v-else>{{ dispositivo.modelo }}: Off</v-chip>
                             </v-col>
                             <v-col>
@@ -193,7 +193,9 @@
                                     <span v-else>
                                         <img src="/heart_beat.png" alt="" width="20px" height="20px">
                                     </span>
-                                    <span v-if="sinalVital.ativo">On</span><span v-else>Off</span>
+                                    <span v-if="sinalVital.ativo">On</span>
+                                    
+                                    <span v-else>Off</span>
                                 </v-chip>
                                 <v-chip :color="hasAlertSignal(sinalVital) ? 'red' : 'success'">
                                     <span>

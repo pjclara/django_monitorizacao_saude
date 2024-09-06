@@ -3,7 +3,7 @@
     <v-row class="d-flex my-2 justify-center" no-gutters>
       <div class="text-h4 text-center font-weight-bold text-deep-purple-darken-4">{{ $t('EditPatient') }}</div>
     </v-row>
-    <PatientForm :patient="patient" @areAllFieldsNonEmpty="areAllFieldsNonEmpty"></PatientForm>
+    <PatientForm :patient="patient" @areAllFieldsNonEmpty="areAllFieldsNonEmpty" @atualizarPaciente="atualizarPaciente"></PatientForm>
     <v-row class="d-flex my-2 justify-space-around">
       <v-btn @click="voltar()" color="blue-darken-3"><v-icon class="mr-2">mdi-keyboard-backspace</v-icon>{{ $t("Return")
         }}</v-btn>
@@ -47,7 +47,6 @@ onMounted(() => {
 
 
   const patientData = usePatientsStore().getPaciente(patientSns);
-  console.log(patientData);
   if (patientData) {
     patient.value = {
       ...patientData,
@@ -87,7 +86,7 @@ const atualizarPaciente = () => {
     }
 
     dispositivo.sinaisVitais.forEach(element => {
-      if (element.maximo < element.minimo) {
+      if (parseInt(element.maximo) < parseInt(element.minimo)) {
         erroEncontrado = true;
         toast.error($t('The maximum value must be greater than the minimum value.'));
       }
